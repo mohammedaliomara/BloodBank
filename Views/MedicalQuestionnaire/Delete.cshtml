@@ -1,0 +1,117 @@
+@model BloodBank.Models.MedicalQuestionnaire
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>Delete</h1>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>MedicalQuestionnaire</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Donor)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Donor.Id)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.AgeRange)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.AgeRange)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.WeightRange)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.WeightRange)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.HadFullMealInLast4Hours)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.HadFullMealInLast4Hours)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.HasUncontrolledBloodPressure)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.HasUncontrolledBloodPressure)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.TakesBloodThinners)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.TakesBloodThinners)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.HasActiveInfectiousDisease)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.HasActiveInfectiousDisease)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.HasChronicHeartOrLungCondition)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.HasChronicHeartOrLungCondition)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.HadSurgeryOrMajorIllnessLast6Months)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.HadSurgeryOrMajorIllnessLast6Months)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.IsPregnantOrRecentlyPregnant)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.IsPregnantOrRecentlyPregnant)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.DonatedWholeBloodLast90Days)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.DonatedWholeBloodLast90Days)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.DonatedPlateletsLast14Days)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.DonatedPlateletsLast14Days)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.HadBloodTransfusionLast12Months)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.HadBloodTransfusionLast12Months)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.TraveledToMalariaRiskAreaLast12Months)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.TraveledToMalariaRiskAreaLast12Months)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.HadTattooOrPiercingLast6Months)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.HadTattooOrPiercingLast6Months)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.HadCovidOrVaccineLast28Days)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.HadCovidOrVaccineLast28Days)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-action="Index">Back to List</a>
+    </form>
+</div>

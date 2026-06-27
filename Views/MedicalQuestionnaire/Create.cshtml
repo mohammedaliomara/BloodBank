@@ -1,0 +1,104 @@
+@model BloodBank.Models.MedicalQuestionnaire
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>MedicalQuestionnaire</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="DonorId" class="control-label"></label>
+                <select asp-for="DonorId" class ="form-control" asp-items="ViewBag.DonorId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="AgeRange" class="control-label"></label>
+                <input asp-for="AgeRange" class="form-control" />
+                <span asp-validation-for="AgeRange" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="WeightRange" class="control-label"></label>
+                <input asp-for="WeightRange" class="form-control" />
+                <span asp-validation-for="WeightRange" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="HadFullMealInLast4Hours" /> @Html.DisplayNameFor(model => model.HadFullMealInLast4Hours)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="HasUncontrolledBloodPressure" /> @Html.DisplayNameFor(model => model.HasUncontrolledBloodPressure)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="TakesBloodThinners" /> @Html.DisplayNameFor(model => model.TakesBloodThinners)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="HasActiveInfectiousDisease" /> @Html.DisplayNameFor(model => model.HasActiveInfectiousDisease)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="HasChronicHeartOrLungCondition" /> @Html.DisplayNameFor(model => model.HasChronicHeartOrLungCondition)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="HadSurgeryOrMajorIllnessLast6Months" /> @Html.DisplayNameFor(model => model.HadSurgeryOrMajorIllnessLast6Months)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsPregnantOrRecentlyPregnant" /> @Html.DisplayNameFor(model => model.IsPregnantOrRecentlyPregnant)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="DonatedWholeBloodLast90Days" /> @Html.DisplayNameFor(model => model.DonatedWholeBloodLast90Days)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="DonatedPlateletsLast14Days" /> @Html.DisplayNameFor(model => model.DonatedPlateletsLast14Days)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="HadBloodTransfusionLast12Months" /> @Html.DisplayNameFor(model => model.HadBloodTransfusionLast12Months)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="TraveledToMalariaRiskAreaLast12Months" /> @Html.DisplayNameFor(model => model.TraveledToMalariaRiskAreaLast12Months)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="HadTattooOrPiercingLast6Months" /> @Html.DisplayNameFor(model => model.HadTattooOrPiercingLast6Months)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="HadCovidOrVaccineLast28Days" /> @Html.DisplayNameFor(model => model.HadCovidOrVaccineLast28Days)
+                </label>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

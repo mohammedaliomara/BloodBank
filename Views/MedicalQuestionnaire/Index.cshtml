@@ -1,0 +1,125 @@
+@model IEnumerable<BloodBank.Models.MedicalQuestionnaire>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Donor)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AgeRange)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.WeightRange)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HadFullMealInLast4Hours)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HasUncontrolledBloodPressure)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TakesBloodThinners)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HasActiveInfectiousDisease)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HasChronicHeartOrLungCondition)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HadSurgeryOrMajorIllnessLast6Months)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsPregnantOrRecentlyPregnant)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DonatedWholeBloodLast90Days)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DonatedPlateletsLast14Days)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HadBloodTransfusionLast12Months)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TraveledToMalariaRiskAreaLast12Months)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HadTattooOrPiercingLast6Months)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HadCovidOrVaccineLast28Days)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Donor.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AgeRange)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.WeightRange)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HadFullMealInLast4Hours)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HasUncontrolledBloodPressure)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TakesBloodThinners)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HasActiveInfectiousDisease)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HasChronicHeartOrLungCondition)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HadSurgeryOrMajorIllnessLast6Months)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsPregnantOrRecentlyPregnant)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DonatedWholeBloodLast90Days)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DonatedPlateletsLast14Days)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HadBloodTransfusionLast12Months)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TraveledToMalariaRiskAreaLast12Months)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HadTattooOrPiercingLast6Months)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HadCovidOrVaccineLast28Days)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

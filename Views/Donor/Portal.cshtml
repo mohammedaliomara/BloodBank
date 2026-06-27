@@ -1,0 +1,1774 @@
+@using BloodBank.Models
+@{
+    Layout = null;
+    var fullName     = ViewBag.FullName     ?? "Guest";
+    var initials     = ViewBag.Initials     ?? "?";
+    var bloodType    = ViewBag.BloodType    ?? "—";
+    var governorate  = ViewBag.Governorate  ?? "—";
+    var totalDon     = (int)(ViewBag.TotalDonations ?? 0);
+    var livesSaved   = (int)(ViewBag.LivesSaved     ?? 0);
+    var isEligible   = (bool)(ViewBag.IsEligible    ?? true);
+    var daysLeft     = (int)(ViewBag.DaysUntilEligible ?? 0);
+    var unreadCount  = (int)(ViewBag.UnreadNotifications ?? 0);
+    var lastAppt     = ViewBag.LastAppointment  as Appointment;
+    var nextAppt     = ViewBag.NextAppointment  as Appointment;
+    var centers      = ViewBag.DonationCenters  as List<BloodBank.Models.BloodCenter> ?? new();
+    string nextEligibleStr = isEligible ? "Ready" : $"{daysLeft}d left";
+    string eligBadgeClass  = isEligible ? "badge-ready" : "badge-wait";
+    string dotClass        = isEligible ? "dot-green"   : "dot-amber";
+    string eligText        = isEligible ? "Ready to Donate ✓" : $"Wait {daysLeft} days";
+    string tbEligClass     = isEligible ? "elig-ready" : "elig-wait";
+    string tbDotClass      = isEligible ? "ed-green"   : "ed-amber";
+    string tbEligText      = isEligible ? "Ready" : $"{daysLeft}d";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Haemo · Donor Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --crimson:#D01C2A; --crimson-deep:#A0141F; --crimson-pale:#FFF1F2; --crimson-mid:#FFCDD0;
+  --slate:#0F1521; --fog:#F3F4F8; --fog2:#EAECF2;
+  --ink:#0F1521; --ink-mid:#485070; --ink-light:#8891AA;
+  --white:#FFFFFF; --border:#E4E6EE;
+  --emerald:#0C9B60; --emerald-pale:#EDFAF4;
+  --amber:#D47B00; --amber-pale:#FFF8EC;
+  --sapphire:#1E5FD0; --sapphire-pale:#EEF3FF;
+  --violet:#6E40C9; --violet-pale:#F3EEFF;
+  --shadow: 0 2px 16px rgba(15,21,33,0.07);
+  --r: 14px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'DM Sans',sans-serif; background:var(--fog); color:var(--ink); min-height:100vh; padding-bottom:80px; }
+::-webkit-scrollbar { width:4px; } ::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+
+/* ─── TOPBAR ─── */
+.topbar {
+  background:var(--white);
+  border-bottom:1px solid var(--border);
+  height:66px;
+  display:flex; align-items:center;
+  padding:0 18px;
+  position:sticky; top:0; z-index:50;
+  box-shadow:0 2px 14px rgba(15,21,33,0.06);
+  gap:0;
+}
+
+/* Brand */
+.tb-brand {
+  display:flex; align-items:center; gap:10px;
+  text-decoration:none; color:inherit;
+  flex-shrink:0;
+}
+.tb-mark {
+  width:34px; height:34px;
+  background:var(--crimson);
+  border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 4px 12px rgba(208,28,42,0.35);
+  flex-shrink:0;
+}
+.tb-mark svg { width:19px; height:19px; }
+.tb-name {
+  font-family:'Sora',sans-serif;
+  font-size:15px; font-weight:800; letter-spacing:-0.4px;
+}
+
+/* Divider */
+.tb-divider {
+  width:1px; height:28px;
+  background:var(--border);
+  margin:0 16px; flex-shrink:0;
+}
+
+/* Donor identity block */
+.tb-donor {
+  display:flex; align-items:center; gap:10px;
+  flex-shrink:0;
+}
+.tb-avatar {
+  width:36px; height:36px; border-radius:10px;
+  background:linear-gradient(135deg, var(--crimson), var(--crimson-deep));
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Sora',sans-serif; font-size:12px; font-weight:700;
+  color:var(--white); flex-shrink:0;
+  box-shadow:0 3px 10px rgba(208,28,42,0.28);
+}
+.tb-donor-info { display:flex; flex-direction:column; gap:1px; }
+.tb-donor-name {
+  font-family:'Sora',sans-serif;
+  font-size:13px; font-weight:700; color:var(--ink);
+  letter-spacing:-0.2px;
+}
+.tb-donor-meta {
+  display:flex; align-items:center; gap:5px;
+}
+.tb-blood-badge {
+  font-family:'Sora',sans-serif;
+  font-size:10px; font-weight:800;
+  padding:1px 7px; border-radius:5px;
+  background:var(--crimson-pale); color:var(--crimson);
+  border:1px solid var(--crimson-mid);
+}
+.tb-donor-city {
+  font-size:10px; color:var(--ink-light); font-weight:500;
+}
+
+/* Spacer */
+.tb-spacer { flex:1; }
+
+/* Donation counter strip */
+.tb-stats {
+  display:flex; align-items:center; gap:6px;
+  background:var(--fog);
+  border:1px solid var(--border);
+  border-radius:11px;
+  padding:6px 14px;
+  margin-right:12px;
+  flex-shrink:0;
+}
+.tb-stat {
+  display:flex; flex-direction:column; align-items:center; gap:1px;
+}
+.tb-stat-val {
+  font-family:'Sora',sans-serif;
+  font-size:14px; font-weight:800;
+  color:var(--ink); letter-spacing:-0.5px;
+  line-height:1;
+}
+.tb-stat-val.red { color:var(--crimson); }
+.tb-stat-val.green { color:var(--emerald); }
+.tb-stat-lbl {
+  font-size:9px; color:var(--ink-light);
+  text-transform:uppercase; letter-spacing:0.7px;
+  white-space:nowrap;
+}
+.tb-stat-sep {
+  width:1px; height:28px;
+  background:var(--border); margin:0 8px;
+}
+
+/* Eligibility pill */
+.tb-elig {
+  display:flex; align-items:center; gap:6px;
+  padding:5px 12px; border-radius:20px;
+  font-size:11px; font-weight:700;
+  margin-right:10px; flex-shrink:0;
+  cursor:default;
+}
+.elig-ready {
+  background:var(--emerald-pale);
+  border:1px solid rgba(12,155,96,0.3);
+  color:var(--emerald);
+}
+.elig-wait {
+  background:var(--amber-pale);
+  border:1px solid rgba(212,123,0,0.3);
+  color:var(--amber);
+}
+.elig-dot {
+  width:6px; height:6px; border-radius:50%;
+  animation:tb-blink 2s ease-in-out infinite;
+}
+.ed-green { background:var(--emerald); }
+.ed-amber { background:var(--amber); }
+@@keyframes tb-blink { 0%,100%{opacity:1;} 50%{opacity:0.2;} }
+
+/* Action buttons */
+.tb-actions { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+.tb-notif-btn {
+  width:36px; height:36px; border-radius:10px;
+  border:1.5px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; position:relative; background:var(--white);
+  transition:all 0.18s;
+}
+.tb-notif-btn:hover { border-color:var(--crimson); background:var(--crimson-pale); }
+.tb-notif-dot {
+  position:absolute; top:5px; right:5px;
+  width:8px; height:8px; background:var(--crimson);
+  border-radius:50%; border:2px solid var(--white);
+}
+.tb-logout-btn {
+  display:flex; align-items:center; gap:6px;
+  padding:7px 14px; border-radius:9px;
+  border:1.5px solid var(--border);
+  background:var(--white);
+  font-size:12px; font-weight:600;
+  color:var(--ink-mid); cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  transition:all 0.18s;
+}
+.tb-logout-btn:hover { border-color:var(--crimson); color:var(--crimson); }
+
+/* keep old names working */
+.notif-btn { display:none; }
+.logout-btn { display:none; }
+
+/* HERO BANNER */
+.hero {
+  background:linear-gradient(130deg, #0A0F1A 0%, #1A0507 50%, #0A0F1A 100%);
+  padding:28px 20px;
+  color:var(--white);
+  position:relative;
+  overflow:hidden;
+}
+.hero-bg-pattern {
+  position:absolute; inset:0; pointer-events:none;
+  background-image: radial-gradient(circle at 80% 50%, rgba(208,28,42,0.12) 0%, transparent 60%),
+                    radial-gradient(circle at 20% 80%, rgba(208,28,42,0.06) 0%, transparent 40%);
+}
+.hero-blood-icon {
+  position:absolute; right:-20px; top:-30px;
+  font-size:160px; opacity:0.04; pointer-events:none;
+  transform:rotate(15deg);
+}
+.hero-top {
+  display:flex; align-items:center; gap:14px; margin-bottom:20px;
+  position:relative; z-index:1;
+}
+.hero-avatar {
+  width:54px; height:54px; border-radius:16px;
+  background:rgba(208,28,42,0.25);
+  border:2px solid rgba(208,28,42,0.4);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Sora',sans-serif; font-size:18px; font-weight:700;
+  flex-shrink:0;
+}
+.hero-name { font-family:'Sora',sans-serif; font-size:19px; font-weight:700; letter-spacing:-0.4px; }
+.hero-meta { font-size:12px; color:rgba(255,255,255,0.45); margin-top:3px; }
+.status-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:5px 12px; border-radius:20px; margin-top:8px;
+  font-size:11px; font-weight:700;
+}
+.badge-ready { background:rgba(12,155,96,0.2); border:1px solid rgba(12,155,96,0.4); color:#5DEBB4; }
+.badge-wait  { background:rgba(212,123,0,0.2);  border:1px solid rgba(212,123,0,0.4);  color:#FFC870; }
+.badge-dot { width:6px; height:6px; border-radius:50%; animation:blink 2s ease-in-out infinite; }
+.dot-green { background:#5DEBB4; }
+.dot-amber { background:#FFC870; }
+@@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.2;} }
+
+.hero-stats {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:10px;
+  position:relative; z-index:1;
+}
+.hs {
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px; padding:14px;
+  text-align:center;
+}
+.hs-val { font-family:'Sora',sans-serif; font-size:22px; font-weight:800; letter-spacing:-1px; }
+.hs-lbl { font-size:10px; color:rgba(255,255,255,0.4); margin-top:4px; text-transform:uppercase; letter-spacing:0.8px; }
+
+/* CONTENT */
+.content { padding:18px 20px; max-width:640px; margin:0 auto; }
+.screen { display:none; }
+.screen.on { display:block; }
+
+/* CARDS */
+.card {
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:var(--r); padding:18px;
+  margin-bottom:14px;
+  box-shadow:var(--shadow);
+}
+.card-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.card-title {
+  display:flex; align-items:center; gap:8px;
+  font-size:14px; font-weight:700; color:var(--ink);
+}
+.card-icon {
+  width:26px; height:26px; border-radius:7px;
+  display:flex; align-items:center; justify-content:center; font-size:12px;
+}
+.ci-red { background:var(--crimson-pale); }
+.ci-green { background:var(--emerald-pale); }
+.ci-blue { background:var(--sapphire-pale); }
+.ci-amber { background:var(--amber-pale); }
+.ci-violet { background:var(--violet-pale); }
+.card-action {
+  font-size:12px; font-weight:600; color:var(--crimson);
+  cursor:pointer; padding:5px 12px; border-radius:8px;
+  border:1.5px solid var(--crimson-mid);
+  transition:all 0.18s;
+}
+.card-action:hover { background:var(--crimson-pale); }
+
+/* URGENT */
+.urgent-card {
+  background:var(--white);
+  border:1.5px solid var(--crimson-mid);
+  border-left:4px solid var(--crimson);
+  border-radius:var(--r); padding:16px;
+  margin-bottom:14px;
+  box-shadow:0 4px 20px rgba(208,28,42,0.1);
+}
+.urgent-label {
+  display:flex; align-items:center; gap:6px;
+  font-size:10px; font-weight:700;
+  color:var(--crimson); text-transform:uppercase;
+  letter-spacing:1px; margin-bottom:10px;
+}
+.urgent-pulse { width:7px; height:7px; background:var(--crimson); border-radius:50%; animation:blink 1s ease-in-out infinite; }
+.urgent-blood { font-family:'Sora',sans-serif; font-size:32px; font-weight:800; color:var(--crimson); }
+.urgent-hospital { font-size:14px; font-weight:700; margin-top:3px; }
+.urgent-meta { font-size:12px; color:var(--ink-light); margin-top:3px; }
+.urgent-ai { font-size:11px; color:var(--violet); font-weight:600; margin-top:5px; }
+.urgent-actions { display:flex; gap:9px; margin-top:14px; }
+.btn-respond {
+  flex:1; background:var(--crimson); color:var(--white);
+  border:none; padding:11px; border-radius:9px;
+  font-size:13px; font-weight:700; cursor:pointer;
+  font-family:'Sora',sans-serif;
+  transition:all 0.2s;
+  box-shadow:0 4px 16px rgba(208,28,42,0.35);
+}
+.btn-respond:hover { background:var(--crimson-deep); transform:translateY(-1px); }
+.btn-respond:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
+.btn-later {
+  padding:11px 16px; border-radius:9px;
+  border:1.5px solid var(--border); background:none;
+  font-size:12px; cursor:pointer; color:var(--ink-mid);
+  font-family:'DM Sans',sans-serif;
+}
+
+/* STEP INDICATOR */
+.step-bar { display:flex; gap:0; margin-bottom:16px; }
+.step { flex:1; display:flex; flex-direction:column; align-items:center; position:relative; }
+.step:not(:last-child)::after {
+  content:''; position:absolute; top:14px; left:50%; width:100%; height:2px;
+  background:var(--border); z-index:0;
+}
+.step.done:not(:last-child)::after { background:var(--emerald); }
+.step-dot {
+  width:28px; height:28px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; font-weight:700; z-index:1;
+  border:2px solid var(--border); background:var(--white);
+  font-family:'Sora',sans-serif;
+}
+.step.done .step-dot  { background:var(--emerald); border-color:var(--emerald); color:var(--white); }
+.step.active .step-dot { background:var(--crimson); border-color:var(--crimson); color:var(--white); }
+.step-label { font-size:9px; color:var(--ink-light); margin-top:6px; text-align:center; font-weight:600; }
+.step.done .step-label  { color:var(--emerald); }
+.step.active .step-label { color:var(--crimson); }
+
+/* BOOKING */
+.centers-list { display:flex; flex-direction:column; gap:8px; margin-bottom:14px; }
+.center-card {
+  display:flex; align-items:center; gap:12px;
+  padding:13px 15px; border:1.5px solid var(--border);
+  border-radius:11px; cursor:pointer; background:var(--white);
+  transition:all 0.2s;
+}
+.center-card:hover { border-color:rgba(208,28,42,0.35); }
+.center-card.sel { border-color:var(--crimson); background:var(--crimson-pale); }
+.center-ico {
+  width:40px; height:40px; border-radius:11px;
+  background:var(--crimson-pale); display:flex;
+  align-items:center; justify-content:center; font-size:18px; flex-shrink:0;
+}
+.center-name { font-size:13px; font-weight:700; }
+.center-meta { font-size:11px; color:var(--ink-light); margin-top:2px; }
+.center-dist { font-size:12px; font-weight:700; color:var(--crimson); margin-left:auto; }
+.center-slots {
+  font-size:10px; color:var(--emerald);
+  background:var(--emerald-pale);
+  padding:2px 8px; border-radius:5px;
+}
+
+/* TIME GRID */
+.time-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:14px; }
+.time-btn {
+  padding:10px 6px; border-radius:9px;
+  border:1.5px solid var(--border); background:var(--fog);
+  text-align:center; font-size:12px; font-weight:600;
+  cursor:pointer; color:var(--ink-mid);
+  transition:all 0.2s; font-family:'DM Sans',sans-serif;
+}
+.time-btn.full { opacity:0.4; cursor:not-allowed; text-decoration:line-through; }
+.time-btn:not(.full):hover { border-color:var(--crimson); color:var(--crimson); }
+.time-btn.sel { background:var(--crimson); border-color:var(--crimson); color:var(--white); }
+
+/* CALENDAR */
+.cal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.cal-month { font-family:'Sora',sans-serif; font-size:14px; font-weight:700; }
+.cal-nav { width:28px; height:28px; border-radius:8px; border:1.5px solid var(--border); background:none; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+.cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; text-align:center; }
+.cal-day-name { font-size:10px; font-weight:600; color:var(--ink-light); padding:4px; text-transform:uppercase; }
+.cal-day {
+  padding:8px 4px; border-radius:8px; font-size:12px; font-weight:500;
+  cursor:pointer; color:var(--ink-mid); transition:all 0.15s;
+}
+.cal-day:hover:not(.empty):not(.past) { background:var(--crimson-pale); color:var(--crimson); }
+.cal-day.past { opacity:0.35; cursor:not-allowed; }
+.cal-day.empty { }
+.cal-day.sel { background:var(--crimson); color:var(--white); font-weight:700; }
+.cal-day.today { font-weight:700; border:1.5px solid var(--crimson); color:var(--crimson); }
+
+/* HISTORY */
+.hist-item {
+  display:flex; align-items:center; gap:12px;
+  padding:13px; background:var(--fog);
+  border:1px solid var(--border); border-radius:11px; margin-bottom:8px;
+}
+.hist-blood {
+  width:44px; height:44px; border-radius:11px;
+  background:var(--crimson-pale); color:var(--crimson);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Sora',sans-serif; font-size:13px; font-weight:800; flex-shrink:0;
+}
+.hist-center { font-size:13px; font-weight:600; }
+.hist-date { font-size:11px; color:var(--ink-light); margin-top:2px; }
+.hist-tag {
+  font-size:10px; font-weight:700; padding:2px 8px; border-radius:5px; margin-top:4px; display:inline-block;
+  background:var(--sapphire-pale); color:var(--sapphire);
+}
+
+/* CHIPS */
+.chip { font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; display:inline-block; }
+.chip-green { background:var(--emerald-pale); color:var(--emerald); }
+.chip-amber { background:var(--amber-pale); color:var(--amber); }
+.chip-red   { background:var(--crimson-pale); color:var(--crimson); }
+
+/* QUESTIONNAIRE */
+.q-item {
+  display:flex; align-items:flex-start; gap:10px;
+  padding:12px 14px; border:1.5px solid var(--border);
+  border-radius:10px; cursor:pointer; transition:all 0.2s;
+  margin-bottom:8px; background:var(--white); user-select:none;
+}
+.q-item.checked { border-color:var(--emerald); background:var(--emerald-pale); }
+.q-check {
+  width:20px; height:20px; border-radius:6px;
+  border:2px solid var(--border); display:flex; align-items:center;
+  justify-content:center; flex-shrink:0; margin-top:1px; transition:all 0.18s;
+}
+.q-item.checked .q-check { background:var(--emerald); border-color:var(--emerald); color:var(--white); font-size:10px; }
+.q-text { font-size:13px; color:var(--ink-mid); line-height:1.5; }
+
+/* PROFILE */
+.profile-section {
+  background:var(--white); border:1px solid var(--border);
+  border-radius:var(--r); padding:16px; margin-bottom:12px;
+}
+.ps-title {
+  font-size:10px; font-weight:700; color:var(--ink-light);
+  text-transform:uppercase; letter-spacing:1.5px;
+  margin-bottom:11px; padding-bottom:8px; border-bottom:1px solid var(--border);
+}
+.ps-row {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:9px 0; border-bottom:1px solid var(--fog2);
+}
+.ps-row:last-child { border:none; }
+.ps-key { font-size:12px; color:var(--ink-light); }
+.ps-val { font-size:13px; font-weight:600; }
+.ps-val.red { color:var(--crimson); }
+.ps-val.green { color:var(--emerald); }
+
+/* QUESTIONNAIRE VALIDATION ERRORS */
+.q-error {
+  display:none; font-size:11px; color:var(--crimson);
+  font-weight:600; margin-top:3px; padding:4px 8px;
+  background:var(--crimson-pale); border-radius:6px;
+  border-left:3px solid var(--crimson);
+}
+.q-error.visible { display:block; }
+.form-input.error { border-color:var(--crimson); background:var(--crimson-pale); }
+.cooldown-bar {
+  background:var(--amber-pale); border:1.5px solid #F0C878;
+  border-radius:var(--r); padding:16px; margin-bottom:14px;
+}
+.cd-title { font-size:13px; font-weight:700; color:var(--amber); }
+.cd-sub { font-size:12px; color:var(--ink-mid); margin-top:4px; }
+.cd-progress { height:8px; background:rgba(0,0,0,0.08); border-radius:4px; overflow:hidden; margin-top:11px; }
+.cd-fill { height:100%; border-radius:4px; background:linear-gradient(to right, var(--amber), #FCD34D); }
+.cd-labels { display:flex; justify-content:space-between; font-size:10px; color:var(--amber); margin-top:5px; font-weight:600; }
+
+/* FORM FIELDS */
+.form-group { display:flex; flex-direction:column; gap:5px; margin-bottom:12px; }
+.form-label { font-size:12px; font-weight:600; color:var(--ink-mid); }
+.form-input {
+  width:100%; padding:10px 13px;
+  border:1.5px solid var(--border); border-radius:9px;
+  font-family:'DM Sans',sans-serif; font-size:13px; color:var(--ink);
+  background:var(--fog); outline:none; transition:border-color 0.2s;
+}
+.form-input:focus { border-color:var(--crimson); background:var(--white); }
+.form-input::placeholder { color:var(--ink-light); }
+select.form-input { cursor:pointer; }
+
+/* BUTTONS */
+.btn-primary {
+  background:var(--crimson); color:var(--white); border:none;
+  padding:12px; border-radius:10px; font-size:14px; font-weight:700;
+  cursor:pointer; font-family:'Sora',sans-serif; width:100%;
+  transition:all 0.2s; box-shadow:0 4px 16px rgba(208,28,42,0.3);
+  letter-spacing:0.1px;
+}
+.btn-primary:hover { background:var(--crimson-deep); transform:translateY(-1px); }
+.btn-primary:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
+.btn-primary.green { background:var(--emerald); box-shadow:0 4px 16px rgba(12,155,96,0.25); }
+.btn-primary.green:hover { background:#077A4A; }
+.btn-ghost {
+  background:none; border:1.5px solid var(--border);
+  color:var(--ink-mid); padding:11px; border-radius:10px;
+  font-size:13px; cursor:pointer; font-family:'DM Sans',sans-serif;
+  transition:all 0.18s; width:100%;
+}
+.btn-ghost:hover { border-color:var(--crimson); color:var(--crimson); }
+.btn-row { display:flex; gap:9px; margin-top:8px; }
+.btn-row .btn-primary, .btn-row .btn-ghost { flex:1; }
+
+/* NOTIFICATIONS */
+.notif-item {
+  display:flex; gap:12px; padding:14px 0;
+  border-bottom:1px solid var(--border);
+}
+.notif-item:last-child { border:none; }
+.notif-ico {
+  width:40px; height:40px; border-radius:11px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:16px; flex-shrink:0;
+}
+.ni-red { background:var(--crimson-pale); }
+.ni-green { background:var(--emerald-pale); }
+.ni-blue { background:var(--sapphire-pale); }
+.notif-title { font-size:13px; font-weight:600; }
+.notif-desc { font-size:12px; color:var(--ink-light); margin-top:3px; line-height:1.4; }
+.notif-time { font-size:10px; color:var(--ink-light); margin-top:5px; }
+.notif-unread { width:8px; height:8px; background:var(--crimson); border-radius:50%; flex-shrink:0; margin-top:6px; }
+
+/* BOTTOM NAV */
+.bottom-nav {
+  position:fixed; bottom:0; left:0; right:0;
+  background:var(--white); border-top:1px solid var(--border);
+  display:flex; z-index:100; padding:8px 0 12px;
+  box-shadow:0 -4px 20px rgba(15,21,33,0.06);
+}
+.bn {
+  flex:1; display:flex; flex-direction:column; align-items:center;
+  gap:3px; cursor:pointer; padding:4px; transition:all 0.18s;
+}
+.bn-ico { font-size:20px; }
+.bn-lbl { font-size:10px; font-weight:600; color:var(--ink-light); }
+.bn.on .bn-lbl { color:var(--crimson); }
+.bn-wrap { position:relative; }
+.bn-badge {
+  position:absolute; top:-5px; right:-6px;
+  width:16px; height:16px; background:var(--crimson);
+  border-radius:50%; font-size:9px; font-weight:800;
+  color:var(--white); display:flex; align-items:center; justify-content:center;
+  border:2px solid var(--white);
+}
+</style>
+</head>
+<body>
+
+<!-- ─── TOPBAR ─── -->
+<div class="topbar">
+
+  <!-- Brand -->
+  <a class="tb-brand" href="/">
+    <div class="tb-mark">
+      <svg viewBox="0 0 26 26" fill="none">
+        <path d="M13 3C13 3 5 11 5 16.5C5 20.6421 8.68629 24 13 24C17.3137 24 21 20.6421 21 16.5C21 11 13 3 13 3Z" fill="white"/>
+      </svg>
+    </div>
+    <div class="tb-name">Haemo</div>
+  </a>
+
+  <div class="tb-divider"></div>
+
+  <!-- Donor Identity -->
+  <div class="tb-donor">
+    <div class="tb-avatar">@initials</div>
+    <div class="tb-donor-info">
+      <div class="tb-donor-name">@fullName</div>
+      <div class="tb-donor-meta">
+        <span class="tb-blood-badge">@bloodType</span>
+        <span class="tb-donor-city">📍 @governorate</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="tb-spacer"></div>
+
+  <!-- Action Buttons -->
+  <div class="tb-actions">
+    <div class="tb-notif-btn" onclick="showScreen('sc-notifs')" style="position:relative;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#485070" stroke-width="2">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/>
+      </svg>
+      @if (unreadCount > 0) {
+        <div class="tb-notif-dot"></div>
+      }
+    </div>
+    <form method="post" action="/Account/Logout" style="display:inline;">
+      <button type="submit" class="tb-logout-btn" style="background:none;cursor:pointer;border:none;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        Sign Out
+      </button>
+    </form>
+  </div>
+
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg-pattern"></div>
+  <div class="hero-blood-icon">🩸</div>
+  <div class="hero-top">
+    <div class="hero-avatar">@initials</div>
+    <div>
+      <div class="hero-name">@fullName</div>
+      <div class="hero-meta">@bloodType · @governorate · @totalDon donations</div>
+      <div class="status-badge @eligBadgeClass" id="statusBadge">
+        <div class="badge-dot @dotClass"></div>
+        @eligText
+      </div>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="hs"><div class="hs-val">@totalDon</div><div class="hs-lbl">Donations</div></div>
+    <div class="hs"><div class="hs-val">@livesSaved</div><div class="hs-lbl">Lives Saved</div></div>
+    <div class="hs"><div class="hs-val" id="nextVal">@nextEligibleStr</div><div class="hs-lbl">Next Eligible</div></div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- HOME SCREEN -->
+  <div id="sc-home" class="screen on">
+
+    <!-- URGENT REQUEST -->
+    <div class="urgent-card" id="urgentCard">
+      <div class="urgent-label"><div class="urgent-pulse"></div>URGENT REQUEST — NOW</div>
+      <div class="urgent-blood">O−</div>
+      <div class="urgent-hospital">Cairo General Hospital</div>
+      <div class="urgent-meta">📍 2.3 km away · Emergency surgery · Needs 4 units</div>
+      <div class="urgent-ai">🤖 AI match: 99% — your blood type is critical here</div>
+      <div class="urgent-actions">
+        <button class="btn-respond" id="urgBtn" onclick="respondUrgent()">Respond Now</button>
+        <button class="btn-later">Not Now</button>
+      </div>
+    </div>
+
+    <!-- QUICK STATS -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title"><div class="card-icon ci-red">🏆</div>Your Impact</div>
+        <span class="chip @(isEligible ? "chip-green" : "chip-amber")">@(isEligible ? "Active" : "Cooling Down")</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div style="background:var(--crimson-pale);border-radius:10px;padding:14px;text-align:center;">
+          <div style="font-family:'Sora',sans-serif;font-size:24px;font-weight:800;color:var(--crimson);">@totalDon</div>
+          <div style="font-size:11px;color:var(--ink-light);margin-top:3px;">Total Donations</div>
+        </div>
+        <div style="background:var(--emerald-pale);border-radius:10px;padding:14px;text-align:center;">
+          <div style="font-family:'Sora',sans-serif;font-size:24px;font-weight:800;color:var(--emerald);">@livesSaved</div>
+          <div style="font-size:11px;color:var(--ink-light);margin-top:3px;">Lives Saved</div>
+        </div>
+        <div style="background:var(--sapphire-pale);border-radius:10px;padding:14px;text-align:center;">
+          <div style="font-family:'Sora',sans-serif;font-size:24px;font-weight:800;color:var(--sapphire);">@bloodType</div>
+          <div style="font-size:11px;color:var(--ink-light);margin-top:3px;">Blood Type</div>
+        </div>
+        <div style="background:var(--amber-pale);border-radius:10px;padding:14px;text-align:center;">
+          <div style="font-family:'Sora',sans-serif;font-size:16px;font-weight:800;color:var(--amber);">@nextEligibleStr</div>
+          <div style="font-size:11px;color:var(--ink-light);margin-top:3px;">Next Eligible</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NEARBY CENTERS -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title"><div class="card-icon ci-blue">📍</div>Nearby Centers</div>
+        <span class="card-action" onclick="showScreen('sc-centers')">View All</span>
+      </div>
+      @if (centers != null && centers.Any())
+      {
+        foreach (var c in centers.Take(2))
+        {
+          <div class="center-card" style="margin-bottom:8px;" onclick="showScreen('sc-book')">
+            <div class="center-ico">🏥</div>
+            <div>
+              <div class="center-name">@c.Name</div>
+              <div class="center-meta">📍 @c.Address · Phone: @c.PhoneNumber</div>
+              <div class="center-slots">Governorate: @c.Governorate</div>
+            </div>
+            <div class="center-dist">Ready</div>
+          </div>
+        }
+      }
+      else
+      {
+        <div style="text-align:center;padding:20px;color:var(--ink-light);font-size:13px;">
+          No nearby donation centers available.
+        </div>
+      }
+    </div>
+
+    <!-- LAST DONATION -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title"><div class="card-icon ci-green">📋</div>Last Donation</div>
+        <span class="card-action" onclick="showScreen('sc-history')">Full History</span>
+      </div>
+      @if (lastAppt != null) {
+        <div class="hist-item">
+          <div class="hist-blood">@bloodType</div>
+          <div>
+            <div class="hist-center">@(lastAppt.Hospital?.Name ?? "—")</div>
+            <div class="hist-date">@lastAppt.AppointmentDate.ToString("MMMM dd, yyyy")</div>
+            <span class="hist-tag">Whole Blood</span>
+          </div>
+          <span class="chip chip-green" style="margin-left:auto;">Completed</span>
+        </div>
+      } else {
+        <div style="text-align:center;padding:20px;color:var(--ink-light);font-size:13px;">
+          No donations yet — book your first appointment!
+        </div>
+      }
+    </div>
+
+    <button class="btn-primary" onclick="showScreen('sc-book')">📅 Book Appointment</button>
+  </div>
+
+  <!-- BOOK APPOINTMENT SCREEN -->
+  <div id="sc-book" class="screen">
+    <div style="margin-bottom:14px;">
+      <div style="font-family:'Sora',sans-serif;font-size:18px;font-weight:700;letter-spacing:-0.3px;margin-bottom:3px;">Book Appointment</div>
+      <div style="font-size:12px;color:var(--ink-light);">Complete all steps to schedule your donation</div>
+    </div>
+
+    <div class="step-bar" id="bookSteps">
+      <div class="step active" id="bs1"><div class="step-dot">1</div><div class="step-label">Center</div></div>
+      <div class="step" id="bs2"><div class="step-dot">2</div><div class="step-label">Eligibility</div></div>
+      <div class="step" id="bs3"><div class="step-dot">3</div><div class="step-label">Date & Time</div></div>
+      <div class="step" id="bs4"><div class="step-dot">4</div><div class="step-label">Confirm</div></div>
+    </div>
+
+    <!-- BOOK STEP 1: Center -->
+    <div id="bStep1">
+      <div class="card" style="margin-bottom:10px;">
+        <div style="font-size:12px;font-weight:600;color:var(--ink-mid);margin-bottom:10px;">Select Donation Center</div>
+        <div class="centers-list">
+          @{
+            bool isFirst = true;
+          }
+          @if (centers != null && centers.Any())
+          {
+            foreach (var center in centers)
+            {
+              <div class="center-card @(isFirst ? "sel" : "")" onclick="selCenter(this)" data-center-id="@center.Id" data-center-name="@center.Name">
+                <div class="center-ico">🏥</div>
+                <div>
+                  <div class="center-name">@center.Name</div>
+                  <div class="center-meta">📍 @center.Address · Phone: @center.PhoneNumber</div>
+                  <div class="center-slots">Governorate: @center.Governorate</div>
+                </div>
+                <div class="center-dist">@center.Status</div>
+              </div>
+              isFirst = false;
+            }
+          }
+          else
+          {
+            <div style="padding: 20px; text-align: center; color: var(--ink-light);">No active donation centers found.</div>
+          }
+        </div>
+      </div>
+      <button class="btn-primary" onclick="bookNext(1)">Continue to Eligibility →</button>
+    </div>
+
+    <!-- BOOK STEP 2: Medical Questionnaire (embedded) -->
+    <div id="bStep2" style="display:none;">
+      <div style="height:6px;background:var(--border);border-radius:3px;margin-bottom:10px;overflow:hidden;">
+        <div id="qProgress" style="height:100%;background:var(--crimson);border-radius:3px;transition:width 0.3s;width:25%;"></div>
+      </div>
+      <div style="font-size:11px;color:var(--ink-light);text-align:right;margin-bottom:14px;" id="qStep">Section 1 of 4</div>
+
+      <!-- Q SECTION 1: General Health -->
+      <div id="qStepDiv1">
+        <div class="card">
+          <div style="font-size:15px;font-weight:700;margin-bottom:4px;color:var(--ink);">🏥 General Health</div>
+          <div style="font-size:12px;color:var(--ink-light);margin-bottom:16px;">All fields are required. Answer honestly for your safety.</div>
+
+          <div class="form-group">
+            <label class="form-label">What is your age? <span style="color:var(--crimson);">*</span></label>
+            <select class="form-input" id="q_age">
+              <option value="">Select your age range</option>
+              <option value="under18">Under 18</option>
+              <option value="18-65">18 – 65</option>
+              <option value="over65">Over 65</option>
+            </select>
+            <div class="q-error" id="err_age">Please select your age range.</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">What is your weight? <span style="color:var(--crimson);">*</span></label>
+            <select class="form-input" id="q_weight">
+              <option value="">Select your weight range</option>
+              <option value="under50">Under 50 kg</option>
+              <option value="50plus">50 kg or more</option>
+            </select>
+            <div class="q-error" id="err_weight">Please select your weight range.</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">How do you feel today? <span style="color:var(--crimson);">*</span></label>
+            <select class="form-input" id="q_feeling">
+              <option value="">Select an option</option>
+              <option value="well">I feel healthy and well</option>
+              <option value="unwell">I feel unwell / have symptoms</option>
+            </select>
+            <div class="q-error" id="err_feeling">Please select how you feel today.</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Have you eaten a full meal in the last 4 hours? <span style="color:var(--crimson);">*</span></label>
+            <select class="form-input" id="q_meal">
+              <option value="">Select an option</option>
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+            </select>
+            <div class="q-error" id="err_meal">Please answer this question.</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Do you have high or uncontrolled blood pressure? <span style="color:var(--crimson);">*</span></label>
+            <select class="form-input" id="q_bp">
+              <option value="">Select an option</option>
+              <option value="no">No / Controlled with medication</option>
+              <option value="yes">Yes, uncontrolled</option>
+            </select>
+            <div class="q-error" id="err_bp">Please answer this question.</div>
+          </div>
+        </div>
+        <button class="btn-primary" onclick="qNext(1)">Next Section →</button>
+      </div>
+
+      <!-- Q SECTION 2: Medical Conditions & Medications -->
+      <div id="qStepDiv2" style="display:none;">
+        <div class="card">
+          <div style="font-size:15px;font-weight:700;margin-bottom:4px;color:var(--ink);">💊 Medical Conditions & Medications</div>
+          <div style="font-size:12px;color:var(--ink-light);margin-bottom:16px;">All fields are required.</div>
+
+          <div class="form-group">
+            <label class="form-label">Are you currently taking blood thinners (e.g. warfarin, aspirin daily)? <span style="color:var(--crimson);">*</span></label>
+            <select class="form-input" id="q_thinners">
+              <option value="">Select an option</option>
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+            </select>
+            <div class="q-error" id="err_thinners">Please answer this question.</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Do you have any active infectious disease (e.g. HIV, hepatitis, TB)? <span style="color:var(--crimson);">*</span></label>
+            <select class="form-input" id="q_infection">
+              <option value="">Select an option</option>
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+            </select>
+            <div class="q-error" id="err_infection">Please answer this question.</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Do you have a chronic heart or lung condition (e.g. heart failure, severe asthma)? <span style="color:var(--crimson);">*</span></label>
+            <select class="form-input" id="q_heart">
+              <option value="">Select an option</option>
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+            </select>
+            <div class="q-error" id="err_heart">Please answer this question.</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Have you had any surgery or major illness in the last 6 months? <span style="color:var(--crimson);">*</span></label>
+            <select class="form-input" id="q_surgery">
+              <option value="">Select an option</option>
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+            </select>
+            <div class="q-error" id="err_surgery">Please answer this question.</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Are you pregnant, breastfeeding, or have you given birth in the last 6 months? <span style="color:var(--crimson);">*</span></label>
+            <select class="form-input" id="q_pregnancy">
+              <option value="">Select an option</option>
+              <option value="na">Not applicable / No</option>
+              <option value="yes">Yes</option>
+            </select>
+            <div class="q-error" id="err_pregnancy">Please answer this question.</div>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-ghost" onclick="qPrev(2)">← Back</button>
+          <button class="btn-primary" onclick="qNext(2)">Next Section →</button>
+        </div>
+      </div>
+
+      <!-- Q SECTION 3: Donation & Transfusion History -->
+      <div id="qStepDiv3" style="display:none;">
+        <div class="card">
+          <div style="font-size:15px;font-weight:700;margin-bottom:4px;color:var(--ink);">🩸 Donation & Transfusion History</div>
+          <div style="font-size:12px;color:var(--ink-light);margin-bottom:16px;">All fields are required.</div>
+
+          <div class="form-group">
+            <label class="form-label">Have you donated whole blood in the last 90 days? <span style="color:var(--crimson);">*</span></label>
+            <select class="form-input" id="q_lastdonation">
+              <option value="">Select an option</option>
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+            </select>
+            <div class="q-error" id="err_lastdonation">Please answer this question.</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Have you donated platelets in the last 14 days? <span style="color:var(--crimson);">*</span></label>
+            <select class="form-input" id="q_platelets">
+              <option value="">Select an option</option>
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+            </select>
+            <div class="q-error" id="err_platelets">Please answer this question.</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Have you received a blood transfusion in the last 12 months? <span style="color:var(--crimson);">*</span></label>
+            <select class="form-input" id="q_transfusion">
+              <option value="">Select an option</option>
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+            </select>
+            <div class="q-error" id="err_transfusion">Please answer this question.</div>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-ghost" onclick="qPrev(3)">← Back</button>
+          <button class="btn-primary" onclick="qNext(3)">Next Section →</button>
+        </div>
+      </div>
+
+      <!-- Q SECTION 4: Travel & Exposure -->
+      <div id="qStepDiv4" style="display:none;">
+        <div class="card">
+          <div style="font-size:15px;font-weight:700;margin-bottom:4px;color:var(--ink);">✈️ Travel & Exposure</div>
+          <div style="font-size:12px;color:var(--ink-light);margin-bottom:16px;">All fields are required.</div>
+
+          <div class="form-group">
+            <label class="form-label">Have you traveled to a malaria-risk area in the past 12 months? <span style="color:var(--crimson);">*</span></label>
+            <select class="form-input" id="q_malaria">
+              <option value="">Select an option</option>
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+            </select>
+            <div class="q-error" id="err_malaria">Please answer this question.</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Have you had a new tattoo or body piercing in the last 6 months? <span style="color:var(--crimson);">*</span></label>
+            <select class="form-input" id="q_tattoo">
+              <option value="">Select an option</option>
+              <option value="no">No</option>
+              <option value="yes_licensed">Yes, done at a licensed/sterile facility</option>
+              <option value="yes_unlicensed">Yes, done elsewhere</option>
+            </select>
+            <div class="q-error" id="err_tattoo">Please answer this question.</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Have you had a COVID-19 infection or received a vaccine in the last 28 days? <span style="color:var(--crimson);">*</span></label>
+            <select class="form-input" id="q_covid">
+              <option value="">Select an option</option>
+              <option value="no">No</option>
+              <option value="yes_infection">Yes, recent infection (last 28 days)</option>
+              <option value="yes_vaccine">Yes, recent vaccine (last 48 hours)</option>
+              <option value="cleared">Recovered/vaccinated more than 28 days ago</option>
+            </select>
+            <div class="q-error" id="err_covid">Please answer this question.</div>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-ghost" onclick="qPrev(4)">← Back</button>
+          <button class="btn-primary" onclick="qSubmit()">Submit & Check Eligibility</button>
+        </div>
+      </div>
+
+      <!-- Q RESULT -->
+      <div id="qStepDiv5" style="display:none;">
+        <div class="card" style="text-align:center;padding:32px 20px;">
+          <div style="font-size:56px;margin-bottom:16px;" id="eligIcon">✅</div>
+          <div style="font-family:'Sora',sans-serif;font-size:20px;font-weight:700;margin-bottom:8px;" id="eligTitle">You're Eligible!</div>
+          <div style="font-size:13px;color:var(--ink-light);margin-bottom:8px;line-height:1.6;" id="eligDesc">All responses indicate you're ready to donate. You may proceed to select a date and time.</div>
+          <div id="eligReasons" style="margin-bottom:20px;text-align:left;"></div>
+          <button class="btn-primary" onclick="proceedToDateTime()" id="eligBtn">Continue to Date & Time →</button>
+        </div>
+        <button class="btn-ghost" style="margin-top:8px;" onclick="qPrev(5)">← Review Answers</button>
+      </div>
+    </div>
+
+    <!-- BOOK STEP 3: Date & Time -->
+    <div id="bStep3" style="display:none;">
+      <div class="card" style="margin-bottom:10px;">
+        <div class="cal-header">
+          <button class="cal-nav" onclick="calPrev()">‹</button>
+          <div class="cal-month" id="calMonth">April 2025</div>
+          <button class="cal-nav" onclick="calNext()">›</button>
+        </div>
+        <div class="cal-grid">
+          <div class="cal-day-name">Sun</div><div class="cal-day-name">Mon</div><div class="cal-day-name">Tue</div>
+          <div class="cal-day-name">Wed</div><div class="cal-day-name">Thu</div><div class="cal-day-name">Fri</div><div class="cal-day-name">Sat</div>
+        </div>
+        <div class="cal-grid" id="calGrid" style="margin-top:4px;"></div>
+      </div>
+      <div class="card" style="margin-bottom:10px;">
+        <div style="font-size:12px;font-weight:600;color:var(--ink-mid);margin-bottom:10px;">Available Time Slots</div>
+        <div class="time-grid">
+          <div class="time-btn past" onclick="selTime(this)">8:00 AM</div>
+          <div class="time-btn full">9:00 AM</div>
+          <div class="time-btn sel" onclick="selTime(this)">9:30 AM</div>
+          <div class="time-btn" onclick="selTime(this)">10:00 AM</div>
+          <div class="time-btn" onclick="selTime(this)">11:00 AM</div>
+          <div class="time-btn" onclick="selTime(this)">11:30 AM</div>
+          <div class="time-btn full">12:00 PM</div>
+          <div class="time-btn" onclick="selTime(this)">1:00 PM</div>
+          <div class="time-btn" onclick="selTime(this)">2:30 PM</div>
+          <div class="time-btn" onclick="selTime(this)">3:00 PM</div>
+          <div class="time-btn" onclick="selTime(this)">4:00 PM</div>
+          <div class="time-btn" onclick="selTime(this)">5:30 PM</div>
+        </div>
+        <div style="display:flex;gap:10px;font-size:11px;color:var(--ink-light);">
+          <span>🟥 Full</span>
+          <span>⬜ Available</span>
+          <span>🟨 Past</span>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-ghost" onclick="bookPrev(3)">← Back</button>
+        <button class="btn-primary" onclick="bookNext(3)">Confirm →</button>
+      </div>
+    </div>
+
+    <!-- BOOK STEP 4: Confirm -->
+    <div id="bStep4" style="display:none;">
+      <div class="card" style="text-align:center;padding:32px 20px;margin-bottom:10px;">
+        <div style="font-size:56px;margin-bottom:16px;">📋</div>
+        <div style="font-family:'Sora',sans-serif;font-size:18px;font-weight:700;margin-bottom:6px;">Confirm Appointment</div>
+        <div style="font-size:13px;color:var(--ink-light);margin-bottom:24px;">Please review the details below</div>
+        <div style="background:var(--fog);border-radius:11px;padding:16px;text-align:left;margin-bottom:20px;">
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
+            <span style="font-size:12px;color:var(--ink-light);">Center</span>
+            <span style="font-size:13px;font-weight:600;" id="confCenter">Central Blood Bank</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
+            <span style="font-size:12px;color:var(--ink-light);">Date</span>
+            <span style="font-size:13px;font-weight:600;" id="confDate">Friday, Apr 25, 2025</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
+            <span style="font-size:12px;color:var(--ink-light);">Time</span>
+            <span style="font-size:13px;font-weight:600;" id="confTime">9:30 AM</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
+            <span style="font-size:12px;color:var(--ink-light);">Donor</span>
+            <span style="font-size:13px;font-weight:600;" id="confDonor">@ViewBag.FullName · @ViewBag.BloodType</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;">
+            <span style="font-size:12px;color:var(--ink-light);">Eligibility</span>
+            <span style="font-size:13px;font-weight:600;color:var(--emerald);">✓ Confirmed</span>
+          </div>
+        </div>
+        <button class="btn-primary" id="confirmBtn" onclick="confirmBook()">✓ Confirm Booking</button>
+      </div>
+      <button class="btn-ghost" onclick="bookPrev(4)">← Back to Date</button>
+    </div>
+  </div>
+
+  <!-- MEDICAL QUESTIONNAIRE (standalone – kept for backward compat, hidden) -->
+  <div id="sc-questionnaire" class="screen" style="display:none!important;"></div>
+
+  <!-- HISTORY SCREEN -->
+  <div id="sc-history" class="screen">
+    <div style="margin-bottom:14px;">
+      <div style="font-family:'Sora',sans-serif;font-size:18px;font-weight:700;letter-spacing:-0.3px;margin-bottom:3px;">Donation History</div>
+      <div style="font-size:12px;color:var(--ink-light);">All your past contributions</div>
+    </div>
+
+    <div class="card" id="historyContainer">
+      <div style="text-align:center;padding:20px;color:var(--ink-light);font-size:13px;">Loading history...</div>
+    </div>
+  </div>
+
+  <!-- DONATION CENTERS -->
+  <div id="sc-centers" class="screen">
+    <div style="margin-bottom:14px;">
+      <div style="font-family:'Sora',sans-serif;font-size:18px;font-weight:700;letter-spacing:-0.3px;margin-bottom:3px;">Donation Centers</div>
+      <div style="font-size:12px;color:var(--ink-light);">Find a center near you</div>
+    </div>
+    <div class="card">
+      @if (centers.Count == 0) {
+        <div style="text-align:center;padding:20px;color:var(--ink-light);font-size:13px;">
+          No donation centers available.
+        </div>
+      } else {
+        @foreach (var c in centers) {
+          <div class="center-card" style="margin-bottom:8px;">
+            <div class="center-ico">🏥</div>
+            <div style="flex:1;">
+              <div class="center-name">@c.Name</div>
+              <div class="center-meta">📍 @c.Address, @c.Governorate</div>
+              @if (!string.IsNullOrEmpty(c.PhoneNumber)) {
+                <div class="center-meta">📞 @c.PhoneNumber</div>
+              }
+            </div>
+          </div>
+        }
+      }
+    </div>
+  </div>
+
+
+  <!-- NOTIFICATIONS -->
+  <div id="sc-notifs" class="screen">
+    <div style="margin-bottom:14px;">
+      <div style="font-family:'Sora',sans-serif;font-size:18px;font-weight:700;letter-spacing:-0.3px;margin-bottom:3px;">Notifications</div>
+      @if (unreadCount > 0) {
+        <div style="font-size:12px;color:var(--crimson);font-weight:600;">@unreadCount unread</div>
+      }
+    </div>
+    <div class="card" id="notifsContainer">
+      <div style="text-align:center;padding:20px;color:var(--ink-light);font-size:13px;" id="notifsLoading">Loading notifications...</div>
+    </div>
+  </div>
+
+  <!-- PROFILE SCREEN -->
+  <div id="sc-profile" class="screen">
+    <div style="margin-bottom:14px;">
+      <div style="font-family:'Sora',sans-serif;font-size:18px;font-weight:700;letter-spacing:-0.3px;margin-bottom:3px;">My Profile</div>
+    </div>
+    <div class="profile-section">
+      <div class="ps-title">Personal Info</div>
+      <div class="ps-row"><span class="ps-key">Full Name</span><span class="ps-val">@fullName</span></div>
+      <div class="ps-row"><span class="ps-key">Email</span><span class="ps-val">@(ViewBag.Email ?? "—")</span></div>
+      <div class="ps-row"><span class="ps-key">Phone</span><span class="ps-val">@(ViewBag.Phone ?? "—")</span></div>
+      <div class="ps-row"><span class="ps-key">National ID</span><span class="ps-val">@(ViewBag.NationalId ?? "—")</span></div>
+      <div class="ps-row"><span class="ps-key">Governorate</span><span class="ps-val">@governorate</span></div>
+    </div>
+    <div class="profile-section">
+      <div class="ps-title">Medical Info</div>
+      <div class="ps-row"><span class="ps-key">Blood Type</span><span class="ps-val red">@bloodType</span></div>
+      <div class="ps-row"><span class="ps-key">Gender</span><span class="ps-val">@(ViewBag.Gender ?? "—")</span></div>
+      <div class="ps-row"><span class="ps-key">Donation Status</span>
+        @if (isEligible) {
+          <span class="ps-val green">Eligible ✓</span>
+        } else {
+          <span class="ps-val" style="color:var(--amber);">Wait @daysLeft days</span>
+        }
+      </div>
+      <div class="ps-row"><span class="ps-key">Last Donation</span><span class="ps-val">@(lastAppt != null ? lastAppt.AppointmentDate.ToString("MMM dd, yyyy") : "—")</span></div>
+      <div class="ps-row"><span class="ps-key">Next Eligible</span><span class="ps-val @(isEligible ? "green" : "")">@nextEligibleStr</span></div>
+    </div>
+    <button class="btn-primary" style="margin-top:4px;" onclick="showScreen('sc-edit-profile')">&#9999;&#65039; Edit Profile</button>
+  </div>
+
+  <!-- EDIT PROFILE SCREEN -->
+  <div id="sc-edit-profile" class="screen">
+    <div style="margin-bottom:14px;">
+      <div style="font-family:'Sora',sans-serif;font-size:18px;font-weight:700;letter-spacing:-0.3px;margin-bottom:3px;">Edit Profile</div>
+      <div style="font-size:12px;color:var(--ink-light);">Update your personal and medical information</div>
+    </div>
+
+    <div class="profile-section">
+      <div class="ps-title">Personal Info</div>
+      <div class="form-group" style="margin-top:8px;">
+        <label class="form-label">Full Name</label>
+        <input class="form-input" type="text" value="@fullName" placeholder="Full Name" id="ep_name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" value="@(ViewBag.Email ?? "")" placeholder="Email" id="ep_email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Phone</label>
+        <input class="form-input" type="tel" value="@(ViewBag.Phone ?? "")" placeholder="Phone" id="ep_phone">
+      </div>
+      <div class="form-group">
+        <label class="form-label">National ID</label>
+        <input class="form-input" type="text" value="@(ViewBag.NationalId ?? "")" placeholder="National ID" readonly style="opacity:0.7;cursor:not-allowed;">
+        <div style="font-size:11px;color:var(--ink-light);margin-top:3px;">National ID cannot be changed</div>
+      </div>
+    </div>
+
+    <div class="profile-section">
+      <div class="ps-title">Medical Info</div>
+      <div class="form-group" style="margin-top:8px;">
+        <label class="form-label">Blood Type</label>
+        <select class="form-input" id="ep_blood">
+          <!option value="A+" @(bloodType == "A+" ? "selected" : "")>A+</!option>
+          <!option value="A-" @(bloodType == "A-" ? "selected" : "")>A-</!option>
+          <!option value="B+" @(bloodType == "B+" ? "selected" : "")>B+</!option>
+          <!option value="B-" @(bloodType == "B-" ? "selected" : "")>B-</!option>
+          <!option value="O+" @(bloodType == "O+" ? "selected" : "")>O+</!option>
+          <!option value="O-" @(bloodType == "O-" ? "selected" : "")>O-</!option>
+          <!option value="AB+" @(bloodType == "AB+" ? "selected" : "")>AB+</!option>
+          <!option value="AB-" @(bloodType == "AB-" ? "selected" : "")>AB-</!option>
+        </select>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-ghost" onclick="showScreen('sc-profile')">Cancel</button>
+      <button class="btn-primary" onclick="saveProfile()">Save Changes</button>
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="bn on" onclick="showScreen('sc-home')">
+    <div class="bn-ico">🏠</div><div class="bn-lbl">Home</div>
+  </div>
+  <div class="bn" onclick="showScreen('sc-book')">
+    <div class="bn-ico">📅</div><div class="bn-lbl">Book</div>
+  </div>
+  <div class="bn" onclick="showScreen('sc-history')">
+    <div class="bn-ico">🩸</div><div class="bn-lbl">History</div>
+  </div>
+  <div class="bn" onclick="showScreen('sc-profile')">
+    <div class="bn-ico">👤</div><div class="bn-lbl">Profile</div>
+  </div>
+</div>
+
+<script>
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('on'));
+  const el = document.getElementById(id);
+  if (el) el.classList.add('on');
+  // bottom nav mapping (questionnaire removed)
+  const map = { 'sc-home':'0','sc-book':'1','sc-history':'2','sc-profile':'3' };
+  document.querySelectorAll('.bn').forEach(b => b.classList.remove('on'));
+  const idx = map[id];
+  if (idx !== undefined) document.querySelectorAll('.bn')[parseInt(idx)].classList.add('on');
+}
+
+function respondUrgent() {
+  const btn = document.getElementById('urgBtn');
+  btn.textContent = '⏳ Sending response…'; btn.disabled = true;
+  setTimeout(() => {
+    btn.textContent = '✓ Responded! Center will contact you'; btn.style.background = 'var(--emerald)';
+    setTimeout(() => { document.getElementById('urgentCard').style.display = 'none'; }, 2000);
+  }, 1200);
+}
+
+// BOOKING (now 4 steps: center, questionnaire, date/time, confirm)
+let bookStep = 1;
+let selectedCenterId = null;
+let selectedCenterName = "";
+let selectedDate = "";
+let selectedTimeSlot = "";
+
+function initBookingSelection() {
+  const activeCenter = document.querySelector('.center-card.sel');
+  if (activeCenter) {
+    selectedCenterId = activeCenter.dataset.centerId;
+    selectedCenterName = activeCenter.dataset.centerName;
+    const confCenterEl = document.getElementById('confCenter');
+    if (confCenterEl) confCenterEl.textContent = selectedCenterName;
+  }
+  const activeTime = document.querySelector('.time-btn.sel');
+  if (activeTime) {
+    selectedTimeSlot = activeTime.textContent.trim();
+    const confTimeEl = document.getElementById('confTime');
+    if (confTimeEl) confTimeEl.textContent = selectedTimeSlot;
+  }
+}
+setTimeout(initBookingSelection, 200);
+
+function selCenter(el) {
+  document.querySelectorAll('.center-card').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+  selectedCenterId = el.dataset.centerId;
+  selectedCenterName = el.dataset.centerName;
+  const confCenterEl = document.getElementById('confCenter');
+  if (confCenterEl) confCenterEl.textContent = selectedCenterName;
+}
+function selTime(el) {
+  if (el.classList.contains('full') || el.classList.contains('past')) return;
+  document.querySelectorAll('.time-btn').forEach(t => t.classList.remove('sel'));
+  el.classList.add('sel');
+  selectedTimeSlot = el.textContent.trim();
+  const confTimeEl = document.getElementById('confTime');
+  if (confTimeEl) confTimeEl.textContent = selectedTimeSlot;
+}
+function bookNext(step) {
+  bookStep = step + 1;
+  updateBookSteps();
+  document.getElementById('bStep' + step).style.display = 'none';
+  document.getElementById('bStep' + (step+1)).style.display = 'block';
+}
+function bookPrev(step) {
+  bookStep = step - 1;
+  updateBookSteps();
+  document.getElementById('bStep' + step).style.display = 'none';
+  // If going back from date/time (step 3) to questionnaire (step 2), show result or last q section
+  if (step - 1 === 2) {
+    // Show the questionnaire step 2
+    document.getElementById('bStep2').style.display = 'block';
+  } else {
+    document.getElementById('bStep' + (step-1)).style.display = 'block';
+  }
+}
+function updateBookSteps() {
+  for (let i = 1; i <= 4; i++) {
+    const el = document.getElementById('bs' + i);
+    if (!el) continue;
+    el.className = 'step';
+    if (i < bookStep) el.classList.add('done');
+    else if (i === bookStep) el.classList.add('active');
+  }
+}
+function proceedToDateTime() {
+  bookStep = 3;
+  updateBookSteps();
+  document.getElementById('bStep2').style.display = 'none';
+  document.getElementById('bStep3').style.display = 'block';
+}
+function convertTo24Hour(timeStr) {
+  const parts = timeStr.split(' ');
+  if (parts.length < 2) return timeStr;
+  const time = parts[0];
+  const ampm = parts[1].toUpperCase();
+  const hm = time.split(':');
+  let hours = parseInt(hm[0], 10);
+  const minutes = hm[1];
+  if (ampm === 'PM' && hours < 12) hours += 12;
+  if (ampm === 'AM' && hours === 12) hours = 0;
+  return `${String(hours).padStart(2, '0')}:${minutes}`;
+}
+
+function confirmBook() {
+  if (!selectedCenterId) { alert('Please select a donation center.'); return; }
+  if (!selectedDate) { alert('Please select a date.'); return; }
+  if (!selectedTimeSlot) { alert('Please select a time slot.'); return; }
+
+  const btn = document.getElementById('confirmBtn');
+  btn.textContent = '⏳ Booking…'; btn.disabled = true;
+
+  const time24 = convertTo24Hour(selectedTimeSlot);
+
+  const params = new URLSearchParams({
+    hospitalId: selectedCenterId,
+    appointmentDate: selectedDate,
+    appointmentTime: time24,
+    notes: ''
+  });
+
+  fetch('/Donor/BookAppointment', {
+    method: 'POST',
+    body: params,
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+  })
+  .then(r => r.ok ? r.json() : Promise.reject())
+  .then(data => {
+    btn.textContent = '✅ Appointment Booked!'; btn.style.background = 'var(--emerald)';
+    setTimeout(() => {
+      showScreen('sc-home');
+      bookStep = 1;
+      updateBookSteps();
+      document.getElementById('bStep1').style.display = 'block';
+      document.getElementById('bStep2').style.display = 'none';
+      document.getElementById('bStep3').style.display = 'none';
+      document.getElementById('bStep4').style.display = 'none';
+      btn.textContent = '✓ Confirm Booking'; btn.style.background = ''; btn.disabled = false;
+      resetQuestionnaire();
+      location.reload();
+    }, 2000);
+  })
+  .catch(() => {
+    btn.textContent = '❌ Booking Failed'; btn.style.background = 'var(--crimson)';
+    btn.disabled = false;
+    setTimeout(() => {
+      btn.textContent = '✓ Confirm Booking'; btn.style.background = '';
+    }, 2000);
+  });
+}
+
+// CALENDAR
+let calYear = new Date().getFullYear(), calMonth = new Date().getMonth();
+const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+function renderCal() {
+  document.getElementById('calMonth').textContent = monthNames[calMonth] + ' ' + calYear;
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = '';
+  const first = new Date(calYear, calMonth, 1).getDay();
+  const days = new Date(calYear, calMonth + 1, 0).getDate();
+  const today = new Date();
+  for (let i = 0; i < first; i++) {
+    const d = document.createElement('div'); d.className = 'cal-day empty'; grid.appendChild(d);
+  }
+  for (let d = 1; d <= days; d++) {
+    const div = document.createElement('div');
+    div.className = 'cal-day';
+    div.textContent = d;
+    const dt = new Date(calYear, calMonth, d);
+    if (dt < today && dt.toDateString() !== today.toDateString()) div.classList.add('past');
+    if (d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear()) div.classList.add('today');
+    div.onclick = function() {
+      if (!this.classList.contains('past')) {
+        document.querySelectorAll('.cal-day').forEach(x => x.classList.remove('sel'));
+        this.classList.add('sel');
+        selectedDate = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        document.getElementById('confDate').textContent = monthNames[calMonth] + ' ' + d + ', ' + calYear;
+      }
+    };
+    grid.appendChild(div);
+  }
+}
+function calPrev() { if (calMonth === 0) { calMonth = 11; calYear--; } else calMonth--; renderCal(); }
+function calNext() { if (calMonth === 11) { calMonth = 0; calYear++; } else calMonth++; renderCal(); }
+renderCal();
+
+// QUESTIONNAIRE (embedded in booking step 2)
+let qCur = 1;
+const Q_SECTIONS = 4;
+
+function resetQuestionnaire() {
+  qCur = 1;
+  for (let i = 1; i <= 5; i++) {
+    const d = document.getElementById('qStepDiv' + i);
+    if (d) d.style.display = i === 1 ? 'block' : 'none';
+  }
+  document.getElementById('qProgress').style.width = '25%';
+  document.getElementById('qStep').textContent = 'Section 1 of 4';
+  // Clear all selects
+  ['q_age','q_weight','q_feeling','q_meal','q_bp','q_thinners','q_infection','q_heart','q_surgery','q_pregnancy','q_lastdonation','q_platelets','q_transfusion','q_malaria','q_tattoo','q_covid'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  clearAllErrors();
+}
+
+function clearAllErrors() {
+  document.querySelectorAll('.q-error').forEach(e => e.classList.remove('visible'));
+  document.querySelectorAll('.form-input.error').forEach(e => e.classList.remove('error'));
+}
+
+function showError(fieldId, errId) {
+  const field = document.getElementById(fieldId);
+  const err = document.getElementById(errId);
+  if (field) field.classList.add('error');
+  if (err) err.classList.add('visible');
+}
+
+function clearError(fieldId, errId) {
+  const field = document.getElementById(fieldId);
+  const err = document.getElementById(errId);
+  if (field) field.classList.remove('error');
+  if (err) err.classList.remove('visible');
+}
+
+// Validate section and return {valid, ineligible, reasons}
+function validateSection(section) {
+  let valid = true;
+  let ineligible = false;
+  let reasons = [];
+
+  if (section === 1) {
+    const age = document.getElementById('q_age').value;
+    const weight = document.getElementById('q_weight').value;
+    const feeling = document.getElementById('q_feeling').value;
+    const meal = document.getElementById('q_meal').value;
+    const bp = document.getElementById('q_bp').value;
+
+    if (!age) { showError('q_age','err_age'); valid = false; } else clearError('q_age','err_age');
+    if (!weight) { showError('q_weight','err_weight'); valid = false; } else clearError('q_weight','err_weight');
+    if (!feeling) { showError('q_feeling','err_feeling'); valid = false; } else clearError('q_feeling','err_feeling');
+    if (!meal) { showError('q_meal','err_meal'); valid = false; } else clearError('q_meal','err_meal');
+    if (!bp) { showError('q_bp','err_bp'); valid = false; } else clearError('q_bp','err_bp');
+
+    if (valid) {
+      if (age === 'under18') { ineligible = true; reasons.push('Donors must be at least 18 years old.'); }
+      if (age === 'over65') { ineligible = true; reasons.push('Donors must be 65 years old or younger.'); }
+      if (weight === 'under50') { ineligible = true; reasons.push('Donors must weigh at least 50 kg.'); }
+      if (feeling === 'unwell') { ineligible = true; reasons.push('You must feel healthy and well on the day of donation.'); }
+      if (meal === 'no') { ineligible = true; reasons.push('Please eat a full meal within 4 hours before donating.'); }
+      if (bp === 'yes') { ineligible = true; reasons.push('Uncontrolled high blood pressure is a temporary deferral.'); }
+    }
+  }
+
+  if (section === 2) {
+    const thinners = document.getElementById('q_thinners').value;
+    const infection = document.getElementById('q_infection').value;
+    const heart = document.getElementById('q_heart').value;
+    const surgery = document.getElementById('q_surgery').value;
+    const pregnancy = document.getElementById('q_pregnancy').value;
+
+    if (!thinners) { showError('q_thinners','err_thinners'); valid = false; } else clearError('q_thinners','err_thinners');
+    if (!infection) { showError('q_infection','err_infection'); valid = false; } else clearError('q_infection','err_infection');
+    if (!heart) { showError('q_heart','err_heart'); valid = false; } else clearError('q_heart','err_heart');
+    if (!surgery) { showError('q_surgery','err_surgery'); valid = false; } else clearError('q_surgery','err_surgery');
+    if (!pregnancy) { showError('q_pregnancy','err_pregnancy'); valid = false; } else clearError('q_pregnancy','err_pregnancy');
+
+    if (valid) {
+      if (thinners === 'yes') { ineligible = true; reasons.push('Blood thinners are a temporary deferral — check with your doctor.'); }
+      if (infection === 'yes') { ineligible = true; reasons.push('Active infectious diseases prevent blood donation at this time.'); }
+      if (heart === 'yes') { ineligible = true; reasons.push('Chronic heart or lung conditions require medical clearance before donating.'); }
+      if (surgery === 'yes') { ineligible = true; reasons.push('Recent surgery or major illness requires a 6-month recovery period.'); }
+      if (pregnancy === 'yes') { ineligible = true; reasons.push('Pregnancy, breastfeeding, or recent childbirth (within 6 months) is a deferral.'); }
+    }
+  }
+
+  if (section === 3) {
+    const lastdonation = document.getElementById('q_lastdonation').value;
+    const platelets = document.getElementById('q_platelets').value;
+    const transfusion = document.getElementById('q_transfusion').value;
+
+    if (!lastdonation) { showError('q_lastdonation','err_lastdonation'); valid = false; } else clearError('q_lastdonation','err_lastdonation');
+    if (!platelets) { showError('q_platelets','err_platelets'); valid = false; } else clearError('q_platelets','err_platelets');
+    if (!transfusion) { showError('q_transfusion','err_transfusion'); valid = false; } else clearError('q_transfusion','err_transfusion');
+
+    if (valid) {
+      if (lastdonation === 'yes') { ineligible = true; reasons.push('You must wait 90 days between whole blood donations.'); }
+      if (platelets === 'yes') { ineligible = true; reasons.push('You must wait 14 days after a platelet donation.'); }
+      if (transfusion === 'yes') { ineligible = true; reasons.push('Receiving a blood transfusion within the last 12 months is a deferral.'); }
+    }
+  }
+
+  if (section === 4) {
+    const malaria = document.getElementById('q_malaria').value;
+    const tattoo = document.getElementById('q_tattoo').value;
+    const covid = document.getElementById('q_covid').value;
+
+    if (!malaria) { showError('q_malaria','err_malaria'); valid = false; } else clearError('q_malaria','err_malaria');
+    if (!tattoo) { showError('q_tattoo','err_tattoo'); valid = false; } else clearError('q_tattoo','err_tattoo');
+    if (!covid) { showError('q_covid','err_covid'); valid = false; } else clearError('q_covid','err_covid');
+
+    if (valid) {
+      if (malaria === 'yes') { ineligible = true; reasons.push('Travel to a malaria-risk area requires a 12-month deferral.'); }
+      if (tattoo === 'yes_unlicensed') { ineligible = true; reasons.push('Tattoos/piercings from non-licensed facilities require a 12-month deferral.'); }
+      if (covid === 'yes_infection') { ineligible = true; reasons.push('Please wait 28 days after recovering from COVID-19 before donating.'); }
+      if (covid === 'yes_vaccine') { ineligible = true; reasons.push('Please wait 48 hours after a COVID-19 vaccine before donating.'); }
+    }
+  }
+
+  return { valid, ineligible, reasons };
+}
+
+// Accumulated ineligibility reasons across all sections
+let allDeferralReasons = [];
+
+function qNext(step) {
+  const result = validateSection(step);
+  if (!result.valid) return; // stop if any field is blank
+
+  // Collect deferral reasons from this section
+  if (result.ineligible) {
+    allDeferralReasons = allDeferralReasons.concat(result.reasons);
+  }
+
+  qCur = step + 1;
+  document.getElementById('qStepDiv' + step).style.display = 'none';
+  document.getElementById('qStepDiv' + qCur).style.display = 'block';
+  const progress = Math.round((qCur <= Q_SECTIONS ? qCur : Q_SECTIONS) / Q_SECTIONS * 100);
+  document.getElementById('qProgress').style.width = progress + '%';
+  if (qCur <= Q_SECTIONS) {
+    document.getElementById('qStep').textContent = 'Section ' + qCur + ' of ' + Q_SECTIONS;
+  }
+}
+
+function qPrev(step) {
+  qCur = step - 1;
+  document.getElementById('qStepDiv' + step).style.display = 'none';
+  document.getElementById('qStepDiv' + qCur).style.display = 'block';
+  const progress = Math.round(qCur / Q_SECTIONS * 100);
+  document.getElementById('qProgress').style.width = progress + '%';
+  document.getElementById('qStep').textContent = 'Section ' + qCur + ' of ' + Q_SECTIONS;
+}
+
+function qSubmit() {
+  // Validate last section
+  const result = validateSection(4);
+  if (!result.valid) return;
+
+  if (result.ineligible) {
+    allDeferralReasons = allDeferralReasons.concat(result.reasons);
+  }
+
+  // Show result screen (qStepDiv5)
+  document.getElementById('qStepDiv4').style.display = 'none';
+  document.getElementById('qStepDiv5').style.display = 'block';
+  document.getElementById('qProgress').style.width = '100%';
+  document.getElementById('qStep').textContent = 'Complete';
+
+  const eligIcon = document.getElementById('eligIcon');
+  const eligTitle = document.getElementById('eligTitle');
+  const eligDesc = document.getElementById('eligDesc');
+  const eligBtn = document.getElementById('eligBtn');
+  const eligReasons = document.getElementById('eligReasons');
+
+  if (allDeferralReasons.length > 0) {
+    // Ineligible
+    eligIcon.textContent = '⚠️';
+    eligTitle.textContent = 'Not Eligible Right Now';
+    eligDesc.textContent = 'Based on your answers, you are temporarily deferred from donating blood for the following reason(s):';
+    eligReasons.innerHTML = allDeferralReasons.map(r =>
+      `<div style="display:flex;gap:8px;align-items:flex-start;padding:8px 10px;background:var(--crimson-pale);border-radius:8px;margin-bottom:6px;border-left:3px solid var(--crimson);">
+        <span style="color:var(--crimson);font-weight:700;flex-shrink:0;">✗</span>
+        <span style="font-size:12px;color:var(--ink-mid);line-height:1.5;">${r}</span>
+      </div>`
+    ).join('');
+    eligBtn.textContent = '← Return Home';
+    eligBtn.className = 'btn-ghost';
+    eligBtn.onclick = function() {
+      showScreen('sc-home');
+      allDeferralReasons = [];
+      resetQuestionnaire();
+      bookStep = 1;
+      updateBookSteps();
+      document.getElementById('bStep1').style.display = 'block';
+      document.getElementById('bStep2').style.display = 'none';
+    };
+  } else {
+    // Eligible
+    eligIcon.textContent = '✅';
+    eligTitle.textContent = "You're Eligible!";
+    eligDesc.textContent = 'All responses indicate you\'re ready to donate. You may proceed to select a date and time.';
+    eligReasons.innerHTML = '';
+    eligBtn.textContent = 'Continue to Date & Time →';
+    eligBtn.className = 'btn-primary';
+    eligBtn.onclick = proceedToDateTime;
+  }
+}
+
+// EDIT PROFILE
+function saveProfile() {
+  const btn = event.currentTarget;
+  btn.textContent = '⏳ Saving…'; btn.disabled = true;
+  setTimeout(() => {
+    btn.textContent = '✅ Saved!'; btn.style.background = 'var(--emerald)';
+    setTimeout(() => {
+      showScreen('sc-profile');
+      btn.textContent = 'Save Changes'; btn.style.background = ''; btn.disabled = false;
+    }, 1500);
+  }, 900);
+}
+
+// On booking screen entry, reset questionnaire
+document.querySelectorAll('.bn')[1].addEventListener('click', function() {
+  allDeferralReasons = [];
+  resetQuestionnaire();
+});
+
+// ─── Notifications: load from server ───
+function loadNotifications() {
+  fetch('/Donor/GetMyNotifications')
+    .then(r => r.ok ? r.json() : Promise.reject(r.status))
+    .then(data => {
+      const container = document.getElementById('notifsContainer');
+      if (!container) return;
+      if (!data || data.length === 0) {
+        container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--ink-light);font-size:13px;">No notifications yet.</div>';
+        return;
+      }
+      const icons = ['🚨','💬','🩸','✅','🏆'];
+      const classes = ['ni-red','ni-blue','ni-blue','ni-green','ni-green'];
+      container.innerHTML = data.map((n, i) => `
+        <div class="notif-item" id="notif-${n.idSMS}">
+          <div class="notif-ico ${classes[i % classes.length]}">${icons[i % icons.length]}</div>
+          <div style="flex:1;">
+            <div class="notif-title">Blood Needed: ${n.bloodNeeded || '—'}</div>
+            <div class="notif-desc">${n.message || ''}</div>
+            <div class="notif-time">${new Date(n.sentAt).toLocaleString()}</div>
+          </div>
+          ${!n.isRead ? '<div class="notif-unread"></div>' : ''}
+        </div>
+      `).join('');
+      // mark as read on click
+      data.filter(n => !n.isRead).forEach(n => {
+        const el = document.getElementById('notif-' + n.idSMS);
+        if (el) el.addEventListener('click', () => {
+          fetch('/Donor/MarkNotificationRead?id=' + n.idSMS, { method: 'POST' });
+          const dot = el.querySelector('.notif-unread');
+          if (dot) dot.remove();
+        });
+      });
+    })
+    .catch(() => {
+      const container = document.getElementById('notifsContainer');
+      if (container) container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--ink-light);font-size:13px;">Could not load notifications.</div>';
+    });
+}
+
+function loadHistory() {
+  fetch('/Donor/GetMyAppointments')
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(data => {
+      const container = document.getElementById('historyContainer');
+      if (!container) return;
+      if (!data || data.length === 0) {
+        container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--ink-light);font-size:13px;">No past appointments found.</div>';
+        return;
+      }
+      container.innerHTML = data.map(a => {
+        const dateStr = new Date(a.appointmentDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        const timeParts = a.appointmentTime.split(':');
+        let timeStr = a.appointmentTime;
+        if(timeParts.length >= 2) {
+          const h = parseInt(timeParts[0]);
+          const m = timeParts[1];
+          const suffix = h >= 12 ? 'PM' : 'AM';
+          const displayH = h % 12 === 0 ? 12 : h % 12;
+          timeStr = `${displayH}:${m} ${suffix}`;
+        }
+        let chipClass = 'chip-green';
+        if (a.status === 'Pending') chipClass = 'chip-yellow';
+        else if (a.status === 'Cancelled') chipClass = 'chip-red';
+
+        return `
+          <div class="hist-item">
+            <div class="hist-blood">@ViewBag.BloodType</div>
+            <div style="flex:1;">
+              <div class="hist-center">${a.hospitalName}</div>
+              <div class="hist-date">${dateStr} · ${timeStr}</div>
+              <span class="hist-tag">${a.notes || 'No notes'}</span>
+            </div>
+            <span class="chip ${chipClass}">${a.status}</span>
+          </div>
+        `;
+      }).join('');
+    })
+    .catch(() => {
+      const container = document.getElementById('historyContainer');
+      if (container) container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--ink-light);font-size:13px;">Could not load history.</div>';
+    });
+}
+
+// Load dynamic data when screen opens
+const origShowScreen = showScreen;
+window.showScreen = function(id) {
+  origShowScreen(id);
+  if (id === 'sc-notifs') loadNotifications();
+  if (id === 'sc-history') loadHistory();
+};
+// Load on page ready if screens are active
+document.addEventListener('DOMContentLoaded', () => {
+  const elNotifs = document.getElementById('sc-notifs');
+  if (elNotifs && elNotifs.classList.contains('on')) loadNotifications();
+  const elHistory = document.getElementById('sc-history');
+  if (elHistory && elHistory.classList.contains('on')) loadHistory();
+});
+
+</script>
+</body>
+</html>

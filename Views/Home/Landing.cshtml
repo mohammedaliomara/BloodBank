@@ -1,0 +1,1414 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BloodBank · Every Drop Counts</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cr:#D01C2A; --cr2:#FF3B4A; --cr-pale:#FFF1F2; --cr-mid:#FFCDD0;
+  --slate:#080E1A; --slate2:#0F1521; --slate3:#1C2840;
+  --fog:#F3F5F8; --fog2:#EAECF2;
+  --ink:#080E1A; --ink-mid:#485070; --ink-soft:#8891AA;
+  --white:#FFFFFF; --border:#E4E6EE;
+  --em:#0C9B60; --em-pale:#EDFAF4;
+  --sap:#1E5FD0; --sap-pale:#EEF3FF;
+  --am:#D47B00; --am-pale:#FFF8EC;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior:smooth; }
+
+body {
+  font-family:'DM Sans', sans-serif;
+  background:var(--white);
+  color:var(--ink);
+  overflow-x:hidden;
+}
+
+::-webkit-scrollbar { width:5px; }
+::-webkit-scrollbar-thumb { background:var(--cr); border-radius:3px; }
+
+/* ─── NAV ─── */
+.nav {
+  position:fixed; top:0; left:0; right:0; z-index:200;
+  padding:0 5%;
+  height:68px;
+  display:flex; align-items:center; gap:0;
+  transition:all 0.35s;
+}
+.nav.scrolled {
+  background:rgba(8,14,26,0.92);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  height:60px;
+}
+.nav-brand {
+  display:flex; align-items:center; gap:11px;
+  text-decoration:none;
+}
+.nav-mark {
+  width:38px; height:38px; background:var(--cr); border-radius:11px;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 6px 20px rgba(208,28,42,0.45);
+  flex-shrink:0;
+  transition:transform 0.2s;
+}
+.nav-mark:hover { transform:scale(1.07); }
+.nav-mark svg { width:22px; height:22px; }
+.nav-logo-name {
+  font-family:'Sora', sans-serif;
+  font-size:18px; font-weight:800;
+  color:var(--white);
+  letter-spacing:-0.5px;
+}
+.nav-links {
+  display:flex; align-items:center; gap:32px;
+  margin:0 auto;
+  list-style:none;
+}
+.nav-links a {
+  font-size:13px; font-weight:500;
+  color:rgba(255,255,255,0.55);
+  text-decoration:none;
+  transition:color 0.2s;
+  letter-spacing:0.1px;
+}
+.nav-links a:hover { color:var(--white); }
+.nav-cta {
+  display:flex; align-items:center; gap:10px;
+}
+.btn-nav-ghost {
+  padding:8px 18px; border-radius:9px;
+  border:1.5px solid rgba(255,255,255,0.18);
+  background:transparent;
+  color:rgba(255,255,255,0.7);
+  font-size:13px; font-weight:600;
+  cursor:pointer; font-family:'DM Sans', sans-serif;
+  text-decoration:none;
+  transition:all 0.2s;
+}
+.btn-nav-ghost:hover {
+  border-color:rgba(255,255,255,0.4);
+  color:var(--white);
+  background:rgba(255,255,255,0.06);
+}
+.btn-nav-primary {
+  padding:9px 20px; border-radius:9px;
+  background:var(--cr);
+  color:var(--white);
+  font-size:13px; font-weight:700;
+  cursor:pointer; font-family:'Sora', sans-serif;
+  text-decoration:none;
+  transition:all 0.2s;
+  box-shadow:0 4px 16px rgba(208,28,42,0.4);
+  letter-spacing:0.1px;
+}
+.btn-nav-primary:hover {
+  background:#B01520;
+  transform:translateY(-1px);
+  box-shadow:0 8px 24px rgba(208,28,42,0.5);
+}
+
+/* ─── HERO ─── */
+.hero {
+  min-height:100vh;
+  background:var(--slate);
+  position:relative;
+  display:flex; align-items:center;
+  padding:100px 5% 80px;
+  overflow:hidden;
+}
+
+/* Animated mesh background */
+.hero-canvas {
+  position:absolute; inset:0;
+  pointer-events:none;
+  overflow:hidden;
+}
+.hero-orb {
+  position:absolute;
+  border-radius:50%;
+  filter:blur(80px);
+}
+.orb-1 {
+  width:700px; height:700px;
+  background:radial-gradient(ellipse, rgba(208,28,42,0.14) 0%, transparent 70%);
+  top:-200px; right:-150px;
+  animation:drift1 18s ease-in-out infinite;
+}
+.orb-2 {
+  width:500px; height:500px;
+  background:radial-gradient(ellipse, rgba(208,28,42,0.07) 0%, transparent 70%);
+  bottom:-100px; left:-100px;
+  animation:drift2 22s ease-in-out infinite;
+}
+.orb-3 {
+  width:300px; height:300px;
+  background:radial-gradient(ellipse, rgba(255,100,120,0.06) 0%, transparent 70%);
+  top:40%; left:40%;
+  animation:drift3 15s ease-in-out infinite;
+}
+@@keyframes drift1 { 0%,100%{transform:translate(0,0);} 50%{transform:translate(-40px,30px);} }
+@@keyframes drift2 { 0%,100%{transform:translate(0,0);} 50%{transform:translate(30px,-25px);} }
+@@keyframes drift3 { 0%,100%{transform:translate(0,0);} 50%{transform:translate(-20px,40px);} }
+
+.hero-grid { display:none; }
+
+.hero-content {
+  max-width:700px;
+  position:relative; z-index:2;
+  animation:fadeUp 0.9s ease both;
+}
+.hero-stats-divider {
+  width:100%;
+  height:1px;
+  background:rgba(255,255,255,0.07);
+  margin-bottom:32px;
+}
+@@keyframes fadeUp {
+  from { opacity:0; transform:translateY(30px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+.hero-eyebrow {
+  display:inline-flex; align-items:center; gap:8px;
+  background:rgba(208,28,42,0.12);
+  border:1px solid rgba(208,28,42,0.28);
+  border-radius:30px;
+  padding:6px 16px;
+  font-size:11px; font-weight:700;
+  color:#FF8A90;
+  text-transform:uppercase; letter-spacing:1.8px;
+  margin-bottom:26px;
+}
+.ew-dot {
+  width:7px; height:7px; background:#FF6B6B;
+  border-radius:50%;
+  animation:pulse-dot 2s ease-in-out infinite;
+}
+@@keyframes pulse-dot {
+  0%,100%{transform:scale(1);opacity:1;}
+  50%{transform:scale(1.8);opacity:0.3;}
+}
+
+.hero-title {
+  font-family:'Sora', sans-serif;
+  font-size:clamp(46px, 6vw, 80px);
+  font-weight:900;
+  color:var(--white);
+  line-height:1.0;
+  letter-spacing:-3px;
+  margin-bottom:24px;
+}
+.hero-title .accent { color:var(--cr); }
+.hero-title .dim { color:rgba(255,255,255,0.22); }
+
+.hero-sub {
+  font-size:17px;
+  color:rgba(255,255,255,0.48);
+  line-height:1.75;
+  max-width:500px;
+  margin-bottom:38px;
+  font-weight:400;
+}
+
+.hero-actions {
+  display:flex; align-items:center; gap:14px;
+  flex-wrap:wrap;
+  margin-bottom:40px;
+}
+.btn-hero-primary {
+  display:inline-flex; align-items:center; gap:9px;
+  padding:15px 28px;
+  background:var(--cr);
+  color:var(--white);
+  border:none; border-radius:12px;
+  font-family:'Sora', sans-serif;
+  font-size:15px; font-weight:700;
+  cursor:pointer; text-decoration:none;
+  transition:all 0.22s;
+  box-shadow:0 8px 28px rgba(208,28,42,0.45);
+  letter-spacing:0.1px;
+}
+.btn-hero-primary:hover {
+  background:#B01520;
+  transform:translateY(-2px);
+  box-shadow:0 14px 38px rgba(208,28,42,0.55);
+}
+.btn-hero-primary svg { width:18px; height:18px; }
+
+.btn-hero-ghost {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:14px 26px;
+  background:rgba(255,255,255,0.06);
+  color:rgba(255,255,255,0.7);
+  border:1.5px solid rgba(255,255,255,0.14);
+  border-radius:12px;
+  font-family:'DM Sans', sans-serif;
+  font-size:14px; font-weight:600;
+  cursor:pointer; text-decoration:none;
+  transition:all 0.2s;
+}
+.btn-hero-ghost:hover {
+  background:rgba(255,255,255,0.1);
+  color:var(--white);
+  border-color:rgba(255,255,255,0.28);
+}
+
+.hero-stats {
+  display:flex; gap:36px; flex-wrap:wrap;
+}
+.hs-item { display:flex; flex-direction:column; gap:4px; }
+.hs-val {
+  font-family:'Sora', sans-serif;
+  font-size:28px; font-weight:800;
+  color:var(--white); letter-spacing:-1px;
+}
+.hs-val span { color:var(--cr); }
+.hs-lbl {
+  font-size:11px;
+  color:rgba(255,255,255,0.32);
+  text-transform:uppercase; letter-spacing:1px;
+}
+.hs-div {
+  width:1px; background:rgba(255,255,255,0.08);
+  align-self:center; height:44px;
+}
+
+/* floating card right side */
+.hero-visual {
+  position:absolute; right:6%; top:50%;
+  transform:translateY(-50%);
+  z-index:2;
+  display:flex; flex-direction:column; gap:14px;
+  animation:fadeUp 1.1s ease 0.2s both;
+}
+.hv-card {
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:16px;
+  padding:18px 20px;
+  backdrop-filter:blur(12px);
+  width:260px;
+}
+.hv-label {
+  font-size:9px; font-weight:700; color:rgba(255,255,255,0.35);
+  text-transform:uppercase; letter-spacing:1.5px; margin-bottom:10px;
+}
+.hv-blood-row {
+  display:flex; gap:6px; flex-wrap:wrap;
+}
+.hv-blood-tag {
+  font-family:'Sora', sans-serif;
+  font-size:12px; font-weight:800;
+  padding:5px 10px; border-radius:7px;
+  background:rgba(208,28,42,0.2);
+  border:1px solid rgba(208,28,42,0.3);
+  color:#FF8A90;
+}
+.hv-stat-row {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:8px 0;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.hv-stat-row:last-child { border:none; }
+.hv-stat-key { font-size:12px; color:rgba(255,255,255,0.45); }
+.hv-stat-val { font-family:'Sora', sans-serif; font-size:13px; font-weight:700; color:var(--white); }
+.hv-pill {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:4px 10px; border-radius:20px;
+  font-size:10px; font-weight:700;
+}
+.pill-green { background:rgba(12,155,96,0.2); border:1px solid rgba(12,155,96,0.3); color:#5DEBB4; }
+.pill-amber { background:rgba(212,123,0,0.2); border:1px solid rgba(212,123,0,0.3); color:#FFC870; }
+.pill-dot { width:5px; height:5px; border-radius:50%; }
+.pd-green { background:#5DEBB4; animation:pulse-dot 2s infinite; }
+.pd-amber { background:#FFC870; animation:pulse-dot 2.5s infinite; }
+
+.urgent-card {
+  background:rgba(208,28,42,0.12);
+  border:1px solid rgba(208,28,42,0.3);
+  border-radius:14px; padding:16px 18px;
+  backdrop-filter:blur(12px);
+  width:260px;
+}
+.uc-label {
+  display:flex; align-items:center; gap:6px;
+  font-size:9px; font-weight:700; color:#FF8A90;
+  text-transform:uppercase; letter-spacing:1.5px;
+  margin-bottom:10px;
+}
+.uc-blood {
+  font-family:'Sora', sans-serif;
+  font-size:36px; font-weight:900; color:#FF3B4A;
+  letter-spacing:-2px; line-height:1;
+}
+.uc-hosp { font-size:13px; font-weight:600; color:var(--white); margin-top:5px; }
+.uc-meta { font-size:11px; color:rgba(255,255,255,0.4); margin-top:3px; }
+.uc-btn {
+  width:100%; padding:10px;
+  background:var(--cr); color:var(--white);
+  border:none; border-radius:9px;
+  font-family:'Sora', sans-serif; font-size:12px; font-weight:700;
+  cursor:pointer; margin-top:12px; transition:all 0.18s;
+}
+.uc-btn:hover { background:#B01520; }
+
+/* scroll indicator */
+.scroll-hint {
+  position:absolute; bottom:30px; left:50%; transform:translateX(-50%);
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  z-index:2; color:rgba(255,255,255,0.22); font-size:11px;
+  animation:bounce 2.5s ease-in-out infinite;
+}
+@@keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0);} 50%{transform:translateX(-50%) translateY(6px);} }
+.scroll-arrow { width:20px; height:20px; }
+
+
+/* ─── SECTION BASE ─── */
+section { padding:100px 5%; }
+.section-eyebrow {
+  display:inline-flex; align-items:center; gap:7px;
+  background:var(--cr-pale);
+  border:1px solid var(--cr-mid);
+  border-radius:30px;
+  padding:5px 14px;
+  font-size:10px; font-weight:700;
+  color:var(--cr);
+  text-transform:uppercase; letter-spacing:1.5px;
+  margin-bottom:18px;
+}
+.section-title {
+  font-family:'Sora', sans-serif;
+  font-size:clamp(32px, 4vw, 48px);
+  font-weight:800;
+  letter-spacing:-1.5px;
+  line-height:1.1;
+  color:var(--ink);
+  margin-bottom:16px;
+}
+.section-title .accent { color:var(--cr); }
+.section-subtitle {
+  font-size:16px;
+  color:var(--ink-soft);
+  line-height:1.7;
+  max-width:520px;
+}
+
+/* ─── ABOUT ─── */
+.about {
+  background:var(--white);
+  display:flex; align-items:center; gap:80px;
+  flex-wrap:wrap;
+}
+.about-left { flex:1; min-width:300px; }
+.about-right {
+  flex:1; min-width:300px;
+  display:grid; grid-template-columns:1fr 1fr; gap:14px;
+}
+.about-card {
+  background:var(--fog);
+  border:1px solid var(--border);
+  border-radius:16px; padding:22px;
+  transition:all 0.25s;
+}
+.about-card:hover {
+  border-color:var(--cr-mid);
+  background:var(--cr-pale);
+  transform:translateY(-3px);
+  box-shadow:0 12px 30px rgba(208,28,42,0.08);
+}
+.about-card-ico {
+  font-size:28px; margin-bottom:12px;
+}
+.about-card-title {
+  font-family:'Sora', sans-serif;
+  font-size:15px; font-weight:700;
+  margin-bottom:6px;
+}
+.about-card-desc {
+  font-size:13px; color:var(--ink-soft); line-height:1.6;
+}
+.about-card.span2 { grid-column:1/-1; display:flex; align-items:center; gap:20px; }
+.about-card.span2 .about-card-ico { font-size:36px; margin:0; flex-shrink:0; }
+
+/* timeline */
+.timeline {
+  display:flex; flex-direction:column; gap:0;
+  margin-top:32px;
+}
+.tl-item {
+  display:flex; gap:16px; padding-bottom:28px;
+  position:relative;
+}
+.tl-item:not(:last-child)::after {
+  content:''; position:absolute;
+  left:17px; top:36px; bottom:0;
+  width:2px; background:var(--border);
+}
+.tl-dot {
+  width:36px; height:36px; border-radius:50%;
+  background:var(--cr-pale); border:2px solid var(--cr);
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; flex-shrink:0; z-index:1;
+}
+.tl-year {
+  font-family:'Sora', sans-serif;
+  font-size:11px; font-weight:700;
+  color:var(--cr); margin-bottom:3px;
+}
+.tl-title { font-size:14px; font-weight:700; }
+.tl-desc { font-size:12px; color:var(--ink-soft); margin-top:3px; line-height:1.5; }
+
+
+/* ─── SERVICES ─── */
+.services { background:var(--fog); }
+.services-grid {
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:16px;
+  margin-top:50px;
+}
+.svc-card {
+  background:var(--white);
+  border:1.5px solid var(--border);
+  border-radius:18px;
+  padding:28px 24px;
+  position:relative; overflow:hidden;
+  transition:all 0.28s;
+  cursor:default;
+}
+.svc-card::before {
+  content:'';
+  position:absolute; bottom:0; left:0; right:0;
+  height:3px;
+  opacity:0; transition:opacity 0.25s;
+}
+.svc-card:hover {
+  border-color:transparent;
+  box-shadow:0 16px 48px rgba(15,21,33,0.1);
+  transform:translateY(-4px);
+}
+.svc-card:hover::before { opacity:1; }
+.svc-card.c-red::before { background:linear-gradient(to right,var(--cr),#FF7080); }
+.svc-card.c-blue::before { background:linear-gradient(to right,var(--sap),#60A0FF); }
+.svc-card.c-green::before { background:linear-gradient(to right,var(--em),#40D090); }
+.svc-card.c-amber::before { background:linear-gradient(to right,var(--am),#FFB340); }
+.svc-card.c-violet::before { background:linear-gradient(to right,#6E40C9,#B080FF); }
+.svc-card.c-navy::before { background:linear-gradient(to right,#1B3A7A,#4080FF); }
+
+.svc-ico-wrap {
+  width:54px; height:54px; border-radius:14px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:26px; margin-bottom:18px;
+}
+.ico-red { background:var(--cr-pale); }
+.ico-blue { background:var(--sap-pale); }
+.ico-green { background:var(--em-pale); }
+.ico-amber { background:var(--am-pale); }
+.ico-violet { background:#F3EEFF; }
+.ico-navy { background:#EEF2FF; }
+
+.svc-tag {
+  position:absolute; top:18px; right:18px;
+  font-size:9px; font-weight:700;
+  padding:3px 8px; border-radius:8px;
+  text-transform:uppercase; letter-spacing:1px;
+}
+.tag-red { background:var(--cr-pale); color:var(--cr); }
+.tag-blue { background:var(--sap-pale); color:var(--sap); }
+.tag-green { background:var(--em-pale); color:var(--em); }
+.tag-amber { background:var(--am-pale); color:var(--am); }
+.tag-violet { background:#F3EEFF; color:#6E40C9; }
+.tag-navy { background:#EEF2FF; color:#1B3A7A; }
+
+.svc-title {
+  font-family:'Sora', sans-serif;
+  font-size:17px; font-weight:700;
+  letter-spacing:-0.3px; margin-bottom:10px;
+}
+.svc-desc {
+  font-size:13px; color:var(--ink-soft);
+  line-height:1.65;
+  margin-bottom:18px;
+}
+.svc-features {
+  display:flex; flex-direction:column; gap:6px;
+}
+.svc-feat {
+  display:flex; align-items:center; gap:8px;
+  font-size:12px; color:var(--ink-mid);
+}
+.feat-dot { width:5px; height:5px; border-radius:50%; flex-shrink:0; }
+.fd-red { background:var(--cr); }
+.fd-blue { background:var(--sap); }
+.fd-green { background:var(--em); }
+.fd-amber { background:var(--am); }
+.fd-violet { background:#6E40C9; }
+.fd-navy { background:#1B3A7A; }
+
+
+/* ─── ROLES ─── */
+.roles { background:var(--white); }
+.roles-grid {
+  display:grid;
+  grid-template-columns:repeat(5, 1fr);
+  gap:12px;
+  margin-top:50px;
+}
+.role-card {
+  background:var(--fog);
+  border:1.5px solid var(--border);
+  border-radius:16px; padding:22px 16px;
+  text-align:center;
+  cursor:pointer; text-decoration:none; color:var(--ink);
+  transition:all 0.22s;
+  display:flex; flex-direction:column; align-items:center; gap:10px;
+}
+.role-card:hover {
+  transform:translateY(-4px);
+  box-shadow:0 12px 36px rgba(15,21,33,0.1);
+  border-color:var(--cr-mid);
+  background:var(--white);
+}
+.role-ico {
+  width:52px; height:52px; border-radius:15px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:24px;
+}
+.role-name {
+  font-family:'Sora', sans-serif;
+  font-size:13px; font-weight:700;
+}
+.role-desc { font-size:11px; color:var(--ink-soft); line-height:1.4; }
+.role-chip {
+  font-size:10px; font-weight:700; padding:3px 9px;
+  border-radius:20px; margin-top:2px;
+}
+
+
+/* ─── IMPACT ─── */
+.impact {
+  background:var(--slate);
+  position:relative; overflow:hidden;
+}
+.impact::before {
+  content:''; position:absolute; inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size:60px 60px;
+}
+.impact-orb {
+  position:absolute; border-radius:50%; filter:blur(80px); pointer-events:none;
+}
+.io1 { width:600px; height:400px; background:radial-gradient(ellipse,rgba(208,28,42,0.1) 0%,transparent 70%); top:-100px; right:-100px; }
+.io2 { width:400px; height:400px; background:radial-gradient(ellipse,rgba(208,28,42,0.06) 0%,transparent 70%); bottom:-80px; left:-80px; }
+
+.impact-inner { position:relative; z-index:1; }
+.impact-header { text-align:center; margin-bottom:64px; }
+.impact-header .section-title { color:var(--white); }
+.impact-header .section-subtitle { color:rgba(255,255,255,0.45); margin:0 auto; }
+.impact-header .section-eyebrow {
+  background:rgba(208,28,42,0.15);
+  border-color:rgba(208,28,42,0.3);
+  color:#FF8A90;
+}
+
+.impact-grid {
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:16px;
+  margin-bottom:48px;
+}
+.impact-card {
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:16px; padding:28px 22px;
+  text-align:center;
+  transition:all 0.25s;
+}
+.impact-card:hover {
+  background:rgba(255,255,255,0.08);
+  border-color:rgba(208,28,42,0.3);
+  transform:translateY(-3px);
+}
+.impact-num {
+  font-family:'Sora', sans-serif;
+  font-size:42px; font-weight:900;
+  color:var(--white); letter-spacing:-2px;
+  line-height:1;
+}
+.impact-num span { color:var(--cr); }
+.impact-label { font-size:12px; color:rgba(255,255,255,0.38); margin-top:8px; text-transform:uppercase; letter-spacing:1px; }
+.impact-sub { font-size:11px; color:rgba(255,255,255,0.22); margin-top:4px; }
+
+.impact-quote {
+  max-width:640px; margin:0 auto;
+  text-align:center;
+  padding:32px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.07);
+  border-radius:18px;
+}
+.quote-mark {
+  font-family:'Sora', sans-serif;
+  font-size:60px; font-weight:900;
+  color:rgba(208,28,42,0.25);
+  line-height:0.7;
+  margin-bottom:16px;
+}
+.quote-text {
+  font-size:17px;
+  color:rgba(255,255,255,0.6);
+  line-height:1.7;
+  font-style:italic;
+  margin-bottom:14px;
+}
+.quote-author { font-size:12px; color:rgba(255,255,255,0.3); font-weight:600; }
+
+
+/* ─── HOW IT WORKS ─── */
+.how { background:var(--fog); }
+.how-steps {
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:0;
+  margin-top:56px;
+  position:relative;
+}
+.how-steps::before {
+  content:''; position:absolute;
+  top:36px; left:12.5%; right:12.5%;
+  height:2px; background:var(--border); z-index:0;
+}
+.how-step {
+  display:flex; flex-direction:column; align-items:center;
+  text-align:center; padding:0 20px;
+  position:relative; z-index:1;
+}
+.how-num {
+  width:72px; height:72px; border-radius:50%;
+  background:var(--white);
+  border:2px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Sora', sans-serif;
+  font-size:22px; font-weight:800;
+  color:var(--ink-soft);
+  margin-bottom:18px;
+  transition:all 0.25s;
+}
+.how-step:hover .how-num {
+  background:var(--cr); border-color:var(--cr);
+  color:var(--white);
+  transform:scale(1.08);
+  box-shadow:0 8px 24px rgba(208,28,42,0.35);
+}
+.how-ico { font-size:28px; }
+.how-title { font-family:'Sora', sans-serif; font-size:15px; font-weight:700; margin-bottom:8px; }
+.how-desc { font-size:13px; color:var(--ink-soft); line-height:1.6; }
+
+
+/* ─── CTA ─── */
+.cta-section {
+  background:var(--white);
+  padding:100px 5%;
+}
+.cta-inner {
+  background:linear-gradient(135deg, var(--slate) 0%, #1A0507 50%, var(--slate) 100%);
+  border-radius:28px;
+  padding:64px 56px;
+  text-align:center;
+  position:relative; overflow:hidden;
+}
+.cta-orb1 { position:absolute; width:400px; height:400px; background:radial-gradient(ellipse,rgba(208,28,42,0.15) 0%,transparent 70%); top:-100px; right:-80px; border-radius:50%; }
+.cta-orb2 { position:absolute; width:300px; height:300px; background:radial-gradient(ellipse,rgba(208,28,42,0.08) 0%,transparent 70%); bottom:-80px; left:-60px; border-radius:50%; }
+.cta-content { position:relative; z-index:1; }
+.cta-eyebrow {
+  display:inline-flex; align-items:center; gap:7px;
+  background:rgba(208,28,42,0.15);
+  border:1px solid rgba(208,28,42,0.3);
+  border-radius:30px; padding:5px 16px;
+  font-size:10px; font-weight:700; color:#FF8A90;
+  text-transform:uppercase; letter-spacing:1.5px;
+  margin-bottom:22px;
+}
+.cta-title {
+  font-family:'Sora', sans-serif;
+  font-size:clamp(32px, 4vw, 50px);
+  font-weight:900; color:var(--white);
+  letter-spacing:-2px; line-height:1.1;
+  margin-bottom:16px;
+}
+.cta-title span { color:var(--cr); }
+.cta-sub { font-size:16px; color:rgba(255,255,255,0.44); line-height:1.7; max-width:480px; margin:0 auto 36px; }
+.cta-buttons { display:flex; justify-content:center; align-items:center; gap:14px; flex-wrap:wrap; }
+
+
+/* ─── FOOTER ─── */
+.footer {
+  background:var(--slate);
+  padding:56px 5% 32px;
+  border-top:1px solid rgba(255,255,255,0.06);
+}
+.footer-grid {
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr 1fr;
+  gap:48px;
+  margin-bottom:48px;
+}
+.footer-brand {
+  display:flex; align-items:center; gap:11px;
+  margin-bottom:14px;
+}
+.footer-mark {
+  width:38px; height:38px; background:var(--cr);
+  border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 4px 16px rgba(208,28,42,0.4);
+  flex-shrink:0;
+}
+.footer-mark svg { width:20px; height:20px; }
+.footer-name {
+  font-family:'Sora', sans-serif;
+  font-size:16px; font-weight:800;
+  color:var(--white); letter-spacing:-0.3px;
+}
+.footer-tagline { font-size:13px; color:rgba(255,255,255,0.35); line-height:1.6; max-width:260px; margin-bottom:20px; }
+.footer-socials { display:flex; gap:10px; }
+.social-btn {
+  width:34px; height:34px; border-radius:9px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.08);
+  display:flex; align-items:center; justify-content:center;
+  color:rgba(255,255,255,0.45); font-size:14px;
+  cursor:pointer; text-decoration:none;
+  transition:all 0.18s;
+}
+.social-btn:hover { background:rgba(208,28,42,0.2); border-color:rgba(208,28,42,0.3); color:#FF8A90; }
+.footer-col-title {
+  font-family:'Sora', sans-serif;
+  font-size:12px; font-weight:700; color:var(--white);
+  text-transform:uppercase; letter-spacing:1.5px;
+  margin-bottom:16px;
+}
+.footer-links { display:flex; flex-direction:column; gap:10px; }
+.footer-links a {
+  font-size:13px; color:rgba(255,255,255,0.38);
+  text-decoration:none; transition:color 0.18s;
+}
+.footer-links a:hover { color:rgba(255,255,255,0.75); }
+.footer-bottom {
+  display:flex; align-items:center; justify-content:space-between;
+  padding-top:24px; border-top:1px solid rgba(255,255,255,0.06);
+  flex-wrap:wrap; gap:12px;
+}
+.footer-copy { font-size:12px; color:rgba(255,255,255,0.22); }
+.footer-badges { display:flex; gap:10px; }
+.footer-badge {
+  font-size:10px; font-weight:600;
+  padding:4px 10px; border-radius:8px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.08);
+  color:rgba(255,255,255,0.3);
+}
+
+
+/* ─── RESPONSIVE ─── */
+@@media (max-width:1024px) {
+  .hero-visual { display:none; }
+  .services-grid { grid-template-columns:1fr 1fr; }
+  .roles-grid { grid-template-columns:repeat(3, 1fr); }
+  .impact-grid { grid-template-columns:1fr 1fr; }
+  .how-steps { grid-template-columns:1fr 1fr; gap:32px; }
+  .how-steps::before { display:none; }
+  .footer-grid { grid-template-columns:1fr 1fr; gap:32px; }
+}
+@@media (max-width:768px) {
+  section { padding:64px 5%; }
+  .nav-links { display:none; }
+  .about { flex-direction:column; gap:48px; }
+  .services-grid { grid-template-columns:1fr; }
+  .roles-grid { grid-template-columns:1fr 1fr; }
+  .impact-grid { grid-template-columns:1fr 1fr; }
+  .how-steps { grid-template-columns:1fr; }
+  .cta-inner { padding:44px 28px; }
+  .footer-grid { grid-template-columns:1fr; }
+  .hero-stats { gap:22px; }
+  .hero-actions { flex-direction:column; align-items:flex-start; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="mainNav">
+  <a class="nav-brand" href="/">
+    <div class="nav-mark">
+      <svg viewBox="0 0 26 26" fill="none"><path d="M13 3C13 3 5 11 5 16.5C5 20.6421 8.68629 24 13 24C17.3137 24 21 20.6421 21 16.5C21 11 13 3 13 3Z" fill="white"/><path d="M9 17C9 17 9.5 20 13 20" stroke="rgba(208,28,42,0.5)" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </div>
+    <span class="nav-logo-name">BloodBank</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#about">About Us</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#roles">Who We Serve</a></li>
+    <li><a href="#impact">Impact</a></li>
+    <li><a href="#how">How It Works</a></li>
+  </ul>
+  <div class="nav-cta">
+    <a class="btn-nav-ghost" href="/Account/Login">Sign In</a>
+    <a class="btn-nav-primary" href="/Donor/Portal">Donate Blood →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-canvas">
+    <div class="hero-grid"></div>
+    <div class="hero-orb orb-1"></div>
+    <div class="hero-orb orb-2"></div>
+    <div class="hero-orb orb-3"></div>
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">
+      <div class="ew-dot"></div>
+      National Blood Network · Egypt
+    </div>
+
+    <h1 class="hero-title">
+      Every drop<br>
+      <span class="accent">saves</span> a<br>
+      <span class="dim">life.</span>
+    </h1>
+
+    <p class="hero-sub">
+      BloodBank connects blood donors, hospitals, and health authorities on a single intelligent platform — making blood donation faster, safer, and more impactful than ever.
+    </p>
+
+    <div class="hero-actions">
+      <a class="btn-hero-primary" href="/Donor/Portal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402z"/></svg>
+        Register as Donor
+      </a>
+      <a class="btn-hero-ghost" href="#services">
+        Explore Services ↓
+      </a>
+    </div>
+
+    <div class="hero-stats-divider"></div>
+    <div class="hero-stats">
+      <div class="hs-item">
+        <div class="hs-val">842<span>K</span></div>
+        <div class="hs-lbl">Registered Donors</div>
+      </div>
+      <div class="hs-div"></div>
+      <div class="hs-item">
+        <div class="hs-val">48<span>K+</span></div>
+        <div class="hs-lbl">Lives Saved</div>
+      </div>
+      <div class="hs-div"></div>
+      <div class="hs-item">
+        <div class="hs-val">312</div>
+        <div class="hs-lbl">Hospitals</div>
+      </div>
+      <div class="hs-div"></div>
+      <div class="hs-item">
+        <div class="hs-val">27</div>
+        <div class="hs-lbl">Governorates</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Visual -->
+  <div class="hero-visual">
+    <!-- Donor impact visual -->
+    <div class="hv-card" style="width:280px;">
+      <div class="hv-label">💉 Today's Donations</div>
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">
+        <div style="font-family:'Sora',sans-serif;font-size:44px;font-weight:900;color:var(--white);letter-spacing:-2px;line-height:1;">1,284</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.38);line-height:1.5;">units collected<br>across Egypt</div>
+      </div>
+      <div style="height:4px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;margin-bottom:6px;">
+        <div style="height:100%;width:78%;background:linear-gradient(to right,var(--cr),#FF7080);border-radius:2px;"></div>
+      </div>
+      <div style="font-size:10px;color:rgba(255,255,255,0.28);">78% of daily target · ↑ 12% vs yesterday</div>
+    </div>
+
+    <!-- Status card -->
+    <div class="hv-card" style="width:280px;">
+      <div class="hv-label">⚡ System Status</div>
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:12px;color:rgba(255,255,255,0.45);">National Network</span>
+          <div class="hv-pill pill-green"><div class="pill-dot pd-green"></div>Live</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:12px;color:rgba(255,255,255,0.45);">AI Match Engine</span>
+          <div class="hv-pill pill-green"><div class="pill-dot pd-green"></div>Active</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:12px;color:rgba(255,255,255,0.45);">312 Hospitals Online</span>
+          <div class="hv-pill pill-green"><div class="pill-dot pd-green"></div>Connected</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <svg class="scroll-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M12 5v14M5 12l7 7 7-7"/>
+    </svg>
+    Scroll to explore
+  </div>
+</section>
+
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="about-left">
+    <div class="section-eyebrow">🏛️ About BloodBank</div>
+    <h2 class="section-title">
+      Built to save<br>
+      <span class="accent">lives</span> at scale
+    </h2>
+    <p class="section-subtitle">
+      BloodBank is Egypt's national blood bank management platform, developed to modernize and unify the entire blood donation ecosystem — from a single donor's appointment to a ministry-level policy decision.
+    </p>
+
+    <div class="timeline" style="margin-top:36px;">
+      <div class="tl-item">
+        <div class="tl-dot">🌱</div>
+        <div>
+          <div class="tl-year">2020</div>
+          <div class="tl-title">Project Founded</div>
+          <div class="tl-desc">Launched as a pilot connecting 3 hospitals and 2 donation centers in Cairo.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot">📡</div>
+        <div>
+          <div class="tl-year">2022</div>
+          <div class="tl-title">National Expansion</div>
+          <div class="tl-desc">Scaled to 14 governorates, 150 hospitals, and 80,000 registered donors.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot">🤖</div>
+        <div>
+          <div class="tl-year">2024</div>
+          <div class="tl-title">AI Integration</div>
+          <div class="tl-desc">Launched predictive AI engine — 97% accuracy in demand forecasting, reducing shortages by 40%.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot">🏆</div>
+        <div>
+          <div class="tl-year">2025</div>
+          <div class="tl-title">Full National Coverage</div>
+          <div class="tl-desc">27 governorates, 312 hospitals, 842K donors. 48,200 lives saved.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="about-right">
+    <div class="about-card">
+      <div class="about-card-ico">🎯</div>
+      <div class="about-card-title">Our Mission</div>
+      <div class="about-card-desc">Ensure no patient dies due to lack of blood by building a real-time, responsive national blood supply system.</div>
+    </div>
+    <div class="about-card">
+      <div class="about-card-ico">👁️</div>
+      <div class="about-card-title">Our Vision</div>
+      <div class="about-card-desc">A world where every hospital has instant access to safe blood, and every willing donor can contribute in minutes.</div>
+    </div>
+    <div class="about-card">
+      <div class="about-card-ico">🤝</div>
+      <div class="about-card-title">Our Values</div>
+      <div class="about-card-desc">Transparency, equity, speed, and compassion — in every feature we build and every decision we make.</div>
+    </div>
+    <div class="about-card">
+      <div class="about-card-ico">🔬</div>
+      <div class="about-card-title">Our Approach</div>
+      <div class="about-card-desc">Data-driven intelligence combined with human empathy — because saving lives is both a science and a calling.</div>
+    </div>
+    <div class="about-card span2">
+      <div class="about-card-ico">🏅</div>
+      <div>
+        <div class="about-card-title">Ministry of Health Certified</div>
+        <div class="about-card-desc">Haemo is the official digital blood management system of Egypt's Ministry of Health, operating under strict data privacy and medical safety standards.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- SERVICES -->
+<section class="services" id="services">
+  <div style="text-align:center; max-width:600px; margin:0 auto;">
+    <div class="section-eyebrow">⚡ What We Offer</div>
+    <h2 class="section-title">Powerful services for <span class="accent">every stakeholder</span></h2>
+    <p class="section-subtitle" style="margin:0 auto;">From a donor booking their first appointment to a minister analyzing national trends — Haemo has a tailored solution.</p>
+  </div>
+
+  <div class="services-grid">
+
+    <div class="svc-card c-red">
+      <span class="svc-tag tag-red">Donor</span>
+      <div class="svc-ico-wrap ico-red">🩸</div>
+      <div class="svc-title">Smart Donation Portal</div>
+      <div class="svc-desc">A seamless experience for blood donors to register, book appointments, complete medical questionnaires, and track their donation history and impact.</div>
+      <div class="svc-features">
+        <div class="svc-feat"><div class="feat-dot fd-red"></div>Online appointment booking with calendar</div>
+        <div class="svc-feat"><div class="feat-dot fd-red"></div>5-step digital medical questionnaire</div>
+        <div class="svc-feat"><div class="feat-dot fd-red"></div>Eligibility tracker & cooldown reminders</div>
+        <div class="svc-feat"><div class="feat-dot fd-red"></div>Donation history & lives saved counter</div>
+      </div>
+    </div>
+
+    <div class="svc-card c-blue">
+      <span class="svc-tag tag-blue">Hospital</span>
+      <div class="svc-ico-wrap ico-blue">🏥</div>
+      <div class="svc-title">Hospital Blood Requests</div>
+      <div class="svc-desc">Hospitals can request specific blood types with priority levels, track delivery in real-time, and manage their own internal blood inventory — all in one dashboard.</div>
+      <div class="svc-features">
+        <div class="svc-feat"><div class="feat-dot fd-blue"></div>Emergency & urgent blood request forms</div>
+        <div class="svc-feat"><div class="feat-dot fd-blue"></div>Live delivery tracking with GPS & ETA</div>
+        <div class="svc-feat"><div class="feat-dot fd-blue"></div>Internal hospital inventory management</div>
+        <div class="svc-feat"><div class="feat-dot fd-blue"></div>Fulfillment rate & response analytics</div>
+      </div>
+    </div>
+
+    <div class="svc-card c-green">
+      <span class="svc-tag tag-green">Admin</span>
+      <div class="svc-ico-wrap ico-green">🖥️</div>
+      <div class="svc-title">System Administration</div>
+      <div class="svc-desc">Full control for system administrators — manage users, approve registrations, monitor blood inventory across all centers, and generate system-wide reports.</div>
+      <div class="svc-features">
+        <div class="svc-feat"><div class="feat-dot fd-green"></div>User lifecycle management (CRUD)</div>
+        <div class="svc-feat"><div class="feat-dot fd-green"></div>National blood inventory dashboard</div>
+        <div class="svc-feat"><div class="feat-dot fd-green"></div>Approve/reject hospital blood requests</div>
+        <div class="svc-feat"><div class="feat-dot fd-green"></div>Advanced analytics & reporting engine</div>
+      </div>
+    </div>
+
+    <div class="svc-card c-amber">
+      <span class="svc-tag tag-amber">Center</span>
+      <div class="svc-ico-wrap ico-amber">🏪</div>
+      <div class="svc-title">Donation Center Management</div>
+      <div class="svc-desc">Donation center staff can view daily appointment schedules, mark completed donations, and automatically push new blood units into the national inventory in real time.</div>
+      <div class="svc-features">
+        <div class="svc-feat"><div class="feat-dot fd-amber"></div>Daily appointment view & management</div>
+        <div class="svc-feat"><div class="feat-dot fd-amber"></div>One-tap donation completion workflow</div>
+        <div class="svc-feat"><div class="feat-dot fd-amber"></div>Automatic inventory push on completion</div>
+        <div class="svc-feat"><div class="feat-dot fd-amber"></div>Center-level progress tracking</div>
+      </div>
+    </div>
+
+    <div class="svc-card c-violet">
+      <span class="svc-tag tag-violet">Ministry</span>
+      <div class="svc-ico-wrap ico-violet">🏛️</div>
+      <div class="svc-title">National Monitoring</div>
+      <div class="svc-desc">Ministry of Health officials get a bird's-eye view of the entire national blood ecosystem — with AI-powered predictions, per-governorate breakdown, and actionable alerts.</div>
+      <div class="svc-features">
+        <div class="svc-feat"><div class="feat-dot fd-violet"></div>27-governorate live statistics dashboard</div>
+        <div class="svc-feat"><div class="feat-dot fd-violet"></div>AI demand predictions (97% accuracy)</div>
+        <div class="svc-feat"><div class="feat-dot fd-violet"></div>Critical shortage alerts & SMS campaigns</div>
+        <div class="svc-feat"><div class="feat-dot fd-violet"></div>Downloadable PDF national reports</div>
+      </div>
+    </div>
+
+    <div class="svc-card c-navy">
+      <span class="svc-tag tag-navy">AI</span>
+      <div class="svc-ico-wrap ico-navy">🤖</div>
+      <div class="svc-title">AI Intelligence Engine</div>
+      <div class="svc-desc">Our built-in AI analyzes 3 years of donation data, seasonal trends, and national events to predict demand, recommend redistribution, and prevent shortages before they happen.</div>
+      <div class="svc-features">
+        <div class="svc-feat"><div class="feat-dot fd-navy"></div>Predictive shortage forecasting</div>
+        <div class="svc-feat"><div class="feat-dot fd-navy"></div>Smart donor-to-hospital matching</div>
+        <div class="svc-feat"><div class="feat-dot fd-navy"></div>Inventory redistribution recommendations</div>
+        <div class="svc-feat"><div class="feat-dot fd-navy"></div>Proactive campaign targeting</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- WHO WE SERVE -->
+<section class="roles" id="roles">
+  <div style="text-align:center; max-width:560px; margin:0 auto;">
+    <div class="section-eyebrow">👥 Who We Serve</div>
+    <h2 class="section-title">One platform, <span class="accent">five portals</span></h2>
+    <p class="section-subtitle" style="margin:0 auto;">Haemo is tailored to the unique needs of each stakeholder in the blood donation ecosystem.</p>
+  </div>
+
+  <div class="roles-grid">
+    <a class="role-card" href="/Donor/Portal">
+      <div class="role-ico" style="background:var(--cr-pale);">🩸</div>
+      <div class="role-name">Blood Donors</div>
+      <div class="role-desc">Register, book appointments, respond to urgent requests</div>
+      <span class="role-chip" style="background:var(--cr-pale);color:var(--cr);">Donor Portal →</span>
+    </a>
+    <a class="role-card" href="/Hospital/Portal">
+      <div class="role-ico" style="background:var(--sap-pale);">🏥</div>
+      <div class="role-name">Hospitals</div>
+      <div class="role-desc">Request blood, track deliveries, manage inventory</div>
+      <span class="role-chip" style="background:var(--sap-pale);color:var(--sap);">Hospital Portal →</span>
+    </a>
+    <a class="role-card" href="/Admin/Dashboard">
+      <div class="role-ico" style="background:var(--em-pale);">🖥️</div>
+      <div class="role-name">System Admins</div>
+      <div class="role-desc">Manage users, inventory, and nationwide requests</div>
+      <span class="role-chip" style="background:var(--em-pale);color:var(--em);">Admin Console →</span>
+    </a>
+    <a class="role-card" href="/Donor/DonationCenter">
+      <div class="role-ico" style="background:var(--am-pale);">🏪</div>
+      <div class="role-name">Center Staff</div>
+      <div class="role-desc">Run daily donation sessions & log blood units</div>
+      <span class="role-chip" style="background:var(--am-pale);color:var(--am);">Staff Portal →</span>
+    </a>
+    <a class="role-card" href="/Ministry/Portal">
+      <div class="role-ico" style="background:#EEF2FF;">🏛️</div>
+      <div class="role-name">Ministry of Health</div>
+      <div class="role-desc">National oversight, AI predictions & strategic reports</div>
+      <span class="role-chip" style="background:#EEF2FF;color:#1B3A7A;">Ministry View →</span>
+    </a>
+  </div>
+</section>
+
+
+<!-- IMPACT -->
+<section class="impact" id="impact">
+  <div class="impact-orb io1"></div>
+  <div class="impact-orb io2"></div>
+  <div class="impact-inner">
+    <div class="impact-header">
+      <div class="section-eyebrow">📊 Our Impact</div>
+      <h2 class="section-title">Numbers that <span class="accent">matter</span></h2>
+      <p class="section-subtitle">Real results from real people — measured every second across the national network.</p>
+    </div>
+
+    <div class="impact-grid">
+      <div class="impact-card">
+        <div class="impact-num">842<span>K</span></div>
+        <div class="impact-label">Registered Donors</div>
+        <div class="impact-sub">↑ +18% vs last year</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-num">48<span>K+</span></div>
+        <div class="impact-label">Lives Saved</div>
+        <div class="impact-sub">↑ +21% vs last year</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-num">93<span>%</span></div>
+        <div class="impact-label">Fulfillment Rate</div>
+        <div class="impact-sub">↑ Up from 74% in 2020</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-num">38<span>m</span></div>
+        <div class="impact-label">Avg Delivery Time</div>
+        <div class="impact-sub">↓ 60% faster than 2020</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-num">312</div>
+        <div class="impact-label">Connected Hospitals</div>
+        <div class="impact-sub">Across all 27 governorates</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-num">−34<span>%</span></div>
+        <div class="impact-label">Blood Waste Reduced</div>
+        <div class="impact-sub">Via AI expiry management</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-num">97<span>%</span></div>
+        <div class="impact-label">AI Prediction Accuracy</div>
+        <div class="impact-sub">Demand forecasting engine</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-num">1M<span>+</span></div>
+        <div class="impact-label">Notifications Sent</div>
+        <div class="impact-sub">Alerts, reminders & urgencies</div>
+      </div>
+    </div>
+
+    <div class="impact-quote">
+      <div class="quote-mark">"</div>
+      <div class="quote-text">Before Haemo, we spent hours on the phone trying to locate blood for emergency surgeries. Now, a request is fulfilled in under 40 minutes. It has genuinely changed how we save lives.</div>
+      <div class="quote-author">— Dr. Hana Youssef, Chief of Surgery, Cairo General Hospital</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div style="text-align:center; max-width:560px; margin:0 auto;">
+    <div class="section-eyebrow">🔄 How It Works</div>
+    <h2 class="section-title">From registration to <span class="accent">rescue</span></h2>
+    <p class="section-subtitle" style="margin:0 auto;">Four simple steps connecting a donor to a patient in need — powered by real-time intelligence.</p>
+  </div>
+
+  <div class="how-steps">
+    <div class="how-step">
+      <div class="how-num"><div class="how-ico">📝</div></div>
+      <div class="how-title">Register & Profile</div>
+      <div class="how-desc">Donors sign up, enter their blood type, and complete a digital medical questionnaire to verify eligibility.</div>
+    </div>
+    <div class="how-step">
+      <div class="how-num"><div class="how-ico">📅</div></div>
+      <div class="how-title">Book Appointment</div>
+      <div class="how-desc">Choose a nearby donation center and a convenient time slot using the interactive calendar — in under 2 minutes.</div>
+    </div>
+    <div class="how-step">
+      <div class="how-num"><div class="how-ico">🩸</div></div>
+      <div class="how-title">Donate & Record</div>
+      <div class="how-desc">Center staff logs the donation with one tap, automatically adding the unit to the national blood inventory in real time.</div>
+    </div>
+    <div class="how-step">
+      <div class="how-num"><div class="how-ico">💖</div></div>
+      <div class="how-title">Hospital Receives</div>
+      <div class="how-desc">When a hospital submits a request, AI matches the nearest available units and dispatches them — with live tracking for the hospital.</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-inner">
+    <div class="cta-orb1"></div>
+    <div class="cta-orb2"></div>
+    <div class="cta-content">
+      <div class="cta-eyebrow"><div class="ew-dot"></div>Join the Network</div>
+      <h2 class="cta-title">Ready to save a <span>life</span><br>today?</h2>
+      <p class="cta-sub">It only takes a few minutes to register. Your blood donation can save up to 3 lives. Be someone's reason to live.</p>
+      <div class="cta-buttons">
+        <a class="btn-hero-primary" href="/Donor/Portal">
+          🩸 Register as Donor
+        </a>
+        <a class="btn-hero-ghost" href="/Hospital/Portal">
+          🏥 Hospital Login
+        </a>
+        <a class="btn-hero-ghost" href="/Admin/Dashboard">
+          🖥️ Admin Console
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">
+        <div class="footer-mark">
+          <svg viewBox="0 0 26 26" fill="none"><path d="M13 3C13 3 5 11 5 16.5C5 20.6421 8.68629 24 13 24C17.3137 24 21 20.6421 21 16.5C21 11 13 3 13 3Z" fill="white"/></svg>
+        </div>
+        <div class="footer-name">Haemo</div>
+      </div>
+      <p class="footer-tagline">Egypt's national blood bank management platform — connecting donors, hospitals, and health authorities to save lives.</p>
+      <div class="footer-socials">
+        <a class="social-btn" href="#">𝕏</a>
+        <a class="social-btn" href="#">in</a>
+        <a class="social-btn" href="#">📘</a>
+        <a class="social-btn" href="#">📧</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">Portals</div>
+      <div class="footer-links">
+        <a href="/Donor/Portal">Donor Portal</a>
+        <a href="/Hospital/Portal">Hospital Portal</a>
+        <a href="/Admin/Dashboard">Admin Dashboard</a>
+        <a href="/Donor/DonationCenter">Center Staff</a>
+        <a href="/Ministry/Portal">Ministry of Health</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">Services</div>
+      <div class="footer-links">
+        <a href="#">Book Appointment</a>
+        <a href="#">Blood Inventory</a>
+        <a href="#">Emergency Requests</a>
+        <a href="#">AI Predictions</a>
+        <a href="#">National Reports</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">Legal & Support</div>
+      <div class="footer-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Data Security</a>
+        <a href="#">Contact Us</a>
+        <a href="#">Help Center</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2025 BloodBank · National Blood Bank Management System · Ministry of Health, Egypt</div>
+    <div class="footer-badges">
+      <span class="footer-badge">🔒 ISO 27001</span>
+      <span class="footer-badge">🏥 MoH Certified</span>
+      <span class="footer-badge">⚕️ HIPAA Compliant</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Sticky nav on scroll
+const nav = document.getElementById('mainNav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 40);
+});
+
+// Animate numbers on scroll
+const nums = document.querySelectorAll('.impact-num');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.animation = 'fadeUp 0.6s ease both';
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1 });
+nums.forEach(n => observer.observe(n));
+
+// How step hover highlight
+document.querySelectorAll('.how-step').forEach((step, i) => {
+  step.style.animationDelay = (i * 0.12) + 's';
+});
+
+// Smooth reveal on scroll
+const cards = document.querySelectorAll('.svc-card, .about-card, .impact-card, .role-card');
+const revealObs = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }, 60 * (Array.from(cards).indexOf(entry.target) % 6));
+      revealObs.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.08 });
+cards.forEach(c => {
+  c.style.opacity = '0';
+  c.style.transform = 'translateY(20px)';
+  c.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+  revealObs.observe(c);
+});
+</script>
+</body>
+</html>
