@@ -1,0 +1,123 @@
+@model IEnumerable<BloodBank.Models.Donor>
+@{
+    ViewData["Title"] = "Donor Requests";
+    Layout = "_Layout";
+    var reviewedDonors = ViewBag.ReviewedDonors as IEnumerable<BloodBank.Models.Donor>;
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fa-solid fa-users-gear text-primary-brand"></i> Donor Registration Approvals</h2>
+    </div>
+
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-4" id="requestsTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active fw-bold" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending" type="button" role="tab">
+                Pending Requests <span class="badge bg-danger ms-2">@ViewBag.PendingCount</span>
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-bold" id="reviewed-tab" data-bs-toggle="tab" data-bs-target="#reviewed" type="button" role="tab">
+                Reviewed History
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <!-- PENDING TAB -->
+        <div class="tab-pane fade show active" id="pending" role="tabpanel">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Submission Date</th>
+                                    <th>Name</th>
+                                    <th>Age</th>
+                                    <th>Blood Type</th>
+                                    <th>Phone Number</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (!Model.Any())
+                                {
+                                    <tr>
+                                        <td colspan="6" class="text-center py-5 text-muted">
+                                            <i class="fa-solid fa-check-circle fa-3x mb-3 text-success d-block"></i>
+                                            All caught up! No pending donor registrations.
+                                        </td>
+                                    </tr>
+                                }
+                                @foreach (var donor in Model)
+                                {
+                                    var age = DateTime.Today.Year - donor.DateOfBirth.Year;
+                                    <tr>
+                                        <td><span class="text-muted"><i class="fa-regular fa-clock"></i> @donor.RegistrationDate.ToString("MMM dd, yyyy HH:mm")</span></td>
+                                        <td class="fw-bold">@(donor.Account?.FirstName) @(donor.Account?.LastName)</td>
+                                        <td>@age</td>
+                                        <td><span class="badge badge-danger fs-6">@donor.BloodType</span></td>
+                                        <td>@donor.PhoneNumber</td>
+                                        <td>
+                                            <a href="/Admin/DonorReview/@donor.Id" class="btn btn-sm btn-primary">
+                                                Review &amp; Decide <i class="fa-solid fa-arrow-right"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- REVIEWED TAB -->
+        <div class="tab-pane fade" id="reviewed" role="tabpanel">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Name</th>
+                                    <th>Blood Type</th>
+                                    <th>Status</th>
+                                    <th>Reason (If rejected)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (reviewedDonors == null || !reviewedDonors.Any())
+                                {
+                                    <tr><td colspan="5" class="text-center py-4 text-muted">No review history found.</td></tr>
+                                }
+                                else
+                                {
+                                    foreach (var donor in reviewedDonors)
+                                    {
+                                        <tr>
+                                            <td>@donor.RegistrationDate.ToString("MMM dd, yyyy")</td>
+                                            <td class="fw-bold">@(donor.Account?.FirstName) @(donor.Account?.LastName)</td>
+                                            <td><span class="badge badge-danger">@donor.BloodType</span></td>
+                                            <td>
+                                                @if (donor.Status == "Accepted") {
+                                                    <span class="badge bg-success"><i class="fa-solid fa-check"></i> Accepted</span>
+                                                } else {
+                                                    <span class="badge bg-danger"><i class="fa-solid fa-xmark"></i> Rejected</span>
+                                                }
+                                            </td>
+                                            <td class="text-muted small">@(donor.RejectionReason ?? "—")</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

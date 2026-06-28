@@ -3,17 +3,21 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - BloodBank</title>
+    <title>@ViewData["Title"] - BloodBank Dashboard</title>
     <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link id="bootstrap-css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/BloodBank.styles.css" asp-append-version="true" />
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">BloodBank</a>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-4">
+            <div class="container">
+                <a class="navbar-brand d-flex align-items-center gap-2" asp-area="" asp-controller="Home" asp-action="Index">
+                    <i class="fa-solid fa-droplet text-primary-brand"></i>
+                    <span data-i18n="BloodBank">BloodBank</span>
+                </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -21,7 +25,7 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" data-i18n="Home" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         
                         @{
@@ -31,71 +35,83 @@
                         @if (role == "admin")
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Dashboard">Admin Dashboard</a>
+                                <a class="nav-link" data-i18n="Admin Dashboard" asp-area="" asp-controller="Admin" asp-action="Dashboard">Admin Dashboard</a>
                             </li>
                         }
                         else if (role == "donor")
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Donor" asp-action="Portal">Donor Portal</a>
+                                <a class="nav-link" data-i18n="Donor Portal" asp-area="" asp-controller="Donor" asp-action="Portal">Donor Portal</a>
                             </li>
                         }
                         else if (role == "hospital")
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Hospital" asp-action="Portal">Hospital Portal</a>
+                                <a class="nav-link" data-i18n="Hospital Portal" asp-area="" asp-controller="Hospital" asp-action="Portal">Hospital Portal</a>
                             </li>
                         }
                         else if (role == "ministry")
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Ministry" asp-action="Portal">Ministry Portal</a>
+                                <a class="nav-link" data-i18n="Ministry Portal" asp-area="" asp-controller="Ministry" asp-action="Portal">Ministry Portal</a>
                             </li>
                         }
                         else if (role == "staff")
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="DonationCenter" asp-action="Dashboard">Center Dashboard</a>
+                                <a class="nav-link" data-i18n="Center Dashboard" asp-area="" asp-controller="DonationCenter" asp-action="Dashboard">Center Dashboard</a>
                             </li>
                         }
                     </ul>
 
-                    <ul class="navbar-nav">
+                    <ul class="navbar-nav align-items-center">
                         @if (!string.IsNullOrEmpty(role))
                         {
-                            <li class="nav-item">
-                                <span class="nav-link text-muted">Role: @role</span>
+                            <li class="nav-item me-3">
+                                <span class="badge badge-primary">Role: @role.ToUpper()</span>
                             </li>
                             <li class="nav-item">
                                 <form method="post" asp-controller="Account" asp-action="Logout" class="form-inline d-inline">
-                                    <button type="submit" class="nav-link text-danger border-0 bg-transparent" style="cursor:pointer">Logout</button>
+                                    <button type="submit" class="btn btn-outline-primary btn-sm" data-i18n="Logout">
+                                        <i class="fa-solid fa-arrow-right-from-bracket me-1"></i> Logout
+                                    </button>
                                 </form>
                             </li>
                         }
                         else
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-primary" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
+                                <a class="btn btn-primary btn-sm" data-i18n="Login" asp-area="" asp-controller="Account" asp-action="Login">
+                                    <i class="fa-solid fa-user me-1"></i> Login
+                                </a>
                             </li>
                         }
+                        
+                        <!-- Language Switcher -->
+                        <li class="nav-item dropdown ms-3 border-start ps-3">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center gap-1" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-solid fa-globe"></i> <span data-i18n="Language">Lang</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                                <li><button class="dropdown-item lang-btn" data-lang="en" onclick="setLanguage('en')">🇬🇧 English</button></li>
+                                <li><button class="dropdown-item lang-btn" data-lang="ar" onclick="setLanguage('ar')">🇪🇬 العربية</button></li>
+                            </ul>
+                        </li>
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
+    
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - BloodBank - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="~/js/lang.js" asp-append-version="true"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

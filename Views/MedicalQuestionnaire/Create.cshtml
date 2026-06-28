@@ -1,104 +1,114 @@
 @model BloodBank.Models.MedicalQuestionnaire
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Medical Questionnaire";
 }
 
-<h1>Create</h1>
+<div class="page-header mt-4">
+    <div>
+        <h2 class="page-title d-flex align-items-center gap-2">
+            <i class="fa-solid fa-clipboard-list text-primary-brand"></i> New Medical Questionnaire
+        </h2>
+        <p class="text-muted mb-0">Donor eligibility screening form</p>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-primary">
+        <i class="fa-solid fa-arrow-left me-2"></i>Back to List
+    </a>
+</div>
 
-<h4>MedicalQuestionnaire</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
+<div class="row justify-content-center">
+    <div class="col-lg-8">
         <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="DonorId" class="control-label"></label>
-                <select asp-for="DonorId" class ="form-control" asp-items="ViewBag.DonorId"></select>
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-3"></div>
+
+            <!-- Basic Info -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <span><i class="fa-solid fa-user text-primary-brand me-2"></i>Donor Information</span>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label asp-for="DonorId" class="form-label"></label>
+                            <select asp-for="DonorId" class="form-control form-select" asp-items="ViewBag.DonorId">
+                                <option value="">— Select Donor —</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="AgeRange" class="form-label"></label>
+                            <select asp-for="AgeRange" class="form-control form-select">
+                                <option value="">— Select —</option>
+                                <option value="18-25">18–25</option>
+                                <option value="26-35">26–35</option>
+                                <option value="36-45">36–45</option>
+                                <option value="46-60">46–60</option>
+                                <option value="60+">60+</option>
+                            </select>
+                            <span asp-validation-for="AgeRange" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="WeightRange" class="form-label"></label>
+                            <select asp-for="WeightRange" class="form-control form-select">
+                                <option value="">— Select —</option>
+                                <option value="50-60kg">50–60 kg</option>
+                                <option value="61-75kg">61–75 kg</option>
+                                <option value="76-90kg">76–90 kg</option>
+                                <option value="90+kg">90+ kg</option>
+                            </select>
+                            <span asp-validation-for="WeightRange" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="AgeRange" class="control-label"></label>
-                <input asp-for="AgeRange" class="form-control" />
-                <span asp-validation-for="AgeRange" class="text-danger"></span>
+
+            <!-- Eligibility Questions -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <span><i class="fa-solid fa-heart-pulse text-primary-brand me-2"></i>Health Screening Questions</span>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3" style="font-size:0.875rem;">Answer all questions honestly. All marked conditions may affect donation eligibility.</p>
+
+                    @{
+                        var questions = new[]
+                        {
+                            new { Field = "HadFullMealInLast4Hours", Label = "Had a full meal in the last 4 hours?", Icon = "fa-utensils", Positive = true },
+                            new { Field = "HasUncontrolledBloodPressure", Label = "Has uncontrolled blood pressure?", Icon = "fa-heart-pulse", Positive = false },
+                            new { Field = "TakesBloodThinners", Label = "Currently takes blood thinners?", Icon = "fa-pills", Positive = false },
+                            new { Field = "HasActiveInfectiousDisease", Label = "Has an active infectious disease?", Icon = "fa-virus", Positive = false },
+                            new { Field = "HasChronicHeartOrLungCondition", Label = "Has a chronic heart or lung condition?", Icon = "fa-lungs", Positive = false },
+                            new { Field = "HadSurgeryOrMajorIllnessLast6Months", Label = "Had surgery or major illness in the last 6 months?", Icon = "fa-scalpel", Positive = false },
+                            new { Field = "IsPregnantOrRecentlyPregnant", Label = "Is pregnant or recently pregnant?", Icon = "fa-baby", Positive = false },
+                            new { Field = "DonatedWholeBloodLast90Days", Label = "Donated whole blood in the last 90 days?", Icon = "fa-droplet", Positive = false },
+                            new { Field = "DonatedPlateletsLast14Days", Label = "Donated platelets in the last 14 days?", Icon = "fa-droplet-slash", Positive = false },
+                            new { Field = "HadBloodTransfusionLast12Months", Label = "Had a blood transfusion in the last 12 months?", Icon = "fa-syringe", Positive = false },
+                            new { Field = "TraveledToMalariaRiskAreaLast12Months", Label = "Traveled to a malaria risk area in the last 12 months?", Icon = "fa-plane", Positive = false },
+                            new { Field = "HadTattooOrPiercingLast6Months", Label = "Had a tattoo or piercing in the last 6 months?", Icon = "fa-needle", Positive = false },
+                            new { Field = "HadCovidOrVaccineLast28Days", Label = "Had COVID-19 or a vaccine in the last 28 days?", Icon = "fa-shield-virus", Positive = false },
+                        };
+                    }
+
+                    <div class="row g-2">
+                        @foreach (var q in questions)
+                        {
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center gap-3 p-3 rounded" style="background:var(--color-bg);border:1px solid var(--border);">
+                                    <i class="fa-solid @q.Icon text-muted" style="width:16px;"></i>
+                                    <div class="flex-grow-1" style="font-size:0.875rem;">@q.Label</div>
+                                    <div class="form-check form-switch mb-0">
+                                        <input class="form-check-input" type="checkbox" asp-for="@(new BloodBank.Models.MedicalQuestionnaire())" name="@q.Field" id="@q.Field" />
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="WeightRange" class="control-label"></label>
-                <input asp-for="WeightRange" class="form-control" />
-                <span asp-validation-for="WeightRange" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="HadFullMealInLast4Hours" /> @Html.DisplayNameFor(model => model.HadFullMealInLast4Hours)
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="HasUncontrolledBloodPressure" /> @Html.DisplayNameFor(model => model.HasUncontrolledBloodPressure)
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="TakesBloodThinners" /> @Html.DisplayNameFor(model => model.TakesBloodThinners)
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="HasActiveInfectiousDisease" /> @Html.DisplayNameFor(model => model.HasActiveInfectiousDisease)
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="HasChronicHeartOrLungCondition" /> @Html.DisplayNameFor(model => model.HasChronicHeartOrLungCondition)
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="HadSurgeryOrMajorIllnessLast6Months" /> @Html.DisplayNameFor(model => model.HadSurgeryOrMajorIllnessLast6Months)
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsPregnantOrRecentlyPregnant" /> @Html.DisplayNameFor(model => model.IsPregnantOrRecentlyPregnant)
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="DonatedWholeBloodLast90Days" /> @Html.DisplayNameFor(model => model.DonatedWholeBloodLast90Days)
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="DonatedPlateletsLast14Days" /> @Html.DisplayNameFor(model => model.DonatedPlateletsLast14Days)
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="HadBloodTransfusionLast12Months" /> @Html.DisplayNameFor(model => model.HadBloodTransfusionLast12Months)
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="TraveledToMalariaRiskAreaLast12Months" /> @Html.DisplayNameFor(model => model.TraveledToMalariaRiskAreaLast12Months)
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="HadTattooOrPiercingLast6Months" /> @Html.DisplayNameFor(model => model.HadTattooOrPiercingLast6Months)
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="HadCovidOrVaccineLast28Days" /> @Html.DisplayNameFor(model => model.HadCovidOrVaccineLast28Days)
-                </label>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+
+            <div class="d-flex gap-2">
+                <input type="submit" value="Submit Questionnaire" class="btn btn-primary flex-grow-1" />
+                <a asp-action="Index" class="btn btn-outline-primary">Cancel</a>
             </div>
         </form>
     </div>
 </div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-

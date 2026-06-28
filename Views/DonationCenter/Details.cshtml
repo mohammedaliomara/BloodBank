@@ -1,42 +1,53 @@
 @model BloodBank.Models.BloodCenter
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Center Details";
 }
 
-<h1>Details</h1>
-
-<div>
-    <h4>BloodCenter</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Address)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Address)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Governorate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Governorate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PhoneNumber)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PhoneNumber)
-        </dd>
-    </dl>
+<div class="page-header mt-4">
+    <div>
+        <h2 class="page-title d-flex align-items-center gap-2">
+            <i class="fa-solid fa-house-medical text-primary-brand"></i> Center Details
+        </h2>
+        <p class="text-muted mb-0">@Model?.Name</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-outline-primary">
+            <i class="fa-solid fa-pen-to-square me-2"></i>Edit
+        </a>
+        <a asp-action="Index" class="btn btn-outline-primary">
+            <i class="fa-solid fa-arrow-left me-2"></i>Back to List
+        </a>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <span><i class="fa-solid fa-circle-info text-primary-brand me-2"></i>Center Information</span>
+            </div>
+            <div class="card-body">
+                <dl class="row g-0">
+                    <dt class="col-sm-4 text-muted fw-semibold py-2 border-bottom" style="font-size:0.875rem;">Center Name</dt>
+                    <dd class="col-sm-8 py-2 border-bottom fw-bold">@Html.DisplayFor(m => m.Name)</dd>
+
+                    <dt class="col-sm-4 text-muted fw-semibold py-2 border-bottom" style="font-size:0.875rem;">Address</dt>
+                    <dd class="col-sm-8 py-2 border-bottom">@Html.DisplayFor(m => m.Address)</dd>
+
+                    <dt class="col-sm-4 text-muted fw-semibold py-2 border-bottom" style="font-size:0.875rem;">Governorate</dt>
+                    <dd class="col-sm-8 py-2 border-bottom">
+                        <span class="badge badge-info">@Html.DisplayFor(m => m.Governorate)</span>
+                    </dd>
+
+                    <dt class="col-sm-4 text-muted fw-semibold py-2" style="font-size:0.875rem;">Phone</dt>
+                    <dd class="col-sm-8 py-2">
+                        <a href="tel:@Model?.PhoneNumber" class="text-decoration-none">
+                            <i class="fa-solid fa-phone me-1 text-muted"></i>@Html.DisplayFor(m => m.PhoneNumber)
+                        </a>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
 </div>

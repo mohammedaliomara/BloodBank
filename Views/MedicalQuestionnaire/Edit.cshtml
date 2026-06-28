@@ -1,106 +1,97 @@
 @model BloodBank.Models.MedicalQuestionnaire
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Questionnaire";
 }
 
-<h1>Edit</h1>
+<div class="page-header mt-4">
+    <div>
+        <h2 class="page-title d-flex align-items-center gap-2">
+            <i class="fa-solid fa-pen-to-square text-primary-brand"></i> Edit Questionnaire
+        </h2>
+        <p class="text-muted mb-0">Update questionnaire #@Model?.Id</p>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-primary">
+        <i class="fa-solid fa-arrow-left me-2"></i>Back to List
+    </a>
+</div>
 
-<h4>MedicalQuestionnaire</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
+<div class="row justify-content-center">
+    <div class="col-lg-8">
         <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-3"></div>
             <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="DonorId" class="control-label"></label>
-                <select asp-for="DonorId" class="form-control" asp-items="ViewBag.DonorId"></select>
-                <span asp-validation-for="DonorId" class="text-danger"></span>
+
+            <!-- Basic Info -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <span><i class="fa-solid fa-user text-primary-brand me-2"></i>Donor Information</span>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label asp-for="DonorId" class="form-label"></label>
+                            <select asp-for="DonorId" class="form-control form-select" asp-items="ViewBag.DonorId">
+                                <option value="">— Select Donor —</option>
+                            </select>
+                            <span asp-validation-for="DonorId" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="AgeRange" class="form-label"></label>
+                            <select asp-for="AgeRange" class="form-control form-select">
+                                <option value="">— Select —</option>
+                                <option value="18-25">18–25</option>
+                                <option value="26-35">26–35</option>
+                                <option value="36-45">36–45</option>
+                                <option value="46-60">46–60</option>
+                                <option value="60+">60+</option>
+                            </select>
+                            <span asp-validation-for="AgeRange" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="WeightRange" class="form-label"></label>
+                            <select asp-for="WeightRange" class="form-control form-select">
+                                <option value="">— Select —</option>
+                                <option value="50-60kg">50–60 kg</option>
+                                <option value="61-75kg">61–75 kg</option>
+                                <option value="76-90kg">76–90 kg</option>
+                                <option value="90+kg">90+ kg</option>
+                            </select>
+                            <span asp-validation-for="WeightRange" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="AgeRange" class="control-label"></label>
-                <input asp-for="AgeRange" class="form-control" />
-                <span asp-validation-for="AgeRange" class="text-danger"></span>
+
+            <!-- Health Questions -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <span><i class="fa-solid fa-heart-pulse text-primary-brand me-2"></i>Health Screening Questions</span>
+                </div>
+                <div class="card-body">
+                    <div class="row g-2">
+
+                        <div class="col-md-6"><div class="d-flex align-items-center gap-3 p-3 rounded" style="background:var(--color-bg);border:1px solid var(--border);"><i class="fa-solid fa-utensils text-muted" style="width:16px;font-size:0.875rem;"></i><div class="flex-grow-1" style="font-size:0.875rem;">Had a full meal in the last 4 hours?</div><div class="form-check form-switch mb-0"><input class="form-check-input" asp-for="HadFullMealInLast4Hours" /></div></div></div>
+                        <div class="col-md-6"><div class="d-flex align-items-center gap-3 p-3 rounded" style="background:var(--color-bg);border:1px solid var(--border);"><i class="fa-solid fa-heart-pulse text-muted" style="width:16px;font-size:0.875rem;"></i><div class="flex-grow-1" style="font-size:0.875rem;">Has uncontrolled blood pressure?</div><div class="form-check form-switch mb-0"><input class="form-check-input" asp-for="HasUncontrolledBloodPressure" /></div></div></div>
+                        <div class="col-md-6"><div class="d-flex align-items-center gap-3 p-3 rounded" style="background:var(--color-bg);border:1px solid var(--border);"><i class="fa-solid fa-pills text-muted" style="width:16px;font-size:0.875rem;"></i><div class="flex-grow-1" style="font-size:0.875rem;">Currently takes blood thinners?</div><div class="form-check form-switch mb-0"><input class="form-check-input" asp-for="TakesBloodThinners" /></div></div></div>
+                        <div class="col-md-6"><div class="d-flex align-items-center gap-3 p-3 rounded" style="background:var(--color-bg);border:1px solid var(--border);"><i class="fa-solid fa-virus text-muted" style="width:16px;font-size:0.875rem;"></i><div class="flex-grow-1" style="font-size:0.875rem;">Has an active infectious disease?</div><div class="form-check form-switch mb-0"><input class="form-check-input" asp-for="HasActiveInfectiousDisease" /></div></div></div>
+                        <div class="col-md-6"><div class="d-flex align-items-center gap-3 p-3 rounded" style="background:var(--color-bg);border:1px solid var(--border);"><i class="fa-solid fa-lungs text-muted" style="width:16px;font-size:0.875rem;"></i><div class="flex-grow-1" style="font-size:0.875rem;">Has a chronic heart or lung condition?</div><div class="form-check form-switch mb-0"><input class="form-check-input" asp-for="HasChronicHeartOrLungCondition" /></div></div></div>
+                        <div class="col-md-6"><div class="d-flex align-items-center gap-3 p-3 rounded" style="background:var(--color-bg);border:1px solid var(--border);"><i class="fa-solid fa-scalpel text-muted" style="width:16px;font-size:0.875rem;"></i><div class="flex-grow-1" style="font-size:0.875rem;">Had surgery or major illness last 6 months?</div><div class="form-check form-switch mb-0"><input class="form-check-input" asp-for="HadSurgeryOrMajorIllnessLast6Months" /></div></div></div>
+                        <div class="col-md-6"><div class="d-flex align-items-center gap-3 p-3 rounded" style="background:var(--color-bg);border:1px solid var(--border);"><i class="fa-solid fa-baby text-muted" style="width:16px;font-size:0.875rem;"></i><div class="flex-grow-1" style="font-size:0.875rem;">Is pregnant or recently pregnant?</div><div class="form-check form-switch mb-0"><input class="form-check-input" asp-for="IsPregnantOrRecentlyPregnant" /></div></div></div>
+                        <div class="col-md-6"><div class="d-flex align-items-center gap-3 p-3 rounded" style="background:var(--color-bg);border:1px solid var(--border);"><i class="fa-solid fa-droplet text-muted" style="width:16px;font-size:0.875rem;"></i><div class="flex-grow-1" style="font-size:0.875rem;">Donated whole blood last 90 days?</div><div class="form-check form-switch mb-0"><input class="form-check-input" asp-for="DonatedWholeBloodLast90Days" /></div></div></div>
+                        <div class="col-md-6"><div class="d-flex align-items-center gap-3 p-3 rounded" style="background:var(--color-bg);border:1px solid var(--border);"><i class="fa-solid fa-droplet-slash text-muted" style="width:16px;font-size:0.875rem;"></i><div class="flex-grow-1" style="font-size:0.875rem;">Donated platelets last 14 days?</div><div class="form-check form-switch mb-0"><input class="form-check-input" asp-for="DonatedPlateletsLast14Days" /></div></div></div>
+                        <div class="col-md-6"><div class="d-flex align-items-center gap-3 p-3 rounded" style="background:var(--color-bg);border:1px solid var(--border);"><i class="fa-solid fa-syringe text-muted" style="width:16px;font-size:0.875rem;"></i><div class="flex-grow-1" style="font-size:0.875rem;">Had a blood transfusion last 12 months?</div><div class="form-check form-switch mb-0"><input class="form-check-input" asp-for="HadBloodTransfusionLast12Months" /></div></div></div>
+                        <div class="col-md-6"><div class="d-flex align-items-center gap-3 p-3 rounded" style="background:var(--color-bg);border:1px solid var(--border);"><i class="fa-solid fa-plane text-muted" style="width:16px;font-size:0.875rem;"></i><div class="flex-grow-1" style="font-size:0.875rem;">Traveled to a malaria risk area last 12 months?</div><div class="form-check form-switch mb-0"><input class="form-check-input" asp-for="TraveledToMalariaRiskAreaLast12Months" /></div></div></div>
+                        <div class="col-md-6"><div class="d-flex align-items-center gap-3 p-3 rounded" style="background:var(--color-bg);border:1px solid var(--border);"><i class="fa-solid fa-needle text-muted" style="width:16px;font-size:0.875rem;"></i><div class="flex-grow-1" style="font-size:0.875rem;">Had a tattoo or piercing last 6 months?</div><div class="form-check form-switch mb-0"><input class="form-check-input" asp-for="HadTattooOrPiercingLast6Months" /></div></div></div>
+                        <div class="col-md-6"><div class="d-flex align-items-center gap-3 p-3 rounded" style="background:var(--color-bg);border:1px solid var(--border);"><i class="fa-solid fa-shield-virus text-muted" style="width:16px;font-size:0.875rem;"></i><div class="flex-grow-1" style="font-size:0.875rem;">Had COVID-19 or a vaccine last 28 days?</div><div class="form-check form-switch mb-0"><input class="form-check-input" asp-for="HadCovidOrVaccineLast28Days" /></div></div></div>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="WeightRange" class="control-label"></label>
-                <input asp-for="WeightRange" class="form-control" />
-                <span asp-validation-for="WeightRange" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="HadFullMealInLast4Hours" /> @Html.DisplayNameFor(model => model.HadFullMealInLast4Hours)
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="HasUncontrolledBloodPressure" /> @Html.DisplayNameFor(model => model.HasUncontrolledBloodPressure)
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="TakesBloodThinners" /> @Html.DisplayNameFor(model => model.TakesBloodThinners)
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="HasActiveInfectiousDisease" /> @Html.DisplayNameFor(model => model.HasActiveInfectiousDisease)
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="HasChronicHeartOrLungCondition" /> @Html.DisplayNameFor(model => model.HasChronicHeartOrLungCondition)
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="HadSurgeryOrMajorIllnessLast6Months" /> @Html.DisplayNameFor(model => model.HadSurgeryOrMajorIllnessLast6Months)
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsPregnantOrRecentlyPregnant" /> @Html.DisplayNameFor(model => model.IsPregnantOrRecentlyPregnant)
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="DonatedWholeBloodLast90Days" /> @Html.DisplayNameFor(model => model.DonatedWholeBloodLast90Days)
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="DonatedPlateletsLast14Days" /> @Html.DisplayNameFor(model => model.DonatedPlateletsLast14Days)
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="HadBloodTransfusionLast12Months" /> @Html.DisplayNameFor(model => model.HadBloodTransfusionLast12Months)
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="TraveledToMalariaRiskAreaLast12Months" /> @Html.DisplayNameFor(model => model.TraveledToMalariaRiskAreaLast12Months)
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="HadTattooOrPiercingLast6Months" /> @Html.DisplayNameFor(model => model.HadTattooOrPiercingLast6Months)
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="HadCovidOrVaccineLast28Days" /> @Html.DisplayNameFor(model => model.HadCovidOrVaccineLast28Days)
-                </label>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+
+            <div class="d-flex gap-2">
+                <input type="submit" value="Save Changes" class="btn btn-primary flex-grow-1" />
+                <a asp-action="Index" class="btn btn-outline-primary">Cancel</a>
             </div>
         </form>
     </div>
 </div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-

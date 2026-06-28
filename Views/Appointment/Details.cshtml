@@ -1,60 +1,63 @@
 @model BloodBank.Models.Appointment
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Appointment Details";
 }
 
-<h1>Details</h1>
-
-<div>
-    <h4>Appointment</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DonorId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DonorId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AppointmentDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AppointmentDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AppointmentTime)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AppointmentTime)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Notes)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Notes)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedAt)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Hospital)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Hospital.Address)
-        </dd>
-    </dl>
+<div class="page-header mt-4">
+    <div>
+        <h2 class="page-title d-flex align-items-center gap-2">
+            <i class="fa-solid fa-calendar-days text-primary-brand"></i> Appointment Details
+        </h2>
+        <p class="text-muted mb-0">Appointment #@Model?.AppointmentId</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="Edit" asp-route-id="@Model?.AppointmentId" class="btn btn-outline-primary">
+            <i class="fa-solid fa-pen-to-square me-2"></i>Edit
+        </a>
+        <a asp-action="Index" class="btn btn-outline-primary">
+            <i class="fa-solid fa-arrow-left me-2"></i>Back to List
+        </a>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.AppointmentId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="card-header">
+                <span><i class="fa-solid fa-circle-info text-primary-brand me-2"></i>Appointment Information</span>
+                @{
+                    var statusClass = Model?.Status == "Completed" ? "badge-success"
+                        : Model?.Status == "Cancelled" ? "badge-danger"
+                        : Model?.Status == "Confirmed" ? "badge-info"
+                        : "badge-warning";
+                }
+                <span class="badge @statusClass">@Model?.Status</span>
+            </div>
+            <div class="card-body">
+                <dl class="row g-0">
+                    <dt class="col-sm-4 text-muted fw-semibold py-2 border-bottom" style="font-size:0.875rem;">Donor ID</dt>
+                    <dd class="col-sm-8 py-2 border-bottom fw-bold">@Html.DisplayFor(m => m.DonorId)</dd>
+
+                    <dt class="col-sm-4 text-muted fw-semibold py-2 border-bottom" style="font-size:0.875rem;">Appointment Date</dt>
+                    <dd class="col-sm-8 py-2 border-bottom">@Html.DisplayFor(m => m.AppointmentDate)</dd>
+
+                    <dt class="col-sm-4 text-muted fw-semibold py-2 border-bottom" style="font-size:0.875rem;">Appointment Time</dt>
+                    <dd class="col-sm-8 py-2 border-bottom">@Html.DisplayFor(m => m.AppointmentTime)</dd>
+
+                    <dt class="col-sm-4 text-muted fw-semibold py-2 border-bottom" style="font-size:0.875rem;">Status</dt>
+                    <dd class="col-sm-8 py-2 border-bottom"><span class="badge @statusClass">@Html.DisplayFor(m => m.Status)</span></dd>
+
+                    <dt class="col-sm-4 text-muted fw-semibold py-2 border-bottom" style="font-size:0.875rem;">Notes</dt>
+                    <dd class="col-sm-8 py-2 border-bottom text-muted">@(string.IsNullOrEmpty(Model?.Notes) ? "—" : Model.Notes)</dd>
+
+                    <dt class="col-sm-4 text-muted fw-semibold py-2 border-bottom" style="font-size:0.875rem;">Created At</dt>
+                    <dd class="col-sm-8 py-2 border-bottom">@Html.DisplayFor(m => m.CreatedAt)</dd>
+
+                    <dt class="col-sm-4 text-muted fw-semibold py-2" style="font-size:0.875rem;">Hospital</dt>
+                    <dd class="col-sm-8 py-2">@Html.DisplayFor(m => m.Hospital.Address)</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
 </div>

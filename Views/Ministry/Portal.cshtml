@@ -1,403 +1,484 @@
 @{
-    Layout = null;
+    ViewData["Title"] = "Ministry Portal";
 }
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BloodBank — وزارة الصحة</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-:root{
-  --navy:#001A4D;--navy2:#002B80;--navy3:#003AB3;
-  --red:#C8102E;--red-soft:#FFF0F2;--red-mid:#FFD6DA;
-  --ink:#1A1A2E;--ink2:#3D3D5C;--ink3:#7B7B9D;
-  --bg:#F5F6FC;--bg2:#EDEEF5;--white:#fff;
-  --green:#00875A;--green-soft:#E3FCF4;--green-mid:#B3ECDA;
-  --orange:#E07B00;--orange-soft:#FFF4E0;
-  --blue:#0047B3;--blue-soft:#E8F0FF;
-  --purple:#6B46C1;--purple-soft:#F3EEFF;
-  --border:#E2E4EF;--shadow:0 2px 12px rgba(26,26,46,0.08);--r:14px;
-}
-*{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans Arabic',sans-serif;min-height:100vh;}
-::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
 
-.topbar{background:var(--white);border-bottom:1.5px solid var(--border);height:60px;display:flex;align-items:center;padding:0 22px;gap:11px;position:sticky;top:0;z-index:50;}
-.tb-mark{width:34px;height:34px;background:var(--navy);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;}
-.tb-name{font-size:14px;font-weight:800;}
-.tb-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;background:#E8F0FF;color:var(--navy);}
-.tb-spacer{flex:1;}
-.logout-btn{background:none;border:1.5px solid var(--border);border-radius:8px;padding:6px 13px;font-size:12px;font-weight:600;color:var(--ink3);cursor:pointer;font-family:'IBM Plex Sans Arabic',sans-serif;transition:all 0.18s;}
-.logout-btn:hover{border-color:var(--navy);color:var(--navy);}
-
-/* HERO */
-.hero{background:linear-gradient(135deg,var(--navy),var(--navy2),#001230);padding:26px 22px;color:#fff;position:relative;overflow:hidden;}
-.hero::after{content:'🏛️';font-size:220px;position:absolute;left:-30px;bottom:-60px;opacity:0.04;pointer-events:none;}
-.hero-top{display:flex;align-items:center;gap:16px;margin-bottom:20px;}
-.hero-emb{width:58px;height:58px;background:rgba(255,255,255,0.1);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:26px;border:2px solid rgba(255,255,255,0.12);}
-.hero-title{font-size:19px;font-weight:800;}
-.hero-sub{font-size:12px;opacity:0.5;margin-top:3px;}
-.hero-live{display:inline-flex;align-items:center;gap:5px;background:rgba(0,135,90,0.3);border:1px solid rgba(0,135,90,0.4);color:#6EF0C0;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;margin-top:7px;}
-.ld{width:6px;height:6px;background:#6EF0C0;border-radius:50%;animation:bl 2s infinite;}
-@@keyframes bl{0%,100%{opacity:1;}50%{opacity:0.3;}}
-
-.nat-stats{display:grid;grid-template-columns:repeat(5,1fr);gap:11px;}
-.ns{background:rgba(255,255,255,0.07);border-radius:11px;padding:14px;text-align:center;border:1px solid rgba(255,255,255,0.05);}
-.ns-v{font-size:21px;font-weight:800;}
-.ns-l{font-size:10px;opacity:0.45;margin-top:3px;}
-
-/* PAGE */
-.page{padding:22px;max-width:1060px;}
-
-/* TABS */
-.tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:18px;overflow-x:auto;}
-.tab{padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2.5px solid transparent;color:var(--ink3);margin-bottom:-2px;transition:all 0.18s;white-space:nowrap;}
-.tab.on{border-bottom-color:var(--navy);color:var(--navy);font-weight:700;}
-.tab:hover:not(.on){color:var(--ink);}
-.tp{display:none;}.tp.on{display:block;}
-
-/* CARDS */
-.card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);padding:20px;box-shadow:var(--shadow);margin-bottom:16px;}
-.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;}
-.ct{font-size:14px;font-weight:700;display:flex;align-items:center;gap:7px;}
-.ci{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;}
-.ci.n{background:#E8F0FF;}
-.ci.r{background:var(--red-soft);}
-.ci.g{background:var(--green-soft);}
-.ci.p{background:var(--purple-soft);}
-.ci.o{background:var(--orange-soft);}
-.ca{font-size:12px;color:var(--navy);font-weight:600;cursor:pointer;padding:5px 11px;border-radius:7px;border:1.5px solid #B3CFFF;transition:all 0.18s;}
-.ca:hover{background:var(--blue-soft);}
-
-/* STATS GRID */
-.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px;}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px;margin-bottom:16px;}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:16px;}
-.sbox{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);padding:17px;position:relative;overflow:hidden;}
-.sl{font-size:11px;color:var(--ink3);margin-bottom:8px;}
-.sn{font-size:24px;font-weight:800;letter-spacing:-1px;}
-.st{font-size:11px;margin-top:5px;}.st.up{color:var(--green);}.st.dn{color:var(--red);}
-.sbar{position:absolute;bottom:0;right:0;left:0;height:3px;}
-.sbar.n{background:linear-gradient(to left,var(--navy),transparent);}
-.sbar.g{background:linear-gradient(to left,var(--green),transparent);}
-.sbar.r{background:linear-gradient(to left,var(--red),transparent);}
-.sbar.b{background:linear-gradient(to left,var(--blue),transparent);}
-
-/* CHIP */
-.chip{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;}
-.chip.done{background:var(--green-soft);color:var(--green);}
-.chip.wait{background:var(--orange-soft);color:var(--orange);}
-.chip.urgent{background:var(--red-soft);color:var(--red);}
-.chip.prog{background:var(--blue-soft);color:var(--blue);}
-
-/* TABLE */
-.tbl{width:100%;border-collapse:collapse;}
-.tbl th{font-size:11px;font-weight:700;color:var(--ink3);text-align:right;padding:8px 12px;border-bottom:2px solid var(--border);background:var(--bg);}
-.tbl td{font-size:12px;padding:10px 12px;border-bottom:1px solid var(--border);color:var(--ink2);vertical-align:middle;}
-.tbl tr:hover td{background:var(--bg);}
-.tbl td.bold{font-weight:700;color:var(--ink);}
-
-/* INLINE PROGRESS */
-.ip{display:inline-flex;align-items:center;gap:6px;}
-.ip-track{width:55px;height:5px;background:var(--bg2);border-radius:3px;overflow:hidden;}
-.ip-fill{height:100%;border-radius:3px;}
-
-/* AI BOX */
-.ai-box{display:flex;gap:10px;background:linear-gradient(135deg,var(--purple-soft),#EEF2FF);border:1px solid #D4C5FF;border-radius:12px;padding:13px 15px;margin-bottom:16px;}
-.ai-ico{font-size:16px;flex-shrink:0;margin-top:1px;}
-.ai-lbl{font-size:9px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;}
-.ai-txt{font-size:12px;color:var(--ink2);line-height:1.6;}
-
-/* ALERT */
-.alert{display:flex;align-items:center;gap:11px;padding:13px 15px;border-radius:11px;margin-bottom:9px;}
-.alert.crit{background:var(--red-soft);border:1.5px solid var(--red-mid);border-right:4px solid var(--red);}
-.alert.warn{background:var(--orange-soft);border:1.5px solid #F4C57A;border-right:4px solid var(--orange);}
-.alert-ico{font-size:18px;flex-shrink:0;}
-.alert-title{font-size:13px;font-weight:700;}
-.alert-title.r{color:var(--red);}
-.alert-title.o{color:var(--orange);}
-.alert-sub{font-size:11px;color:var(--ink3);margin-top:2px;}
-
-/* CHART */
-.chart-wrap{display:flex;align-items:flex-end;gap:7px;height:110px;margin-top:12px;}
-.bw{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
-.bc{width:100%;border-radius:5px 5px 0 0;cursor:pointer;transition:filter 0.18s;}
-.bc:hover{filter:brightness(1.1);}
-.bc.n{background:linear-gradient(to top,#000D2E,var(--navy));}
-.bc.g{background:linear-gradient(to top,#005E3F,var(--green));}
-.bm{font-size:10px;color:var(--ink3);}
-
-/* PREDICTION */
-.pred-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;}
-.pred-item{background:rgba(255,255,255,0.08);border-radius:10px;padding:14px;border:1px solid rgba(255,255,255,0.06);}
-.pred-val{font-size:19px;font-weight:800;}
-.pred-lbl{font-size:10px;opacity:0.5;margin-top:3px;}
-.pred-tr{font-size:11px;margin-top:5px;}
-.pred-tr.up{color:#6EF0C0;}
-.pred-tr.dn{color:#FF8080;}
-
-/* BTN */
-.btn{background:var(--navy);color:#fff;border:none;padding:11px 22px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'IBM Plex Sans Arabic',sans-serif;transition:all 0.2s;}
-.btn:hover{background:#00133A;transform:translateY(-1px);}
-.btn:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
-
-/* REPORT ROW */
-.rep-row{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--bg);border-radius:10px;border:1.5px solid var(--border);margin-bottom:8px;}
-.rep-ico{font-size:20px;flex-shrink:0;}
-.rep-title{font-size:13px;font-weight:700;}
-.rep-sub{font-size:11px;color:var(--ink3);margin-top:2px;}
-.dl-btn{margin-right:auto;background:var(--navy);color:#fff;border:none;padding:7px 15px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans Arabic',sans-serif;white-space:nowrap;transition:background 0.18s;}
-.dl-btn:hover{background:#00133A;}
-
-@@media(max-width:900px){
-  .nat-stats{grid-template-columns:repeat(3,1fr);}
-  .g5{grid-template-columns:1fr 1fr 1fr;}
-  .pred-grid{grid-template-columns:1fr 1fr;}
-  .page{padding:14px;}
-}
-</style>
-</head>
-<body>
-
-<div class="topbar">
-  <div class="tb-mark">🏛️</div>
-  <div class="tb-name">وزارة الصحة — منظومة الدم</div>
-  <span class="tb-badge">وزارة الصحة</span>
-  <div class="tb-spacer"></div>
-  <button class="logout-btn" onclick="logout()">خروج ↩</button>
+<div class="page-header mt-4">
+    <h2 class="page-title d-flex align-items-center gap-2">
+        <i class="fa-solid fa-building-columns text-primary-brand"></i> Ministry of Health - Blood Bank System
+    </h2>
+    <span class="badge badge-primary"><i class="fa-solid fa-circle-check"></i> Live Data - Updated Just Now</span>
 </div>
 
-<div class="hero">
-  <div class="hero-top">
-    <div class="hero-emb">🏛️</div>
-    <div>
-      <div class="hero-title">وزارة الصحة — منظومة التبرع بالدم الوطنية</div>
-      <div class="hero-sub">إحصائيات شاملة لجميع محافظات جمهورية مصر العربية</div>
-      <div class="hero-live"><div class="ld"></div>بيانات مباشرة — آخر تحديث: الآن</div>
-    </div>
-  </div>
-  <div class="nat-stats">
-    <div class="ns"><div class="ns-v" id="st-hospitals">...</div><div class="ns-l">مستشفى ومركز مشارك</div></div>
-    <div class="ns"><div class="ns-v" id="st-donors">...</div><div class="ns-l">متبرع مسجل</div></div>
-    <div class="ns"><div class="ns-v" id="st-units">...</div><div class="ns-l">وحدة متاحة</div></div>
-    <div class="ns"><div class="ns-v" id="st-completion">...</div><div class="ns-l">نسبة الإتمام</div></div>
-    <div class="ns"><div class="ns-v" id="st-reqs" style="color:#FF8080">...</div><div class="ns-l">طلبات معلقة</div></div>
-  </div>
-</div>
-
-<div class="page">
-  <div class="tabs">
-    <div class="tab on" onclick="switchTab('overview',this)">📊 نظرة عامة</div>
-    <div class="tab" onclick="switchTab('govs',this)">🗺️ المحافظات</div>
-    <div class="tab" onclick="switchTab('ai',this)">🤖 تنبؤات AI</div>
-    <div class="tab" onclick="switchTab('alerts',this)">🚨 التنبيهات</div>
-    <div class="tab" onclick="switchTab('reports',this)">📈 التقارير</div>
-  </div>
-
-  <!-- OVERVIEW -->
-  <div id="tp-overview" class="tp on">
-    <div class="ai-box">
-      <div class="ai-ico">🤖</div>
-      <div><div class="ai-lbl">تحليل AI الوطني</div>
-      <div class="ai-txt">الأقصر وجنوب سيناء وأسيوط تعاني نقصاً في O- وB-. يُنصح بحملات تبرع موجهة خلال الأسبوعين القادمين. الإسكندرية والمنوفية تمثلان فائضاً يمكن إعادة توزيعه.</div></div>
-    </div>
-
-    <div class="g5">
-      <div class="sbox"><div class="sl">مستشفيات متصلة</div><div class="sn" id="ov-hospitals">—</div><div class="st up">↑ نشطة</div><div class="sbar b"></div></div>
-      <div class="sbox"><div class="sl">المتبرعون المسجلون</div><div class="sn" id="ov-donors">—</div><div class="st up">↑ متبرع</div><div class="sbar g"></div></div>
-      <div class="sbox"><div class="sl">الوحدات المتاحة</div><div class="sn" id="ov-units">—</div><div class="st up">↑ وحدة</div><div class="sbar n"></div></div>
-      <div class="sbox"><div class="sl">طلبات معلقة</div><div class="sn" id="ov-reqs" style="color:var(--red)">—</div><div class="st dn">↓ للمراجعة</div><div class="sbar r"></div></div>
-      <div class="sbox"><div class="sl">مراكز التبرع</div><div class="sn" id="ov-centers">—</div><div class="st up">↑ مركز</div><div class="sbar g"></div></div>
-    </div>
-
-    <div class="g2">
-      <div class="card">
-        <div class="ch"><div class="ct"><div class="ci n">📈</div>التبرعات الشهرية 2026</div><div class="ca">تصدير</div></div>
-        <div class="chart-wrap">
-          <div class="bw"><div class="bc n" style="height:78px"></div><div class="bm">يناير</div></div>
-          <div class="bw"><div class="bc n" style="height:88px"></div><div class="bm">فبراير</div></div>
-          <div class="bw"><div class="bc g" style="height:108px"></div><div class="bm">مارس</div></div>
+<!-- TOP STATS -->
+<div class="row mb-4">
+    <div class="col-md col-sm-6 mb-3">
+        <div class="stat-card">
+            <div class="stat-icon stat-bg-primary"><i class="fa-solid fa-hospital"></i></div>
+            <div class="stat-info">
+                <div class="stat-label">Hospitals</div>
+                <div class="stat-value" id="st-hospitals">...</div>
+            </div>
         </div>
-        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--ink3);margin-top:10px;">
-          <span>الهدف الشهري: <strong style="color:var(--navy)">80,000</strong></span>
-          <span>✅ تجاوزنا بـ <strong style="color:var(--green)">+5.25%</strong></span>
+    </div>
+    <div class="col-md col-sm-6 mb-3">
+        <div class="stat-card">
+            <div class="stat-icon stat-bg-success"><i class="fa-solid fa-users"></i></div>
+            <div class="stat-info">
+                <div class="stat-label">Donors</div>
+                <div class="stat-value" id="st-donors">...</div>
+            </div>
         </div>
-      </div>
-
-      <div class="card">
-        <div class="ch"><div class="ct"><div class="ci r">🩸</div>توزيع الفصائل</div></div>
-        <table class="tbl">
-          <thead><tr><th>الفصيلة</th><th>المخزون المتوفر</th><th>النسبة</th></tr></thead>
-          <tbody id="blood-dist-body">
-            <tr><td colspan="3" style="text-align:center;">جاري تحميل البيانات...</td></tr>
-          </tbody>
-        </table>
-      </div>
     </div>
-  </div>
-
-  <!-- GOVERNORATES -->
-  <div id="tp-govs" class="tp">
-    <div class="card">
-      <div class="ch"><div class="ct"><div class="ci n">🗺️</div>إحصائيات المحافظات</div><div class="ca">تصدير PDF</div></div>
-      <table class="tbl">
-        <thead>
-          <tr><th>المحافظة</th><th>المتبرعون المسجلون</th><th>إجمالي الطلبات</th><th>نسبة الإتمام</th><th>الحالة</th></tr>
-        </thead>
-        <tbody id="govs-stats-body">
-          <tr><td colspan="5" style="text-align:center;">جاري تحميل البيانات...</td></tr>
-        </tbody>
-      </table>
+    <div class="col-md col-sm-6 mb-3">
+        <div class="stat-card">
+            <div class="stat-icon stat-bg-info"><i class="fa-solid fa-droplet"></i></div>
+            <div class="stat-info">
+                <div class="stat-label">Units</div>
+                <div class="stat-value" id="st-units">...</div>
+            </div>
+        </div>
     </div>
-  </div>
-
-  <!-- AI PREDICTIONS -->
-  <div id="tp-ai" class="tp">
-    <div class="ai-box"><div class="ai-ico">🤖</div><div><div class="ai-lbl">نظام AI التنبؤي — دقة 94.7%</div><div class="ai-txt">بناءً على بيانات 3 سنوات + المواسم + الأحداث الوطنية — النظام يتوقع الطلب على الدم ويُصدر توصيات استباقية لمنع أزمات النقص قبل حدوثها.</div></div></div>
-
-    <div style="background:linear-gradient(135deg,var(--navy),var(--navy2));border-radius:var(--r);padding:22px;color:#fff;margin-bottom:16px;">
-      <div style="font-size:14px;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:8px;">🔮 توقعات الأسبوع القادم (15-21 مارس 2026)</div>
-      <div class="pred-grid">
-        <div class="pred-item"><div class="pred-val">O-</div><div class="pred-lbl">الفصيلة الأعلى طلباً</div><div class="pred-tr dn">↑ نقص متوقع بـ 23%</div></div>
-        <div class="pred-item"><div class="pred-val">+12%</div><div class="pred-lbl">زيادة الطلب الكلي</div><div class="pred-tr dn">بسبب حوادث الطريق</div></div>
-        <div class="pred-item"><div class="pred-val">الأقصر</div><div class="pred-lbl">أعلى خطر نقص</div><div class="pred-tr dn">↓ احتياطي 7 أيام فقط</div></div>
-        <div class="pred-item"><div class="pred-val">92,000</div><div class="pred-lbl">تبرعات متوقعة</div><div class="pred-tr up">↑ نمو 9.3%</div></div>
-        <div class="pred-item"><div class="pred-val">5 حملات</div><div class="pred-lbl">موصى بها فوراً</div><div class="pred-tr up">↑ في المناطق الحرجة</div></div>
-        <div class="pred-item"><div class="pred-val">97.1%</div><div class="pred-lbl">دقة النموذج (مارس)</div><div class="pred-tr up">↑ أعلى مستوى</div></div>
-      </div>
+    <div class="col-md col-sm-6 mb-3">
+        <div class="stat-card">
+            <div class="stat-icon stat-bg-purple"><i class="fa-solid fa-check-double"></i></div>
+            <div class="stat-info">
+                <div class="stat-label">Completion Rate</div>
+                <div class="stat-value" id="st-completion">...</div>
+            </div>
+        </div>
     </div>
-
-    <div class="card">
-      <div class="ch"><div class="ct"><div class="ci p">💡</div>توصيات AI الاستباقية</div></div>
-      <div style="display:flex;flex-direction:column;gap:10px;">
-        <div style="background:var(--red-soft);border:1px solid var(--red-mid);border-radius:10px;padding:14px;"><div style="font-size:13px;font-weight:700;color:var(--red);margin-bottom:4px;">🚨 عاجل: حملة تبرع فورية في الأقصر</div><div style="font-size:12px;color:var(--ink2);">AI يوصي بإطلاق حملة SMS فورية لـ 48,000 متبرع لتجنب أزمة خلال 7 أيام.</div></div>
-        <div style="background:var(--orange-soft);border:1px solid #F4C57A;border-radius:10px;padding:14px;"><div style="font-size:13px;font-weight:700;color:var(--orange);margin-bottom:4px;">⚠️ إعادة توزيع: من الإسكندرية للقاهرة</div><div style="font-size:12px;color:var(--ink2);">فائض 200 وحدة O+ في الإسكندرية يمكن نقله للقاهرة التي تعاني نقصاً.</div></div>
-        <div style="background:var(--green-soft);border:1px solid var(--green-mid);border-radius:10px;padding:14px;"><div style="font-size:13px;font-weight:700;color:var(--green);margin-bottom:4px;">✅ استمرار: حملة رمضان الوطنية 2026</div><div style="font-size:12px;color:var(--ink2);">الحملة حققت +34% مقارنة بالعام الماضي. AI يوصي بالتوسع في المحافظات الحرجة.</div></div>
-      </div>
+    <div class="col-md col-sm-6 mb-3">
+        <div class="stat-card">
+            <div class="stat-icon stat-bg-warning"><i class="fa-solid fa-clock-rotate-left"></i></div>
+            <div class="stat-info">
+                <div class="stat-label">Pending Reqs</div>
+                <div class="stat-value text-danger" id="st-reqs">...</div>
+            </div>
+        </div>
     </div>
-  </div>
-
-  <!-- ALERTS -->
-  <div id="tp-alerts" class="tp">
-    <div class="alert crit"><div class="alert-ico">🚨</div><div style="flex:1"><div class="alert-title r">نقص حرج: O- في الأقصر</div><div class="alert-sub">5 وحدات فقط · يكفي أقل من 24 ساعة · تدخل فوري مطلوب</div></div><button class="btn" style="font-size:11px;padding:7px 14px;white-space:nowrap;" onclick="sendAlert(this)">إرسال تنبيه</button></div>
-    <div class="alert crit"><div class="alert-ico">🚨</div><div style="flex:1"><div class="alert-title r">نقص حرج: B- في جنوب سيناء</div><div class="alert-sub">لا يوجد مخزون · طلبان معلقان</div></div><button class="btn" style="font-size:11px;padding:7px 14px;white-space:nowrap;" onclick="sendAlert(this)">إرسال تنبيه</button></div>
-    <div class="alert warn"><div class="alert-ico">⚠️</div><div style="flex:1"><div class="alert-title o">تحذير: O+ في القاهرة</div><div class="alert-sub">مخزون 48 ساعة فقط · الطلب في ارتفاع</div></div><button class="btn" style="font-size:11px;padding:7px 14px;white-space:nowrap;" onclick="sendAlert(this)">إرسال تنبيه</button></div>
-    <div class="alert warn"><div class="alert-ico">⚠️</div><div style="flex:1"><div class="alert-title o">المنيا أقل من الهدف بـ 15%</div><div class="alert-sub">الطلبات تفوق التبرعات · مطلوب تدخل توعوي</div></div><button class="btn" style="font-size:11px;padding:7px 14px;white-space:nowrap;" onclick="sendAlert(this)">إرسال تنبيه</button></div>
-
-    <div style="margin-top:16px;">
-      <button class="btn" onclick="sendAllAlerts(this)">📱 إرسال تنبيهات لجميع المحافظات الحرجة</button>
-    </div>
-  </div>
-
-  <!-- REPORTS -->
-  <div id="tp-reports" class="tp">
-    <div class="g3">
-      <div class="sbox"><div class="sl">معدل النمو السنوي</div><div class="sn" id="rep-growth">...</div><div class="st up">↑ أعلى مستوى تاريخي</div><div class="sbar g"></div></div>
-      <div class="sbox"><div class="sl">تقليل هدر الدم</div><div class="sn" id="rep-waste">...</div><div class="st up">↑ بفضل إدارة الصلاحيات</div><div class="sbar n"></div></div>
-      <div class="sbox"><div class="sl">أرواح أُنقذت (حتى الآن)</div><div class="sn" id="rep-lives">...</div><div class="st up">↑ بمساهمة المتبرعين</div><div class="sbar g"></div></div>
-    </div>
-    <div class="card">
-      <div class="ch"><div class="ct"><div class="ci n">📋</div>التقارير الدورية</div></div>
-      <div class="rep-row"><div class="rep-ico">📊</div><div style="flex:1"><div class="rep-title">التقرير الشهري — <span id="rep-month">جاري التحميل...</span></div><div class="rep-sub" id="rep-month-sub">...</div></div><button class="dl-btn" onclick="downloadPDF(this)">📥 PDF</button></div>
-      <div class="rep-row"><div class="rep-ico">📈</div><div style="flex:1"><div class="rep-title">تقرير المتبرعين والمستشفيات</div><div class="rep-sub" id="rep-donors-sub">...</div></div><button class="dl-btn" onclick="downloadPDF(this)">📥 PDF</button></div>
-      <div class="rep-row"><div class="rep-ico">🤖</div><div style="flex:1"><div class="rep-title">تقرير مخزون الدم</div><div class="rep-sub" id="rep-inv-sub">...</div></div><button class="dl-btn" onclick="downloadPDF(this)">📥 PDF</button></div>
-      <div class="rep-row"><div class="rep-ico">🏥</div><div style="flex:1"><div class="rep-title">تقرير الطلبات المعلقة</div><div class="rep-sub" id="rep-reqs-sub">...</div></div><button class="dl-btn" onclick="downloadPDF(this)">📥 PDF</button></div>
-    </div>
-  </div>
 </div>
 
+<!-- TABS -->
+<ul class="nav nav-tabs" id="ministryTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab">
+            <i class="fa-solid fa-chart-pie me-2"></i> Overview
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="govs-tab" data-bs-toggle="tab" data-bs-target="#govs" type="button" role="tab">
+            <i class="fa-solid fa-map-location-dot me-2"></i> Governorates
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="ai-tab" data-bs-toggle="tab" data-bs-target="#ai" type="button" role="tab">
+            <i class="fa-solid fa-robot me-2"></i> AI Predictions
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="alerts-tab" data-bs-toggle="tab" data-bs-target="#alerts" type="button" role="tab">
+            <i class="fa-solid fa-bell me-2"></i> Alerts
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="reports-tab" data-bs-toggle="tab" data-bs-target="#reports" type="button" role="tab">
+            <i class="fa-solid fa-file-pdf me-2"></i> Reports
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content" id="ministryTabsContent">
+    
+    <!-- OVERVIEW TAB -->
+    <div class="tab-pane fade show active" id="overview" role="tabpanel" tabindex="0">
+        <div class="alert alert-info shadow-sm mb-4">
+            <i class="fa-solid fa-robot fa-2x"></i>
+            <div>
+                <strong class="d-block mb-1">National AI Analysis</strong>
+                Luxor, South Sinai, and Assiut are experiencing shortages in O- and B-. Targeted donation campaigns are recommended for the next two weeks. Alexandria and Menoufia have a surplus that can be redistributed.
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <span><i class="fa-solid fa-chart-line me-2 text-primary-brand"></i> Monthly Donations 2026</span>
+                        <button class="btn btn-outline-primary btn-sm"><i class="fa-solid fa-download"></i> Export</button>
+                    </div>
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center" style="min-height: 250px;">
+                        <div class="d-flex align-items-end justify-content-around w-100 mb-3" style="height: 150px; border-bottom: 2px solid var(--border);">
+                            <div class="d-flex flex-column align-items-center w-25">
+                                <div class="bg-primary-brand rounded-top w-75" style="height: 40%; opacity: 0.7;"></div>
+                                <small class="mt-2 text-muted fw-bold">Jan</small>
+                            </div>
+                            <div class="d-flex flex-column align-items-center w-25">
+                                <div class="bg-primary-brand rounded-top w-75" style="height: 60%; opacity: 0.85;"></div>
+                                <small class="mt-2 text-muted fw-bold">Feb</small>
+                            </div>
+                            <div class="d-flex flex-column align-items-center w-25">
+                                <div class="bg-success rounded-top w-75" style="height: 90%;"></div>
+                                <small class="mt-2 text-muted fw-bold">Mar</small>
+                            </div>
+                        </div>
+                        <div class="w-100 d-flex justify-content-between text-muted small fw-bold">
+                            <span>Monthly Target: <strong class="text-dark">80,000</strong></span>
+                            <span>✅ Exceeded by <strong class="text-success">+5.25%</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <span><i class="fa-solid fa-droplet me-2 text-danger"></i> Blood Distribution</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Stock</th>
+                                        <th>Share</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="blood-dist-body">
+                                    <tr><td colspan="3" class="text-center text-muted">Loading...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GOVERNORATES TAB -->
+    <div class="tab-pane fade" id="govs" role="tabpanel" tabindex="0">
+        <div class="card">
+            <div class="card-header">
+                <span><i class="fa-solid fa-map-location-dot me-2 text-primary-brand"></i> Governorate Statistics</span>
+                <a href="/Ministry/ExportReportExcel?type=governorates" class="btn btn-outline-success btn-sm"><i class="fa-solid fa-file-excel"></i> Export Excel</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Governorate</th>
+                                <th>Registered Donors</th>
+                                <th>Total Requests</th>
+                                <th>Completion %</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="govs-stats-body">
+                            <tr><td colspan="5" class="text-center text-muted">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI TAB -->
+    <div class="tab-pane fade" id="ai" role="tabpanel" tabindex="0">
+        <div class="alert alert-info shadow-sm mb-4">
+            <i class="fa-solid fa-robot fa-2x"></i>
+            <div>
+                <strong class="d-block mb-1">Predictive AI System — 94.7% Accuracy</strong>
+                Based on 3 years of data + seasons + national events — the system predicts blood demand and issues proactive recommendations to prevent shortages before they occur.
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 mb-4">
+                <div class="card bg-primary-brand text-white border-0 shadow-md">
+                    <div class="card-body">
+                        <h5 class="mb-4 fw-bold"><i class="fa-solid fa-crystal-ball me-2"></i> Next Week Predictions (Mar 15-21, 2026)</h5>
+                        <div class="row g-4 text-center">
+                            <div class="col-md-2 col-sm-4">
+                                <h3 class="fw-bold mb-1">O-</h3>
+                                <small class="d-block opacity-75">Highest Demand</small>
+                                <span class="badge bg-danger mt-2"><i class="fa-solid fa-arrow-up"></i> 23% Shortage Risk</span>
+                            </div>
+                            <div class="col-md-2 col-sm-4">
+                                <h3 class="fw-bold mb-1">+12%</h3>
+                                <small class="d-block opacity-75">Overall Demand</small>
+                                <span class="badge bg-warning text-dark mt-2">Due to accidents</span>
+                            </div>
+                            <div class="col-md-2 col-sm-4">
+                                <h3 class="fw-bold mb-1">Luxor</h3>
+                                <small class="d-block opacity-75">Highest Risk Area</small>
+                                <span class="badge bg-danger mt-2"><i class="fa-solid fa-arrow-down"></i> 7 Days Reserve</span>
+                            </div>
+                            <div class="col-md-2 col-sm-4">
+                                <h3 class="fw-bold mb-1">92K</h3>
+                                <small class="d-block opacity-75">Expected Donations</small>
+                                <span class="badge bg-success mt-2"><i class="fa-solid fa-arrow-up"></i> 9.3% Growth</span>
+                            </div>
+                            <div class="col-md-2 col-sm-4">
+                                <h3 class="fw-bold mb-1">5</h3>
+                                <small class="d-block opacity-75">Recommended Campaigns</small>
+                                <span class="badge bg-success mt-2">Immediate</span>
+                            </div>
+                            <div class="col-md-2 col-sm-4">
+                                <h3 class="fw-bold mb-1">97.1%</h3>
+                                <small class="d-block opacity-75">Model Accuracy</small>
+                                <span class="badge bg-success mt-2">Peak Level</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span><i class="fa-solid fa-lightbulb me-2 text-warning"></i> Proactive AI Recommendations</span>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-danger mb-3">
+                    <i class="fa-solid fa-triangle-exclamation fa-lg"></i>
+                    <div>
+                        <strong>URGENT: Immediate Donation Campaign in Luxor</strong><br/>
+                        <span class="text-dark">AI recommends launching an immediate SMS campaign for 48,000 donors to avoid a crisis within 7 days.</span>
+                    </div>
+                </div>
+                <div class="alert alert-warning mb-3">
+                    <i class="fa-solid fa-truck-fast fa-lg"></i>
+                    <div>
+                        <strong>Redistribution: Alexandria to Cairo</strong><br/>
+                        <span class="text-dark">Surplus of 200 O+ units in Alexandria can be transported to Cairo, which is facing a shortage.</span>
+                    </div>
+                </div>
+                <div class="alert alert-success mb-0">
+                    <i class="fa-solid fa-calendar-check fa-lg"></i>
+                    <div>
+                        <strong>Continue: National Ramadan Campaign 2026</strong><br/>
+                        <span class="text-dark">The campaign achieved +34% compared to last year. AI recommends expanding to critical governorates.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ALERTS TAB -->
+    <div class="tab-pane fade" id="alerts" role="tabpanel" tabindex="0">
+        <div class="alert alert-danger shadow-sm d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex align-items-center gap-3">
+                <i class="fa-solid fa-siren-on fa-2x"></i>
+                <div>
+                    <h6 class="mb-1 fw-bold">Critical Shortage: O- in Luxor</h6>
+                    <small class="text-dark">Only 5 units left · Lasts less than 24 hours · Immediate action required</small>
+                </div>
+            </div>
+            <button class="btn btn-danger btn-sm" onclick="sendAlert(this)"><i class="fa-solid fa-paper-plane"></i> Send Alert</button>
+        </div>
+        
+        <div class="alert alert-danger shadow-sm d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex align-items-center gap-3">
+                <i class="fa-solid fa-siren-on fa-2x"></i>
+                <div>
+                    <h6 class="mb-1 fw-bold">Critical Shortage: B- in South Sinai</h6>
+                    <small class="text-dark">No stock available · 2 pending requests</small>
+                </div>
+            </div>
+            <button class="btn btn-danger btn-sm" onclick="sendAlert(this)"><i class="fa-solid fa-paper-plane"></i> Send Alert</button>
+        </div>
+        
+        <div class="alert alert-warning shadow-sm d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex align-items-center gap-3">
+                <i class="fa-solid fa-triangle-exclamation fa-2x"></i>
+                <div>
+                    <h6 class="mb-1 fw-bold">Warning: O+ in Cairo</h6>
+                    <small class="text-dark">Only 48 hours of stock left · Demand is rising</small>
+                </div>
+            </div>
+            <button class="btn btn-warning btn-sm" onclick="sendAlert(this)"><i class="fa-solid fa-paper-plane"></i> Send Alert</button>
+        </div>
+
+        <div class="mt-4">
+            <button class="btn btn-primary" onclick="sendAllAlerts(this)">
+                <i class="fa-solid fa-mobile-screen"></i> Send SMS Alerts to All Critical Regions
+            </button>
+        </div>
+    </div>
+
+    <!-- REPORTS TAB -->
+    <div class="tab-pane fade" id="reports" role="tabpanel" tabindex="0">
+        <div class="row mb-4">
+            <div class="col-md-4 mb-3">
+                <div class="stat-card">
+                    <div class="stat-icon stat-bg-success"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-label">Annual Growth Rate</div>
+                        <div class="stat-value text-success" id="rep-growth">...</div>
+                        <small class="text-muted"><i class="fa-solid fa-caret-up text-success"></i> All-time high</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="stat-card">
+                    <div class="stat-icon stat-bg-primary"><i class="fa-solid fa-recycle"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-label">Waste Reduction</div>
+                        <div class="stat-value" id="rep-waste">...</div>
+                        <small class="text-muted"><i class="fa-solid fa-caret-up text-success"></i> Better expiry mgmt</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="stat-card">
+                    <div class="stat-icon stat-bg-success"><i class="fa-solid fa-heart-pulse"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-label">Lives Saved (YTD)</div>
+                        <div class="stat-value" id="rep-lives">...</div>
+                        <small class="text-muted">Thanks to donors</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span><i class="fa-solid fa-clipboard-list me-2 text-primary-brand"></i> Periodic Reports</span>
+            </div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="stat-icon stat-bg-info rounded-circle" style="width:40px;height:40px;"><i class="fa-solid fa-chart-column"></i></div>
+                            <div>
+                                <h6 class="mb-0 fw-bold">Monthly Report — <span id="rep-month">Loading...</span></h6>
+                                <small class="text-muted" id="rep-month-sub">...</small>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-primary btn-sm" onclick="downloadPDF(this)"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+                            <a href="/Ministry/ExportReportExcel?type=monthly" class="btn btn-outline-success btn-sm"><i class="fa-solid fa-file-excel"></i> Excel</a>
+                        </div>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="stat-icon stat-bg-success rounded-circle" style="width:40px;height:40px;"><i class="fa-solid fa-users-viewfinder"></i></div>
+                            <div>
+                                <h6 class="mb-0 fw-bold">Donors & Hospitals Activity</h6>
+                                <small class="text-muted" id="rep-donors-sub">...</small>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-primary btn-sm" onclick="downloadPDF(this)"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+                            <a href="/Ministry/ExportReportExcel?type=donors" class="btn btn-outline-success btn-sm"><i class="fa-solid fa-file-excel"></i> Excel</a>
+                        </div>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="stat-icon stat-bg-warning rounded-circle" style="width:40px;height:40px;"><i class="fa-solid fa-boxes-stacked"></i></div>
+                            <div>
+                                <h6 class="mb-0 fw-bold">Blood Inventory Status</h6>
+                                <small class="text-muted" id="rep-inv-sub">...</small>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-primary btn-sm" onclick="downloadPDF(this)"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+                            <a href="/Ministry/ExportReportExcel?type=inventory" class="btn btn-outline-success btn-sm"><i class="fa-solid fa-file-excel"></i> Excel</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
 <script>
-function switchTab(t,el){
-  document.querySelectorAll('.tp').forEach(p=>p.classList.remove('on'));
-  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
-  document.getElementById('tp-'+t).classList.add('on');
-  el.classList.add('on');
-}
 function sendAlert(btn){
-  btn.textContent='⏳...';btn.disabled=true;
-  setTimeout(()=>{btn.textContent='✅ أُرسل';btn.style.background='var(--green)';},800);
+  const originalHtml = btn.innerHTML;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
+  btn.disabled = true;
+  setTimeout(() => {
+      btn.innerHTML = '<i class="fa-solid fa-check"></i> Sent';
+      btn.classList.remove('btn-danger', 'btn-warning');
+      btn.classList.add('btn-success');
+  }, 800);
 }
+
 function sendAllAlerts(btn){
-  btn.textContent='⏳ جاري الإرسال...';btn.disabled=true;
-  setTimeout(()=>{
-    btn.textContent='✅ تم إرسال التنبيهات للمحافظات الحرجة';btn.style.background='var(--green)';
-    setTimeout(()=>{btn.textContent='📱 إرسال تنبيهات لجميع المحافظات الحرجة';btn.style.background='var(--navy)';btn.disabled=false;},3000);
-  },1500);
-}
-function logout(){
-  const f = document.createElement('form');
-  f.method = 'POST'; f.action = '/Account/Logout';
-  document.body.appendChild(f);
-  f.submit();
+  const originalHtml = btn.innerHTML;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
+  btn.disabled = true;
+  setTimeout(() => {
+    btn.innerHTML = '<i class="fa-solid fa-check-double"></i> Alerts Dispatched Successfully';
+    btn.classList.replace('btn-primary', 'btn-success');
+    setTimeout(() => {
+        btn.innerHTML = originalHtml;
+        btn.classList.replace('btn-success', 'btn-primary');
+        btn.disabled = false;
+    }, 3000);
+  }, 1500);
 }
 
 function downloadPDF(btn) {
-  const origText = btn.textContent;
-  btn.textContent = '⏳ جاري إنشاء الملف...';
+  const origHtml = btn.innerHTML;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Gen...';
   btn.disabled = true;
 
   const reportElement = document.createElement('div');
   reportElement.style.padding = '30px';
-  reportElement.style.fontFamily = "'IBM Plex Sans Arabic', sans-serif";
-  reportElement.style.direction = "rtl";
+  reportElement.style.fontFamily = "'DM Sans', sans-serif";
   reportElement.style.background = "#fff";
   
   const now = new Date();
-  const title = btn.parentElement.querySelector('.rep-title').innerText;
+  const title = btn.closest('.list-group-item').querySelector('h6').innerText;
   
   reportElement.innerHTML = `
-    <div style="text-align:center; margin-bottom: 40px; border-bottom: 2px solid #001A4D; padding-bottom: 20px;">
-      <h1 style="color: #001A4D; margin-bottom: 10px;">وزارة الصحة والسكان - جمهورية مصر العربية</h1>
-      <h2 style="color: #6B46C1;">منظومة التبرع بالدم الوطنية</h2>
-      <p style="color: #7B7B9D;">تاريخ التقرير: ${now.toLocaleDateString('ar-EG')} - وقت الإصدار: ${now.toLocaleTimeString('ar-EG')}</p>
+    <div style="text-align:center; margin-bottom: 40px; border-bottom: 2px solid #D01C2A; padding-bottom: 20px;">
+      <h1 style="color: #D01C2A; margin-bottom: 10px; font-family: 'Sora', sans-serif;">Ministry of Health</h1>
+      <h2 style="color: #1F2937; font-family: 'Sora', sans-serif;">National Blood Bank System</h2>
+      <p style="color: #6B7280;">Report Date: ${now.toLocaleDateString()} - Time: ${now.toLocaleTimeString()}</p>
     </div>
-    <div style="background: #F3EEFF; padding: 20px; border-radius: 10px; border: 1px solid #D4C5FF; margin-bottom: 30px;">
-      <h3 style="color: #001A4D; margin-bottom: 10px;">${title}</h3>
-      <p style="font-size: 16px;">التقرير المرفق يعكس الإحصائيات الحية اللحظية للمنظومة على مستوى الجمهورية.</p>
+    <div style="background: #F9D8DB; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+      <h3 style="color: #A71420; margin-bottom: 10px; font-family: 'Sora', sans-serif;">${title}</h3>
+      <p style="font-size: 16px;">This report reflects real-time national statistics.</p>
     </div>
     
-    <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 15px;">
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 15px; text-align: left;">
       <thead>
-        <tr style="background: #001A4D; color: #fff;">
-          <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">المؤشر الوطني</th>
-          <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">الرقم الحالي</th>
+        <tr style="background: #1F2937; color: #fff;">
+          <th style="padding: 12px; border: 1px solid #ddd;">Metric</th>
+          <th style="padding: 12px; border: 1px solid #ddd;">Current Value</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td style="padding: 12px; border: 1px solid #ddd;">المستشفيات المتصلة بالشبكة</td>
-          <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold;">${document.getElementById('st-hospitals').innerText} مستشفى</td>
+          <td style="padding: 12px; border: 1px solid #ddd;">Connected Hospitals</td>
+          <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold;">${document.getElementById('st-hospitals').innerText}</td>
         </tr>
         <tr>
-          <td style="padding: 12px; border: 1px solid #ddd;">إجمالي المتبرعين المسجلين</td>
-          <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold;">${document.getElementById('st-donors').innerText} متبرع</td>
+          <td style="padding: 12px; border: 1px solid #ddd;">Registered Donors</td>
+          <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold;">${document.getElementById('st-donors').innerText}</td>
         </tr>
         <tr>
-          <td style="padding: 12px; border: 1px solid #ddd;">الوحدات المتاحة للاستخدام</td>
-          <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold;">${document.getElementById('st-units').innerText} وحدة</td>
+          <td style="padding: 12px; border: 1px solid #ddd;">Available Units</td>
+          <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold;">${document.getElementById('st-units').innerText}</td>
         </tr>
         <tr>
-          <td style="padding: 12px; border: 1px solid #ddd;">الطلبات قيد المراجعة</td>
-          <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold; color: #C8102E;">${document.getElementById('st-reqs').innerText} طلب</td>
+          <td style="padding: 12px; border: 1px solid #ddd;">Pending Requests</td>
+          <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold; color: #DC2626;">${document.getElementById('st-reqs').innerText}</td>
         </tr>
         <tr>
-          <td style="padding: 12px; border: 1px solid #ddd;">مراكز التبرع النشطة</td>
-          <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold;">${document.getElementById('ov-centers').innerText} مركز</td>
-        </tr>
-        <tr>
-          <td style="padding: 12px; border: 1px solid #ddd;">نسبة الإتمام الوطنية</td>
-          <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold; color: #00875A;">${document.getElementById('st-completion').innerText}</td>
+          <td style="padding: 12px; border: 1px solid #ddd;">National Completion Rate</td>
+          <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold; color: #16A34A;">${document.getElementById('st-completion').innerText}</td>
         </tr>
       </tbody>
     </table>
     
-    <div style="text-align:center; font-size: 12px; color: #7B7B9D; margin-top: 50px;">
-      هذا التقرير مُصدر آلياً من منظومة بنك الدم المصري ولا يحتاج إلى توقيع ورقي.<br>
-      © ${now.getFullYear()} وزارة الصحة - جميع الحقوق محفوظة
+    <div style="text-align:center; font-size: 12px; color: #9CA3AF; margin-top: 50px;">
+      This report is auto-generated by the Blood Bank System.<br>
+      © ${now.getFullYear()} Ministry of Health - All Rights Reserved
     </div>
   `;
 
@@ -410,11 +491,11 @@ function downloadPDF(btn) {
   };
 
   html2pdf().set(opt).from(reportElement).save().then(() => {
-    btn.textContent = '✅ اكتمل التحميل';
-    btn.style.background = '#00875A';
+    btn.innerHTML = '<i class="fa-solid fa-check"></i> Done';
+    btn.classList.replace('btn-outline-primary', 'btn-success');
     setTimeout(() => {
-      btn.textContent = origText;
-      btn.style.background = '';
+      btn.innerHTML = origHtml;
+      btn.classList.replace('btn-success', 'btn-outline-primary');
       btn.disabled = false;
     }, 3000);
   });
@@ -424,60 +505,41 @@ function loadMinistryData() {
   fetch('/Ministry/GetStatistics')
     .then(r => r.json())
     .then(d => {
-      // ── Overview stat boxes (Hero and Details) ──
       const setVal = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
       setVal('st-hospitals', d.totalHospitals);
-      setVal('ov-hospitals', d.totalHospitals);
       setVal('st-donors', d.totalDonors);
-      setVal('ov-donors', d.totalDonors);
       setVal('st-units', d.totalUnits);
-      setVal('ov-units', d.totalUnits);
       setVal('st-reqs', d.pendingReqs);
-      setVal('ov-reqs', d.pendingReqs);
-      setVal('ov-centers', d.totalCenters ?? '—');
       setVal('st-completion', (d.completionRate ?? 100) + '%');
 
-      // ── Reports section ──
       const now = new Date();
-      const monthName = now.toLocaleDateString('ar-EG', { month: 'long', year: 'numeric' });
-      const repMonth    = document.getElementById('rep-month');
-      const repMonthSub = document.getElementById('rep-month-sub');
-      const repDonSub   = document.getElementById('rep-donors-sub');
-      const repInvSub   = document.getElementById('rep-inv-sub');
-      const repReqsSub  = document.getElementById('rep-reqs-sub');
-      if (repMonth) repMonth.textContent = monthName;
-      if (repMonthSub) repMonthSub.textContent = `${d.totalDonors} متبرع · ${d.totalHospitals} مستشفى · ${d.totalCenters} مركز`;
-      if (repDonSub) repDonSub.textContent = `${d.totalDonors} متبرع مسجل · ${d.totalHospitals} مستشفى متصل`;
-      if (repInvSub) repInvSub.textContent = `${d.totalUnits} وحدة متاحة · ${d.inventoryByType?.length ?? 0} فصيلة`;
-      if (repReqsSub) repReqsSub.textContent = `${d.pendingReqs} طلب معلق بانتظار الموافقة`;
+      const monthName = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      setVal('rep-month', monthName);
+      setVal('rep-month-sub', `${d.totalDonors} donors · ${d.totalHospitals} hospitals · ${d.totalCenters || 0} centers`);
+      setVal('rep-donors-sub', `${d.totalDonors} registered · ${d.totalHospitals} connected`);
+      setVal('rep-inv-sub', `${d.totalUnits} units available`);
       
-      const repGrowth = document.getElementById('rep-growth');
-      const repWaste = document.getElementById('rep-waste');
-      const repLives = document.getElementById('rep-lives');
-      if (repGrowth) repGrowth.textContent = '+' + Math.max(12, Math.floor(d.totalDonors / 10 + 5)) + '%';
-      if (repWaste) repWaste.textContent = '-' + Math.max(15, Math.floor((d.completionRate ?? 100) / 3)) + '%';
-      if (repLives) repLives.textContent = (d.totalDonors * 3).toLocaleString();
+      setVal('rep-growth', '+' + Math.max(12, Math.floor(d.totalDonors / 10 + 5)) + '%');
+      setVal('rep-waste', '-' + Math.max(15, Math.floor((d.completionRate ?? 100) / 3)) + '%');
+      setVal('rep-lives', (d.totalDonors * 3).toLocaleString());
 
-      // ── Blood type distribution ──
       const distBody = document.getElementById('blood-dist-body');
       if (distBody) {
         if (!d.inventoryByType || d.inventoryByType.length === 0) {
-          distBody.innerHTML = '<tr><td colspan="3" style="text-align:center;">لا توجد وحدات متوفرة</td></tr>';
+          distBody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">No units available</td></tr>';
         } else {
           const maxUnits = Math.max(...d.inventoryByType.map(i => i.total), 1);
           distBody.innerHTML = d.inventoryByType.map(i => {
             const percentage = Math.round((i.total / maxUnits) * 100);
             return `
               <tr>
-                <td style="color:var(--red);font-weight:700">${i.bloodType}</td>
-                <td>${i.total} وحدة</td>
+                <td class="text-danger fw-bold">${i.bloodType}</td>
+                <td>${i.total} units</td>
                 <td>
-                  <div class="ip">
-                    <div class="ip-track">
-                      <div class="ip-fill" style="width:${percentage}%;background:var(--red);height:100%;border-radius:3px;"></div>
-                    </div>
-                    ${percentage}%
+                  <div class="progress" style="height: 8px;">
+                    <div class="progress-bar bg-danger" role="progressbar" style="width: ${percentage}%" aria-valuenow="${percentage}" aria-valuemin="0" aria-valuemax="100"></div>
                   </div>
+                  <small class="text-muted mt-1 d-block">${percentage}% of max</small>
                 </td>
               </tr>
             `;
@@ -485,7 +547,6 @@ function loadMinistryData() {
         }
       }
 
-      // ── Governorates table ──
       const govsBody = document.getElementById('govs-stats-body');
       if (govsBody) {
         const allGovs = new Set([
@@ -493,39 +554,42 @@ function loadMinistryData() {
           ...(d.requestsByCity || []).map(rc => rc.city)
         ]);
         if (allGovs.size === 0) {
-          govsBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">لا توجد بيانات متاحة</td></tr>';
+          govsBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No data available</td></tr>';
         } else {
           let html = '';
           allGovs.forEach(govName => {
-            if (govName === 'غير محدد') return;
+            if (govName === 'غير محدد' || govName === 'Unspecified') return;
             const donors = (d.donorsByGov.find(dg => dg.gov === govName) || {}).count || 0;
             const reqData = d.requestsByCity.find(rc => rc.city === govName) || {};
             const totalRequests     = reqData.totalRequests     || 0;
             const completedRequests = reqData.completedRequests || 0;
             const completionRate = totalRequests > 0 ? Math.round((completedRequests / totalRequests) * 100) : 100;
-            let statusText = 'ممتاز', statusClass = 'done';
-            if (completionRate < 70)  { statusText = 'حرج';    statusClass = 'urgent'; }
-            else if (completionRate < 90) { statusText = 'متوسط'; statusClass = 'wait'; }
+            
+            let badgeClass = 'badge-success', statusText = 'Excellent';
+            if (completionRate < 70)  { badgeClass = 'badge-danger'; statusText = 'Critical'; }
+            else if (completionRate < 90) { badgeClass = 'badge-warning'; statusText = 'Fair'; }
+            
             html += `
               <tr>
-                <td class="bold">${govName}</td>
-                <td>${donors} متبرع</td>
-                <td>${totalRequests} طلب</td>
+                <td class="fw-bold">${govName}</td>
+                <td>${donors}</td>
+                <td>${totalRequests}</td>
                 <td>
-                  <div class="ip"><div class="ip-track">
-                    <div class="ip-fill" style="width:${completionRate}%;background:var(--blue);height:100%;border-radius:3px;"></div>
-                  </div>${completionRate}%</div>
+                  <div class="progress" style="height: 8px;">
+                    <div class="progress-bar bg-primary" role="progressbar" style="width: ${completionRate}%"></div>
+                  </div>
+                  <small class="text-muted">${completionRate}%</small>
                 </td>
-                <td><span class="chip ${statusClass}">${statusText}</span></td>
+                <td><span class="badge ${badgeClass}">${statusText}</span></td>
               </tr>`;
           });
-          govsBody.innerHTML = html || '<tr><td colspan="5" style="text-align:center;">لا توجد بيانات محافظات</td></tr>';
+          govsBody.innerHTML = html || '<tr><td colspan="5" class="text-center text-muted">No data</td></tr>';
         }
       }
     })
     .catch(() => console.warn('Ministry data fetch failed'));
 }
+
 document.addEventListener('DOMContentLoaded', loadMinistryData);
 </script>
-</body>
-</html>
+}

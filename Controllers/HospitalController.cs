@@ -59,7 +59,7 @@ namespace BloodBank.Controllers
             return View();
         }
 
-        // ===================== طلب دم جديد =====================
+        // طلب دم جديد
         [HttpPost]
         public async Task<IActionResult> SubmitRequest(
             string bloodType, int quantity, string urgencyLevel,
@@ -89,7 +89,7 @@ namespace BloodBank.Controllers
             return Ok(new { message = "تم تقديم الطلب بنجاح" });
         }
 
-        // ===================== طلباتنا =====================
+        // طلباتنا
         [HttpGet]
         public async Task<IActionResult> GetMyRequests()
         {
@@ -142,7 +142,51 @@ namespace BloodBank.Controllers
             return Json(units);
         }
 
-        // ===================== إحصائيات المستشفى =====================
+        // استهلاك وحدة دم (Auto-Replenishment Trigger)
+        [HttpPost]
+        public async Task<IActionResult> ConsumeUnit(int bloodUnitId)
+        {
+            if (!IsHospital()) return Unauthorized();
+
+            var accountId = HttpContext.Session.GetInt32("bb_user_id");
+            var hospital = await _context.Hospitals.FirstOrDefaultAsync(h => h.HospitalId == accountId);
+            if (hospital == null) return Unauthorized();
+
+            var unit = await _context.BloodUnits.FindAsync(bloodUnitId);
+            if (unit == null || unit.HospitalId != hospital.HospitalId) return NotFound();
+
+            unit.Status = "Consumed";
+            
+            // Business Rule: Auto-Replenishment Trigger
+            var remainingUnits = await _context.BloodUnits
+                .CountAsync(b => b.HospitalId == hospital.HospitalId && b.BloodType == unit.BloodType && b.Status == "Available");
+
+            if (remainingUnits < 10) // Auto-replenishment threshold
+            {
+                // Only create if we don't already have a pending request for this type
+                var existingRequest = await _context.Requests.AnyAsync(r => 
+                    r.HospitalId == hospital.HospitalId && r.BloodType == unit.BloodType && r.Status == "Pending");
+                
+                if (!existingRequest)
+                {
+                    _context.Requests.Add(new Request
+                    {
+                        HospitalId = hospital.HospitalId,
+                        BloodType = unit.BloodType,
+                        QuantityNeeded = 20, // Standard auto-order size
+                        UrgencyLevel = "Urgent",
+                        Status = "Pending",
+                        Notes = "Auto-generated stock replenishment request.",
+                        RequestDate = DateTime.UtcNow
+                    });
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+        // إحصائيات المستشفى
         [HttpGet]
         public async Task<IActionResult> GetStats()
         {
@@ -181,7 +225,52 @@ namespace BloodBank.Controllers
             });
         }
 
-        // ===================== Logout =====================
+        // تأكيد الاستلام (Delivery Confirmation)
+        [HttpPost]
+        public async Task<IActionResult> ConfirmReceipt(int requestId)
+        {
+            if (!IsHospital()) return Unauthorized();
+
+            var accountId = HttpContext.Session.GetInt32("bb_user_id");
+            var hospital = await _context.Hospitals.FirstOrDefaultAsync(h => h.HospitalId == accountId);
+            if (hospital == null) return Unauthorized();
+
+            var request = await _context.Requests.FindAsync(requestId);
+            if (request == null || request.HospitalId != hospital.HospitalId) return NotFound();
+
+            if (request.Status != "Dispatched")
+                return BadRequest(new { message = "Request is not in a dispatched state." });
+
+            // Find all units tied to this hospital that are dispatched
+            // Since we set unit.HospitalId when dispatching, we can find them
+            var dispatchedUnits = await _context.BloodUnits
+                .Where(b => b.HospitalId == hospital.HospitalId && b.Status == "Dispatched" && b.BloodType == request.BloodType)
+                .ToListAsync();
+
+            foreach (var unit in dispatchedUnits)
+            {
+                unit.Status = "Available"; // Now it's officially in hospital inventory
+            }
+
+            request.Status = "Completed";
+            
+            // Add to audit log for traceability
+            var auditLog = new BloodBank.Models.AuditLog
+            {
+                Action = "Delivery Confirmed",
+                EntityName = "Request",
+                EntityId = request.RequestId,
+                Details = $"Hospital {hospital.Name} confirmed receipt of {dispatchedUnits.Count} units of {request.BloodType}.",
+                Timestamp = DateTime.UtcNow,
+                UserId = $"Hospital_{hospital.HospitalId}"
+            };
+            _context.AuditLogs.Add(auditLog);
+
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "تم تأكيد الاستلام بنجاح" });
+        }
+
+        // Logout
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();

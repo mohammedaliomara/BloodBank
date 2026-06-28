@@ -1,867 +1,361 @@
 @{
-    Layout = null;
+    ViewData["Title"] = "Admin Dashboard";
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Haemo — Admin Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-:root{
-  --crimson:#D01C2A;--crimson-deep:#A0141F;--crimson-pale:#FFF1F2;--crimson-mid:#FFCDD0;
-  --slate:#0F1521;--slate-mid:#1C2840;
-  --fog:#F3F4F8;--fog2:#EAECF2;
-  --ink:#0F1521;--ink-mid:#485070;--ink-light:#8891AA;
-  --white:#FFFFFF;--border:#E4E6EE;
-  --emerald:#0C9B60;--emerald-pale:#EDFAF4;--emerald-mid:#B3ECDA;
-  --amber:#D47B00;--amber-pale:#FFF8EC;
-  --sapphire:#1E5FD0;--sapphire-pale:#EEF3FF;--sapphire-mid:#B3CFFF;
-  --violet:#6E40C9;--violet-pale:#F3EEFF;
-  --shadow:0 2px 16px rgba(15,21,33,0.07);--r:14px;
-}
-*{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--fog);color:var(--ink);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;}
-::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
 
-/* SIDEBAR */
-.sb{width:260px;background:var(--white);border-right:1px solid var(--border);height:100vh;position:fixed;left:0;top:0;display:flex;flex-direction:column;z-index:100;box-shadow:2px 0 16px rgba(15,21,33,0.05);}
-.sb-logo{padding:22px 20px 18px;border-bottom:1px solid var(--border);}
-.sb-logorow{display:flex;align-items:center;gap:11px;margin-bottom:14px;}
-.sb-mark{width:42px;height:42px;background:var(--crimson);border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 6px 18px rgba(208,28,42,0.35);}
-.sb-name{font-family:'Sora',sans-serif;font-size:15px;font-weight:800;letter-spacing:-0.4px;}
-.sb-tag{font-size:10px;color:var(--ink-light);margin-top:1px;}
-.sb-live{display:inline-flex;align-items:center;gap:6px;background:var(--emerald-pale);color:var(--emerald);font-size:10px;font-weight:700;padding:5px 12px;border-radius:20px;text-transform:uppercase;letter-spacing:0.8px;}
-.live-dot{width:6px;height:6px;background:var(--emerald);border-radius:50%;animation:blink 2s ease-in-out infinite;}
-@@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.2;}}
-
-.sb-nav{flex:1;padding:12px;overflow-y:auto;}
-.sb-sec{font-size:9px;font-weight:700;color:var(--ink-light);text-transform:uppercase;letter-spacing:2px;padding:0 8px;margin:14px 0 4px;}
-.sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;cursor:pointer;transition:all 0.18s;font-size:13px;font-weight:500;color:var(--ink-mid);margin-bottom:1px;position:relative;}
-.sb-item:hover{background:var(--fog);color:var(--ink);}
-.sb-item.on{background:var(--crimson-pale);color:var(--crimson);font-weight:700;}
-.sb-ico{width:30px;height:30px;border-radius:9px;background:var(--fog);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
-.sb-item.on .sb-ico{background:var(--crimson-mid);}
-.sb-badge{margin-left:auto;font-size:9px;font-weight:800;padding:2px 7px;border-radius:12px;}
-.sb-badge.r{background:var(--crimson);color:#fff;}
-.sb-badge.o{background:var(--amber);color:#fff;}
-.sb-badge.g{background:var(--emerald);color:#fff;}
-
-.sb-foot{padding:14px;border-top:1px solid var(--border);}
-.sb-user{display:flex;align-items:center;gap:10px;padding:11px 12px;background:var(--fog);border-radius:12px;cursor:pointer;}
-.sb-ava{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--crimson),var(--crimson-deep));color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-size:13px;font-weight:700;flex-shrink:0;}
-.sb-uname{font-size:12px;font-weight:700;}
-.sb-urole{font-size:10px;color:var(--crimson);font-weight:600;}
-.sb-logout{margin-left:auto;font-size:11px;color:var(--ink-light);cursor:pointer;transition:color 0.18s;}
-.sb-logout:hover{color:var(--crimson);}
-
-/* MAIN */
-.main{margin-left:260px;flex:1;display:flex;flex-direction:column;min-height:100vh;}
-.topbar{background:var(--white);border-bottom:1px solid var(--border);height:62px;display:flex;align-items:center;padding:0 28px;gap:11px;position:sticky;top:0;z-index:50;box-shadow:0 1px 8px rgba(15,21,33,0.04);}
-.tb-title{flex:1;}
-.tb-title h1{font-family:'Sora',sans-serif;font-size:18px;font-weight:700;letter-spacing:-0.4px;}
-.tb-title p{font-size:11px;color:var(--ink-light);margin-top:1px;}
-.tb-actions{display:flex;align-items:center;gap:10px;}
-.icon-btn{width:38px;height:38px;border-radius:10px;border:1.5px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;transition:all 0.18s;font-size:16px;}
-.icon-btn:hover{border-color:var(--crimson);background:var(--crimson-pale);}
-.icon-btn .dot{position:absolute;top:6px;right:6px;width:8px;height:8px;background:var(--crimson);border-radius:50%;border:2px solid var(--white);}
-.tb-avatar{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--crimson),var(--crimson-deep));display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-size:13px;font-weight:700;color:#fff;cursor:pointer;}
-
-.content{padding:26px 28px;flex:1;}
-.screen{display:none;}.screen.on{display:block;}
-
-/* COMPONENTS */
-.card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:20px;box-shadow:var(--shadow);}
-.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
-.card-title{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:700;color:var(--ink);}
-.card-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;}
-.ci-red{background:var(--crimson-pale);}
-.ci-green{background:var(--emerald-pale);}
-.ci-blue{background:var(--sapphire-pale);}
-.ci-amber{background:var(--amber-pale);}
-.ci-violet{background:var(--violet-pale);}
-.card-action{font-size:12px;color:var(--crimson);font-weight:600;cursor:pointer;padding:5px 12px;border-radius:8px;border:1.5px solid var(--crimson-mid);transition:all 0.18s;}
-.card-action:hover{background:var(--crimson-pale);}
-
-.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:18px;}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px;}
-.mb{margin-bottom:16px;}
-
-/* STAT BOX */
-.sbox{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:20px;position:relative;overflow:hidden;box-shadow:var(--shadow);}
-.sl{font-size:11px;color:var(--ink-light);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.8px;}
-.sn{font-family:'Sora',sans-serif;font-size:30px;font-weight:800;letter-spacing:-1.5px;line-height:1;}
-.st{font-size:11px;margin-top:8px;font-weight:600;}.st.up{color:var(--emerald);}.st.dn{color:var(--crimson);}
-.sbar{position:absolute;bottom:0;left:0;right:0;height:3px;}
-.sbar.r{background:linear-gradient(to right,var(--crimson),transparent);}
-.sbar.g{background:linear-gradient(to right,var(--emerald),transparent);}
-.sbar.b{background:linear-gradient(to right,var(--sapphire),transparent);}
-.sbar.o{background:linear-gradient(to right,var(--amber),transparent);}
-
-/* CHIPS */
-.chip{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;}
-.chip.done{background:var(--emerald-pale);color:var(--emerald);}
-.chip.wait{background:var(--amber-pale);color:var(--amber);}
-.chip.urgent{background:var(--crimson-pale);color:var(--crimson);}
-.chip.prog{background:var(--sapphire-pale);color:var(--sapphire);}
-.chip.expired{background:var(--fog2);color:var(--ink-light);}
-
-/* BUTTONS */
-.btn{background:var(--crimson);color:#fff;border:none;padding:9px 18px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.18s;}
-.btn:hover{background:var(--crimson-deep);transform:translateY(-1px);}
-.btn:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
-.btn.g{background:var(--emerald);}.btn.g:hover{background:#077A4A;}
-.btn.b{background:var(--sapphire);}.btn.b:hover{background:#1040A0;}
-.btn-ghost{background:none;border:1.5px solid var(--border);color:var(--ink-mid);padding:8px 16px;border-radius:9px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.18s;}
-.btn-ghost:hover{border-color:var(--crimson);color:var(--crimson);}
-
-/* TABLE */
-.tbl{width:100%;border-collapse:collapse;}
-.tbl th{font-size:11px;font-weight:700;color:var(--ink-light);text-align:left;padding:9px 14px;border-bottom:2px solid var(--border);background:var(--fog);text-transform:uppercase;letter-spacing:0.5px;}
-.tbl td{font-size:12px;padding:11px 14px;border-bottom:1px solid var(--border);color:var(--ink-mid);vertical-align:middle;}
-.tbl tr:hover td{background:var(--fog);}
-.tbl td.bold{font-weight:700;color:var(--ink);}
-
-/* ACTIVITY */
-.act{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
-.act:last-child{border:none;}
-.act-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0;}
-.act-txt{font-size:12.5px;color:var(--ink-mid);line-height:1.5;flex:1;}
-.act-txt strong{color:var(--ink);font-weight:600;}
-.act-time{font-size:10px;color:var(--ink-light);margin-top:3px;display:block;}
-
-/* INVENTORY GRID */
-.inv-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
-.inv-cell{background:var(--fog);border:1.5px solid var(--border);border-radius:11px;padding:16px;text-align:center;transition:all 0.2s;cursor:pointer;position:relative;}
-.inv-cell:hover{border-color:var(--crimson);background:var(--crimson-pale);}
-.inv-cell.low{background:var(--amber-pale);border-color:#F0C878;}
-.inv-cell.critical{background:var(--crimson-pale);border-color:var(--crimson);animation:critBlink 2s infinite;}
-@@keyframes critBlink{0%,100%{border-color:var(--crimson);}50%{border-color:transparent;}}
-.inv-type{font-family:'Sora',sans-serif;font-size:18px;font-weight:800;color:var(--ink);}
-.inv-units{font-size:11px;color:var(--ink-light);margin:4px 0 2px;}
-.inv-exp{font-size:10px;font-weight:600;}
-.inv-exp.ok{color:var(--emerald);}
-.inv-exp.warn{color:var(--amber);}
-.inv-exp.bad{color:var(--crimson);}
-.inv-bar{height:4px;background:var(--fog2);border-radius:2px;overflow:hidden;margin-top:8px;}
-.inv-fill{height:100%;border-radius:2px;}
-.inv-fill.hi{background:var(--emerald);}
-.inv-fill.mid{background:var(--amber);}
-.inv-fill.lo{background:var(--crimson);}
-
-/* UNIT ROW */
-.unit-row{display:flex;align-items:center;gap:10px;padding:10px 13px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;transition:all 0.18s;background:var(--white);margin-bottom:6px;}
-.unit-row:hover{border-color:var(--crimson);background:var(--crimson-pale);}
-.unit-blood{width:42px;height:42px;border-radius:10px;background:var(--crimson-pale);color:var(--crimson);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;}
-.unit-id{font-size:11px;color:var(--ink-light);margin-top:2px;}
-.unit-days{font-size:11px;font-weight:700;}
-.unit-days.ok{color:var(--emerald);}
-.unit-days.warn{color:var(--amber);}
-.unit-days.bad{color:var(--crimson);}
-
-/* DONOR ROW */
-.drow{display:flex;align-items:center;gap:10px;padding:10px 13px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;transition:all 0.18s;background:var(--white);margin-bottom:6px;}
-.drow:hover{border-color:var(--sapphire);background:var(--sapphire-pale);}
-.d-ava{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,var(--crimson),var(--crimson-deep));color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
-.d-name{font-size:13px;font-weight:600;}
-.d-meta{font-size:11px;color:var(--ink-light);margin-top:2px;}
-.d-blood{margin-left:auto;font-size:12px;font-weight:700;color:var(--crimson);background:var(--crimson-pale);padding:3px 9px;border-radius:6px;}
-.d-status{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-.d-status.on{background:var(--emerald);}
-.d-status.pend{background:var(--amber);}
-.d-status.off{background:#CCC;}
-
-/* PENDING DONOR */
-.pend-card{background:var(--white);border:1.5px solid var(--amber-pale);border-left:4px solid var(--amber);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px;margin-bottom:8px;}
-.pend-ava{width:38px;height:38px;border-radius:10px;background:var(--amber-pale);color:var(--amber);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;}
-.pend-name{font-size:13px;font-weight:700;}
-.pend-meta{font-size:11px;color:var(--ink-light);margin-top:2px;}
-.pend-actions{display:flex;gap:6px;margin-left:auto;}
-
-/* REQUEST ROW */
-.req-card{background:var(--white);border:1.5px solid var(--border);border-radius:11px;padding:14px 16px;display:flex;align-items:center;gap:12px;margin-bottom:8px;transition:all 0.18s;}
-.req-card:hover{border-color:var(--sapphire);}
-.req-blood{width:44px;height:44px;border-radius:11px;background:var(--crimson-pale);color:var(--crimson);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0;}
-.req-hosp{font-size:13px;font-weight:700;}
-.req-meta{font-size:11px;color:var(--ink-light);margin-top:3px;}
-
-/* AI BOX */
-.ai-box{display:flex;gap:10px;background:linear-gradient(135deg,var(--violet-pale),#EEF2FF);border:1px solid #D4C5FF;border-radius:12px;padding:13px 16px;margin-bottom:16px;}
-.ai-ico{font-size:18px;flex-shrink:0;margin-top:1px;}
-.ai-lbl{font-size:9px;font-weight:700;color:var(--violet);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;}
-.ai-txt{font-size:12px;color:var(--ink-mid);line-height:1.6;}
-
-/* MATCH CARD */
-.match-card{background:var(--white);border:1.5px solid var(--border);border-radius:11px;padding:13px 15px;display:flex;align-items:center;gap:11px;margin-bottom:8px;cursor:pointer;transition:all 0.18s;}
-.match-card:hover{border-color:var(--violet);box-shadow:0 4px 14px rgba(107,70,193,0.1);}
-.match-card.top{border-left:3px solid var(--violet);}
-.match-rank{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;}
-.rank1{background:linear-gradient(135deg,#FFD700,#FFA500);color:#fff;}
-.rank2{background:linear-gradient(135deg,#C0C0C0,#A0A0A0);color:#fff;}
-.rank3{background:linear-gradient(135deg,#CD7F32,#A0522D);color:#fff;}
-.rankN{background:var(--fog2);color:var(--ink-light);}
-.score-wrap{width:90px;}
-.score-top{display:flex;justify-content:space-between;font-size:10px;color:var(--ink-light);margin-bottom:3px;}
-.score-bar{height:5px;background:var(--fog2);border-radius:3px;overflow:hidden;}
-.score-fill{height:100%;border-radius:3px;}
-.sf-hi{background:linear-gradient(to right,var(--violet),#8B5CF6);}
-.sf-mid{background:linear-gradient(to right,var(--sapphire),#60A5FA);}
-.sf-lo{background:linear-gradient(to right,var(--amber),#FCA5A5);}
-.notif-btn{background:var(--violet);color:#fff;border:none;padding:6px 13px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.18s;white-space:nowrap;}
-.notif-btn:hover{background:#5B36B0;}
-
-/* TRACKING */
-.track-steps{display:flex;flex-direction:column;}
-.ts{display:flex;gap:14px;padding:12px 0;position:relative;}
-.ts:not(:last-child)::after{content:'';position:absolute;left:17px;top:38px;bottom:0;width:2px;background:var(--border);}
-.ts-dot{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;z-index:1;}
-.ts-dot.done{background:var(--emerald-pale);border:2px solid var(--emerald);}
-.ts-dot.active{background:var(--sapphire-pale);border:2px solid var(--sapphire);animation:blink 2s infinite;}
-.ts-dot.wait{background:var(--fog2);border:2px solid var(--border);}
-.ts-info{flex:1;padding-top:5px;}
-.ts-title{font-size:13px;font-weight:700;}
-.ts-sub{font-size:11px;color:var(--ink-light);margin-top:2px;}
-.ts-time{font-size:10px;color:var(--ink-light);margin-top:3px;}
-
-/* EXPIRY ALERT */
-.exp-alert{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:10px;margin-bottom:8px;}
-.exp-alert.warn{background:var(--amber-pale);border:1px solid #F4C57A;}
-.exp-alert.bad{background:var(--crimson-pale);border:1px solid var(--crimson-mid);}
-.exp-alert-ico{font-size:18px;flex-shrink:0;}
-.exp-alert-txt{font-size:12px;font-weight:600;}
-.exp-alert-txt span{font-size:11px;color:var(--ink-light);display:block;font-weight:400;margin-top:2px;}
-
-/* MODAL */
-.overlay{position:fixed;inset:0;background:rgba(15,21,33,0.6);z-index:200;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(5px);opacity:0;pointer-events:none;transition:opacity 0.25s;}
-.overlay.open{opacity:1;pointer-events:all;}
-.modal{background:var(--white);border-radius:18px;padding:28px;width:480px;max-width:92vw;box-shadow:0 24px 60px rgba(0,0,0,0.2);transform:scale(0.96);transition:transform 0.25s;max-height:90vh;overflow-y:auto;}
-.overlay.open .modal{transform:scale(1);}
-.modal-hd{display:flex;align-items:center;gap:12px;margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--border);}
-.modal-ava{width:48px;height:48px;border-radius:13px;background:linear-gradient(135deg,var(--crimson),var(--crimson-deep));color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0;}
-.modal-close{margin-left:auto;width:28px;height:28px;border-radius:50%;border:1.5px solid var(--border);background:var(--fog);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;transition:all 0.18s;}
-.modal-close:hover{background:var(--crimson-pale);border-color:var(--crimson);}
-.mf-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px;}
-.mf{background:var(--fog);border-radius:9px;padding:11px 13px;}
-.mf-l{font-size:10px;color:var(--ink-light);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:3px;}
-.mf-v{font-size:13px;font-weight:700;}
-.mf-v.r{color:var(--crimson);}
-.mf-v.g{color:var(--emerald);}
-.mf-v.o{color:var(--amber);}
-/* SMALL MODAL */
-.modal-sm{background:var(--white);border-radius:18px;padding:24px;width:440px;max-width:92vw;box-shadow:0 24px 60px rgba(0,0,0,0.2);transform:scale(0.96);transition:transform 0.25s;max-height:90vh;overflow-y:auto;}
-.overlay.open .modal-sm{transform:scale(1);}
-.modal-hd-sm{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--border);}
-.modal-hd-sm span{font-size:22px;}
-.modal-hd-sm h2{font-size:15px;font-weight:800;}
-.m-lbl{font-size:11px;font-weight:600;color:var(--ink-light);margin:10px 0 4px;}
-.m-in{width:100%;border:1.5px solid var(--border);border-radius:9px;padding:9px 12px;font-size:13px;color:var(--ink);font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.18s;background:var(--fog);}
-.m-in:focus{border-color:var(--crimson);background:var(--white);}
-.m-row{display:flex;gap:9px;}
-.m-sep{font-size:10px;font-weight:700;color:var(--ink-light);text-transform:uppercase;letter-spacing:1.5px;margin:16px 0 4px;padding-bottom:6px;border-bottom:1px solid var(--border);}
-.m-btn{width:100%;background:var(--crimson);color:#fff;border:none;padding:11px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:16px;transition:all 0.18s;}
-.m-btn:hover:not(:disabled){background:var(--crimson-deep);}
-.m-btn:disabled{opacity:0.6;cursor:not-allowed;}
-.m-back{text-align:center;margin-top:10px;font-size:12px;color:var(--ink-light);cursor:pointer;}
-.m-back:hover{color:var(--ink-mid);}
-
-/* FORM */
-.f-g{display:flex;flex-direction:column;gap:5px;margin-bottom:11px;}
-.f-l{font-size:12px;font-weight:600;color:var(--ink-mid);}
-.f-i{background:var(--fog);border:1.5px solid var(--border);border-radius:9px;padding:9px 12px;font-size:13px;color:var(--ink);font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.2s;width:100%;}
-.f-i:focus{border-color:var(--crimson);background:var(--white);}
-.f-s{background:var(--fog);border:1.5px solid var(--border);border-radius:9px;padding:9px 12px;font-size:13px;color:var(--ink);font-family:'DM Sans',sans-serif;outline:none;width:100%;cursor:pointer;}
-.fg2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-
-/* CENTER FILTER */
-.center-filter{background:var(--fog);border:1.5px solid var(--border);border-radius:8px;padding:5px 12px;font-size:11px;font-weight:600;color:var(--ink-light);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.18s;}
-.center-filter:hover{border-color:var(--sapphire);color:var(--sapphire);}
-.center-filter.on{background:var(--sapphire-pale);border-color:var(--sapphire);color:var(--sapphire);font-weight:700;}
-
-/* APPOINTMENTS */
-.appt-row{display:flex;align-items:center;gap:11px;padding:11px 13px;border:1.5px solid var(--border);border-radius:11px;margin-bottom:7px;background:var(--white);transition:all 0.2s;}
-.appt-row.done-row{background:var(--emerald-pale);border-color:var(--emerald-mid);}
-.appt-time{font-size:12px;font-weight:700;color:var(--ink-light);width:52px;flex-shrink:0;}
-.appt-ava{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,var(--crimson),var(--crimson-deep));color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
-.appt-name{font-size:13px;font-weight:700;}
-.appt-meta{font-size:11px;color:var(--ink-light);margin-top:2px;}
-.btn-donate{background:var(--crimson);color:#fff;border:none;padding:7px 13px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:all 0.18s;flex-shrink:0;}
-.btn-donate:hover:not(:disabled){background:var(--crimson-deep);transform:translateY(-1px);}
-.btn-donate:disabled{cursor:default;}
-
-@@media(max-width:900px){
-  .sb{transform:translateX(-260px);}
-  .sb.open{transform:translateX(0);}
-  .main{margin-left:0;}
-  .g4{grid-template-columns:1fr 1fr;}
-  .inv-grid{grid-template-columns:repeat(4,1fr);}
-  .content{padding:16px;}
-}
-</style>
-</head>
-<body>
-
-<!-- SIDEBAR -->
-<div class="sb" id="sb">
-  <div class="sb-logo">
-    <div class="sb-logorow">
-      <div class="sb-mark"><svg viewBox="0 0 26 26" fill="none" width="22" height="22"><path d="M13 3C13 3 5 11 5 16.5C5 20.6421 8.68629 24 13 24C17.3137 24 21 20.6421 21 16.5C21 11 13 3 13 3Z" fill="white"/></svg></div>
-      <div><div class="sb-name">BloodBank Egypt
-</div><div class="sb-tag">Admin Console</div></div>
-    </div>
-    <div class="sb-live"><div class="live-dot"></div>System Live</div>
-  </div>
-
-  <div class="sb-nav">
-    <div class="sb-sec">Overview</div>
-    <div class="sb-item on" onclick="go('dashboard',this)"><div class="sb-ico">📊</div>Dashboard</div>
-    <div class="sb-item" onclick="go('requests',this)"><div class="sb-ico">📋</div>Blood Requests<span class="sb-badge o" id="sidebar-pending-requests">@ViewBag.PendingRequests</span></div>
-
-    <div class="sb-sec">Inventory</div>
-    <div class="sb-item" onclick="go('inventory',this)"><div class="sb-ico">🏦</div>Blood Inventory</div>
-    <div class="sb-item" onclick="go('expiry',this)"><div class="sb-ico">⏳</div>Expiry Management<span class="sb-badge r" id="sidebar-expiry">@ViewBag.ExpiringSoon</span></div>
-
-    <div class="sb-sec">Donors</div>
-    <div class="sb-item" onclick="go('donors',this)"><div class="sb-ico">👥</div>Donors<span class="sb-badge g" id="sidebar-donors">@ViewBag.TotalDonors</span></div>
-    <div class="sb-item" onclick="go('pending',this)"><div class="sb-ico">⏳</div>Pending Approval<span class="sb-badge o" id="sidebar-pending-donors">0</span></div>
-    <div class="sb-item" onclick="go('centers',this)"><div class="sb-ico">🏪</div>Donation Centers</div>
-
-    <div class="sb-sec">System</div>
-    <div class="sb-item" onclick="go('tracking',this)"><div class="sb-ico">🔍</div>Unit Tracking</div>
-    <div class="sb-item" onclick="go('hospitals',this)"><div class="sb-ico">🏥</div>Hospitals</div>
-    <div class="sb-item" onclick="go('settings',this)"><div class="sb-ico">⚙️</div>Settings</div>
-  </div>
-
-  <div class="sb-foot">
-    <div class="sb-user">
-      <div class="sb-ava">SA</div>
-      <div><div class="sb-uname">System Admin</div><div class="sb-urole">Admin · Full Access</div></div>
-      <span class="sb-logout" onclick="logout()">↩ Logout</span>
-    </div>
-  </div>
+<div class="page-header mt-4">
+    <h2 class="page-title d-flex align-items-center gap-2">
+        <i class="fa-solid fa-shield-halved text-primary-brand"></i> BloodBank Admin Console
+    </h2>
+    <span class="badge badge-primary"><i class="fa-solid fa-circle-check"></i> System Live</span>
 </div>
 
-<!-- MAIN -->
-<div class="main">
-  <div class="topbar">
-    <button style="display:none;width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:var(--white);font-size:18px;cursor:pointer;" id="menuBtn" onclick="toggleSB()">☰</button>
-    <div class="tb-title">
-      <h1 id="pageTitle">Dashboard</h1>
-      <p id="pageSubtitle">@DateTime.Today.ToString("dddd, MMMM d, yyyy")</p>
-    </div>
-    <div class="tb-actions">
-      <div class="icon-btn" onclick="go('requests',null)">🔔<div class="dot" id="notif-dot" style="display: @(ViewBag.PendingRequests > 0 ? "block" : "none");"></div></div>
-      <div class="icon-btn" onclick="logout()" title="Logout">↩</div>
-      <div class="tb-avatar">SA</div>
-    </div>
-  </div>
-
-  <div class="content">
-
-    <!-- ══ DASHBOARD ══ -->
-    <div id="s-dashboard" class="screen on">
-
-      <!-- STAT CARDS -->
-      <div class="g4">
-        <div class="sbox" style="cursor:pointer" onclick="go('inventory',null)">
-          <div style="position:absolute;top:16px;right:16px;opacity:0.1;">
-            <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="8" fill="#0C9B60"/><polyline points="6,28 14,18 20,22 27,12 34,16" stroke="#0C9B60" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
-          </div>
-          <div class="sl">Units in Stock</div>
-          <div class="sn">@ViewBag.TotalBloodUnits</div>
-          <div class="st up">↑ Safe inventory</div>
-          <div class="sbar g"></div>
-        </div>
-        <div class="sbox" style="cursor:pointer" onclick="go('requests',null)">
-          <div style="position:absolute;top:16px;right:16px;opacity:0.1;">
-            <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="8" fill="#D01C2A"/><rect x="10" y="11" width="20" height="3" rx="1.5" fill="#D01C2A"/><rect x="10" y="18" width="14" height="3" rx="1.5" fill="#D01C2A"/><rect x="10" y="25" width="17" height="3" rx="1.5" fill="#D01C2A"/></svg>
-          </div>
-          <div class="sl">Active Requests</div>
-          <div class="sn">@ViewBag.PendingRequests</div>
-          <div class="st dn">↓ Action required</div>
-          <div class="sbar r"></div>
-        </div>
-        <div class="sbox" style="cursor:pointer" onclick="go('donors',null)">
-          <div style="position:absolute;top:16px;right:16px;opacity:0.1;">
-            <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="8" fill="#1E5FD0"/><circle cx="20" cy="14" r="6" fill="#1E5FD0"/><path d="M6 34c0-7.732 6.268-14 14-14s14 6.268 14 14" stroke="#1E5FD0" stroke-width="3" stroke-linecap="round" fill="none"/></svg>
-          </div>
-          <div class="sl">Donors Ready</div>
-          <div class="sn">@ViewBag.TotalDonors</div>
-          <div class="st up">↑ Available now</div>
-          <div class="sbar b"></div>
-        </div>
-        <div class="sbox" style="cursor:pointer" onclick="go('expiry',null)">
-          <div style="position:absolute;top:16px;right:16px;opacity:0.1;">
-            <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="8" fill="#D47B00"/><circle cx="20" cy="20" r="12" stroke="#D47B00" stroke-width="3" fill="none"/><path d="M20 12v8l5 5" stroke="#D47B00" stroke-width="3" stroke-linecap="round" fill="none"/></svg>
-          </div>
-          <div class="sl">Expiring Soon</div>
-          <div class="sn" style="color:var(--amber)">@ViewBag.ExpiringSoon</div>
-          <div class="st dn">↓ Within 7 days</div>
-          <div class="sbar o"></div>
-        </div>
-      </div>
-
-      <!-- ROW 2: Bar Chart + Donut -->
-      <div class="g2">
-        <!-- BAR CHART -->
-        <div class="card">
-          <div class="card-head">
-            <div class="card-title"><div class="card-icon ci-blue">📈</div>Donations — Last 7 Days</div>
-            <span style="font-size:11px;color:var(--ink-light);">March 2026</span>
-          </div>
-          <div style="display:flex;align-items:flex-end;gap:8px;height:120px;padding-bottom:4px;">
-            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end">
-              <span style="font-size:10px;color:var(--ink-light);font-weight:600">0</span>
-              <div style="width:100%;height:0%;background:linear-gradient(180deg,var(--sapphire),#6BA4F8);border-radius:5px 5px 0 0;"></div>
-              <span style="font-size:9px;color:var(--ink-light);">Sun</span>
+<!-- TOP STATS -->
+<div class="row mb-4">
+    <div class="col-md col-sm-6 mb-3">
+        <div class="stat-card">
+            <div class="stat-icon stat-bg-success"><i class="fa-solid fa-boxes-stacked"></i></div>
+            <div class="stat-info">
+                <div class="stat-label">Units in Stock</div>
+                <div class="stat-value">@ViewBag.TotalBloodUnits</div>
             </div>
-            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end">
-              <span style="font-size:10px;color:var(--ink-light);font-weight:600">0</span>
-              <div style="width:100%;height:0%;background:linear-gradient(180deg,var(--sapphire),#6BA4F8);border-radius:5px 5px 0 0;"></div>
-              <span style="font-size:9px;color:var(--ink-light);">Mon</span>
-            </div>
-            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end">
-              <span style="font-size:10px;color:var(--ink-light);font-weight:600">0</span>
-              <div style="width:100%;height:0%;background:linear-gradient(180deg,var(--sapphire),#6BA4F8);border-radius:5px 5px 0 0;"></div>
-              <span style="font-size:9px;color:var(--ink-light);">Tue</span>
-            </div>
-            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end">
-              <span style="font-size:10px;color:var(--ink-light);font-weight:600">0</span>
-              <div style="width:100%;height:0%;background:linear-gradient(180deg,var(--crimson),#F87A8A);border-radius:5px 5px 0 0;"></div>
-              <span style="font-size:9px;color:var(--crimson);font-weight:700">Wed</span>
-            </div>
-            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end">
-              <span style="font-size:10px;color:var(--ink-light);font-weight:600">0</span>
-              <div style="width:100%;height:0%;background:linear-gradient(180deg,var(--sapphire),#6BA4F8);border-radius:5px 5px 0 0;"></div>
-              <span style="font-size:9px;color:var(--ink-light);">Thu</span>
-            </div>
-            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end">
-              <span style="font-size:10px;color:var(--ink-light);font-weight:600">0</span>
-              <div style="width:100%;height:0%;background:linear-gradient(180deg,var(--sapphire),#6BA4F8);border-radius:5px 5px 0 0;"></div>
-              <span style="font-size:9px;color:var(--ink-light);">Fri</span>
-            </div>
-            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end">
-              <span style="font-size:10px;color:var(--emerald);font-weight:700" id="donationCount">0</span>
-              <div style="width:100%;height:0%;background:linear-gradient(180deg,var(--emerald),#4ECFA0);border-radius:5px 5px 0 0;"></div>
-              <span style="font-size:9px;color:var(--emerald);font-weight:700">Today</span>
-            </div>
-          </div>
-          <div style="margin-top:10px;display:flex;align-items:center;gap:12px;padding-top:10px;border-top:1px solid var(--border);">
-            <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink-light)"><div style="width:9px;height:9px;border-radius:2px;background:var(--sapphire)"></div>Normal</div>
-            <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--crimson)"><div style="width:9px;height:9px;border-radius:2px;background:var(--crimson)"></div>Peak day</div>
-            <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--emerald)"><div style="width:9px;height:9px;border-radius:2px;background:var(--emerald)"></div>Today</div>
-            <div style="margin-left:auto;font-size:11px;color:var(--ink-light)">Total: <strong style="color:var(--ink)">0</strong></div>
-          </div>
         </div>
-
-        <!-- DONUT CHART -->
-        <div class="card">
-          <div class="card-head">
-            <div class="card-title"><div class="card-icon ci-red">🩸</div>Blood Type Distribution</div>
-            <span style="font-size:11px;color:var(--ink-light);">Current stock</span>
-          </div>
-          <div style="display:flex;align-items:center;gap:18px;">
-            <div style="position:relative;flex-shrink:0;">
-              <svg width="120" height="120" viewBox="0 0 120 120">
-                <circle cx="60" cy="60" r="46" fill="none" stroke="#E4E6EE" stroke-width="16"/>
-                <text x="60" y="56" text-anchor="middle" font-family="Sora,sans-serif" font-size="15" font-weight="800" fill="#0F1521">0</text>
-                <text x="60" y="70" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9" fill="#8891AA">units</text>
-              </svg>
+    </div>
+    <div class="col-md col-sm-6 mb-3">
+        <div class="stat-card">
+            <div class="stat-icon stat-bg-danger"><i class="fa-solid fa-clipboard-list"></i></div>
+            <div class="stat-info">
+                <div class="stat-label">Active Requests</div>
+                <div class="stat-value text-danger">@ViewBag.PendingRequests</div>
             </div>
-            <div style="flex:1;display:flex;flex-direction:column;gap:9px;">
-              <div style="display:flex;align-items:center;gap:7px;">
-                <div style="width:9px;height:9px;border-radius:50%;background:var(--crimson);flex-shrink:0;"></div>
-                <div style="flex:1;font-size:12px;font-weight:600">O+</div>
-                <div style="font-size:11px;color:var(--ink-light)">0</div>
-                <div style="font-size:11px;font-weight:700;color:var(--crimson)">0%</div>
-              </div>
-              <div style="display:flex;align-items:center;gap:7px;">
-                <div style="width:9px;height:9px;border-radius:50%;background:var(--sapphire);flex-shrink:0;"></div>
-                <div style="flex:1;font-size:12px;font-weight:600">A+</div>
-                <div style="font-size:11px;color:var(--ink-light)">0</div>
-                <div style="font-size:11px;font-weight:700;color:var(--sapphire)">0%</div>
-              </div>
-              <div style="display:flex;align-items:center;gap:7px;">
-                <div style="width:9px;height:9px;border-radius:50%;background:var(--emerald);flex-shrink:0;"></div>
-                <div style="flex:1;font-size:12px;font-weight:600">AB+</div>
-                <div style="font-size:11px;color:var(--ink-light)">0</div>
-                <div style="font-size:11px;font-weight:700;color:var(--emerald)">0%</div>
-              </div>
-              <div style="display:flex;align-items:center;gap:7px;">
-                <div style="width:9px;height:9px;border-radius:50%;background:var(--amber);flex-shrink:0;"></div>
-                <div style="flex:1;font-size:12px;font-weight:600">Other</div>
-                <div style="font-size:11px;color:var(--ink-light)">0</div>
-                <div style="font-size:11px;font-weight:700;color:var(--amber)">0%</div>
-              </div>
-              <div style="margin-top:2px;padding-top:8px;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
-                <div style="background:var(--crimson-pale);border-radius:7px;padding:7px;text-align:center;">
-                  <div style="font-size:9px;color:var(--ink-light);margin-bottom:2px;">Critical</div>
-                  <div style="font-size:15px;font-weight:800;color:var(--crimson);font-family:'Sora',sans-serif;">0</div>
-                </div>
-                <div style="background:var(--amber-pale);border-radius:7px;padding:7px;text-align:center;">
-                  <div style="font-size:9px;color:var(--ink-light);margin-bottom:2px;">Low</div>
-                  <div style="font-size:15px;font-weight:800;color:var(--amber);font-family:'Sora',sans-serif;">0</div>
-                </div>
-                <div style="background:var(--emerald-pale);border-radius:7px;padding:7px;text-align:center;">
-                  <div style="font-size:9px;color:var(--ink-light);margin-bottom:2px;">Safe</div>
-                  <div style="font-size:15px;font-weight:800;color:var(--emerald);font-family:'Sora',sans-serif;">0</div>
-                </div>
-              </div>
+        </div>
+    </div>
+    <div class="col-md col-sm-6 mb-3">
+        <div class="stat-card">
+            <div class="stat-icon stat-bg-primary"><i class="fa-solid fa-users"></i></div>
+            <div class="stat-info">
+                <div class="stat-label">Donors Ready</div>
+                <div class="stat-value">@ViewBag.TotalDonors</div>
             </div>
-          </div>
         </div>
-      </div>
-
-      <!-- ROW 3: Requests + Activity -->
-      <div class="g2">
-        <div class="card">
-          <div class="card-head"><div class="card-title"><div class="card-icon ci-red">📋</div>Latest Requests</div><div class="card-action" onclick="go('requests',null)">View All</div></div>
-          <div style="padding: 20px; text-align: center; color: var(--ink-light); font-size: 13px;">No active requests found</div>
-        </div>
-        <div class="card">
-          <div class="card-head"><div class="card-title"><div class="card-icon ci-amber">⚡</div>Recent Activity</div></div>
-          <div style="padding: 20px; text-align: center; color: var(--ink-light); font-size: 13px;">No recent activity</div>
-        </div>
-      </div>
-
-      <!-- ROW 4: Center Performance + Sparkline -->
-      <div class="g2">
-        <div class="card">
-          <div class="card-head"><div class="card-title"><div class="card-icon ci-blue">🏪</div>Center Performance — Today</div><div class="card-action" onclick="go('centers',null)">View All</div></div>
-          <div style="padding: 20px; text-align: center; color: var(--ink-light); font-size: 13px;">No data available</div>
-        </div>
-
-        <!-- Sparkline -->
-        <div class="card">
-          <div class="card-head"><div class="card-title"><div class="card-icon ci-violet">📊</div>Requests — Last 6 Months</div></div>
-          <div style="position:relative;height:120px;margin-bottom:8px;">
-            <svg width="100%" height="120" viewBox="0 0 380 120" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#D01C2A" stop-opacity="0.2"/>
-                  <stop offset="100%" stop-color="#D01C2A" stop-opacity="0.02"/>
-                </linearGradient>
-              </defs>
-              <line x1="0" y1="30" x2="380" y2="30" stroke="#E4E6EE" stroke-width="1"/>
-              <line x1="0" y1="70" x2="380" y2="70" stroke="#E4E6EE" stroke-width="1"/>
-              <line x1="0" y1="110" x2="380" y2="110" stroke="#E4E6EE" stroke-width="1"/>
-            </svg>
-          </div>
-          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--ink-light);margin-bottom:14px;padding:0 2px;">
-            <span>Oct</span><span>Nov</span><span>Dec</span><span>Jan</span><span>Feb</span><span style="color:var(--emerald);font-weight:700">Mar</span>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-            <div style="background:var(--crimson-pale);border-radius:10px;padding:10px;text-align:center;">
-              <div style="font-size:9px;color:var(--ink-light);margin-bottom:3px;">This Month</div>
-              <div style="font-size:20px;font-weight:800;color:var(--crimson);font-family:'Sora',sans-serif;">0</div>
+    </div>
+    <div class="col-md col-sm-6 mb-3">
+        <div class="stat-card">
+            <div class="stat-icon stat-bg-warning"><i class="fa-solid fa-hourglass-half"></i></div>
+            <div class="stat-info">
+                <div class="stat-label">Expiring Soon</div>
+                <div class="stat-value text-warning">@ViewBag.ExpiringSoon</div>
             </div>
-            <div style="background:var(--emerald-pale);border-radius:10px;padding:10px;text-align:center;">
-              <div style="font-size:9px;color:var(--ink-light);margin-bottom:3px;">Fulfilled</div>
-              <div style="font-size:20px;font-weight:800;color:var(--emerald);font-family:'Sora',sans-serif;">0</div>
-            </div>
-            <div style="background:var(--sapphire-pale);border-radius:10px;padding:10px;text-align:center;">
-              <div style="font-size:9px;color:var(--ink-light);margin-bottom:3px;">Completion</div>
-              <div style="font-size:20px;font-weight:800;color:var(--sapphire);font-family:'Sora',sans-serif;">0%</div>
-            </div>
-          </div>
         </div>
-      </div>
-
     </div>
-
-    <!-- ══ REQUESTS ══ -->
-    <div id="s-requests" class="screen">
-      <div class="card">
-        <div class="card-head"><div class="card-title"><div class="card-icon ci-red">📋</div><span id="requests-title-count">Hospital Requests</span></div></div>
-        <table class="tbl">
-          <thead><tr><th>Request #</th><th>Hospital</th><th>Blood Type</th><th>Quantity</th><th>Priority</th><th>Status</th><th>Action</th></tr></thead>
-          <tbody>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- ══ INVENTORY ══ -->
-    <div id="s-inventory" class="screen">
-      <div class="inv-grid mb" id="inventory-grid">
-        <div style="grid-column: 1 / -1; padding: 20px; text-align: center; color: var(--ink-light); font-size: 13px;">No inventory data available</div>
-      </div>
-      <div style="display:flex;gap:10px;">
-        <button class="btn" onclick="sendSMSCampaign(this)">📱 Send SMS to Required Donors</button>
-      </div>
-    </div>
-
-    <!-- ══ EXPIRY ══ -->
-    <div id="s-expiry" class="screen">
-      <div class="g3 mb">
-        <div class="sbox"><div class="sl">Expiring within 7 days</div><div class="sn" style="color:var(--amber)">@ViewBag.ExpiringSoon</div><div class="st dn">↓ Urgent consumption needed</div><div class="sbar o"></div></div>
-        <div class="sbox"><div class="sl">Expiring within 3 days</div><div class="sn" style="color:var(--crimson)">@ViewBag.ExpiringSoon3</div><div class="st dn">↓ Risk of waste</div><div class="sbar r"></div></div>
-        <div class="sbox"><div class="sl">Total Blood Units</div><div class="sn">@ViewBag.TotalBloodUnits</div><div class="st up">↑ Available now</div><div class="sbar g"></div></div>
-      </div>
-
-      <div class="card">
-        <div class="card-head"><div class="card-title"><div class="card-icon ci-amber">⏳</div>Units Expiring Soon</div></div>
-        <div style="padding: 20px; text-align: center; color: var(--ink-light); font-size: 13px;">No units expiring soon</div>
-      </div>
-
-      <div class="card">
-        <div class="card-head"><div class="card-title"><div class="card-icon ci-red">📋</div>Unit Registry</div></div>
-        <div style="padding: 20px; text-align: center; color: var(--ink-light); font-size: 13px;">No units registered</div>
-      </div>
-    </div>
-
-    <!-- ══ DONORS ══ -->
-    <div id="s-donors" class="screen">
-      <div class="g4 mb">
-        <div class="sbox"><div class="sl">Total Donors</div><div class="sn">@ViewBag.TotalDonors</div><div class="st up">↑ Registered</div><div class="sbar g"></div></div>
-        <div class="sbox"><div class="sl">Total Hospitals</div><div class="sn">@ViewBag.TotalHospitals</div><div class="st up">↑ Connected</div><div class="sbar b"></div></div>
-        <div class="sbox"><div class="sl">Donation Centers</div><div class="sn">@ViewBag.TotalCenters</div><div class="st up">↑ Active</div><div class="sbar g"></div></div>
-        <div class="sbox"><div class="sl">Pending Requests</div><div class="sn" style="color:var(--amber)">@ViewBag.PendingRequests</div><div class="st dn">↓ Needs review</div><div class="sbar o"></div></div>
-      </div>
-      <div class="card">
-        <div class="card-head"><div class="card-title"><div class="card-icon ci-green">👥</div>Donor List</div><div style="display:flex;gap:7px;"><div class="card-action" onclick="window.location.href='/Admin/ExportDonors'">Export</div><div class="card-action" onclick="go('pending',null)">Pending</div></div></div>
-        <div class="drow" onclick="openDonorModal('Mohamed Ahmed','O-','Maadi','8','Ready ✅','Maadi Center')"><div class="d-ava">MA</div><div><div class="d-name">Mohamed Ahmed</div><div class="d-meta">📍 Maadi · Last donation: Jan 8, 2024</div></div><div class="d-blood">O-</div><div class="d-status on"></div></div>
-        <div class="drow" onclick="openDonorModal('Sara Khaled','A+','Nasr City','6','Ready ✅','Nasr City Center')"><div class="d-ava">SK</div><div><div class="d-name">Sara Khaled</div><div class="d-meta">📍 Nasr City · Last donation: Oct 15, 2023</div></div><div class="d-blood">A+</div><div class="d-status on"></div></div>
-        <div class="drow" onclick="openDonorModal('Karim Mahmoud','B+','Zamalek','5','Cooldown 🕐','Zamalek Center')"><div class="d-ava">KM</div><div><div class="d-name">Karim Mahmoud</div><div class="d-meta">📍 Zamalek · Last donation: Mar 1, 2024</div></div><div class="d-blood">B+</div><div class="d-status off"></div></div>
-        <div class="drow" onclick="openDonorModal('Hend El Sheikh','AB-','Mohandeseen','4','Ready ✅','Mohandeseen Center')"><div class="d-ava">HS</div><div><div class="d-name">Hend El Sheikh</div><div class="d-meta">📍 Mohandeseen · Last donation: Nov 20, 2023</div></div><div class="d-blood">AB-</div><div class="d-status on"></div></div>
-        <div class="drow" onclick="openDonorModal('Omar Farouk','O+','Dokki','3','Cooldown 🕐','Dokki Center')"><div class="d-ava">OF</div><div><div class="d-name">Omar Farouk</div><div class="d-meta">📍 Dokki · Last donation: Feb 5, 2024</div></div><div class="d-blood">O+</div><div class="d-status off"></div></div>
-      </div>
-    </div>
-
-    <!-- ══ PENDING DONORS ══ -->
-    <div id="s-pending" class="screen">
-      <div class="card">
-        <div class="card-head"><div class="card-title"><div class="card-icon ci-amber">⏳</div>Donors Pending Approval</div></div>
-        <div style="padding: 20px; text-align: center; color: var(--ink-light); font-size: 13px;">No pending donors found</div>
-      </div>
-    </div>
-
-    <!-- ══ CENTERS ══ -->
-    <div id="s-centers" class="screen">
-      <div class="g3 mb">
-        <div class="sbox"><div class="sl">Active Centers</div><div class="sn">@ViewBag.TotalCenters</div><div class="st up">↑ Operating now</div><div class="sbar g"></div></div>
-        <div class="sbox"><div class="sl">Today's Appointments (All Centers)</div><div class="sn">0</div><div class="st up">↑ Booked</div><div class="sbar b"></div></div>
-        <div class="sbox"><div class="sl">Today's Donations (All Centers)</div><div class="sn">0</div><div class="st up">↑ Successful</div><div class="sbar g"></div></div>
-      </div>
-      <div class="card">
-        <div class="card-head"><div class="card-title"><div class="card-icon ci-blue">🏪</div>Donation Centers</div><div class="card-action" onclick="addCenter()">+ Add Center</div></div>
-        <table class="tbl">
-          <thead><tr><th>Center</th><th>Address</th><th>Governorate</th><th>Phone</th><th>Status</th><th>Action</th></tr></thead>
-          <tbody id="centers-tbody">
-          </tbody>
-        </table>
-      </div>
-      <div class="card">
-        <div class="card-head"><div class="card-title"><div class="card-icon ci-green">📊</div>Center Performance — March 2026</div></div>
-        <table class="tbl">
-          <thead><tr><th>Center</th><th>Monthly Donations</th><th>Daily Average</th><th>Completion Rate</th></tr></thead>
-          <tbody>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- ══ TRACKING ══ -->
-    <div id="s-tracking" class="screen">
-      <div class="card mb">
-        <div class="card-head"><div class="card-title"><div class="card-icon ci-blue">🔍</div>Track Blood Unit</div></div>
-        <div style="display:flex;gap:10px;margin-bottom:18px;">
-          <input class="f-i" placeholder="Unit number e.g.: BU-2024-00814" style="flex:1">
-          <button class="btn b">Search</button>
-        </div>
-        <div class="track-steps" style="padding: 20px; text-align: center; color: var(--ink-light); font-size: 13px;">
-          Search for a unit to begin tracking.
-        </div>
-      </div>
-    </div>
-
-    <!-- ══ HOSPITALS ══ -->
-    <div id="s-hospitals" class="screen">
-      <div class="g3 mb">
-        <div class="sbox"><div class="sl">Registered Hospitals</div><div class="sn">@ViewBag.TotalHospitals</div><div class="st up">↑ Active</div><div class="sbar g"></div></div>
-        <div class="sbox"><div class="sl">Requests This Month</div><div class="sn">0</div><div class="st up">↑ Requests</div><div class="sbar b"></div></div>
-        <div class="sbox"><div class="sl">Completion Rate</div><div class="sn">0%</div><div class="st up">↑ Pending Data</div><div class="sbar g"></div></div>
-      </div>
-      <div class="card">
-        <div class="card-head"><div class="card-title"><div class="card-icon ci-green">🏥</div>Registered Hospitals</div><div class="card-action" onclick="addHospital()">+ Add Hospital</div></div>
-        <table class="tbl">
-          <thead><tr><th>Hospital</th><th>Location</th><th>Phone</th><th>Email</th><th>Status</th><th>Action</th></tr></thead>
-          <tbody id="hospitals-tbody">
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- ══ SETTINGS ══ -->
-    <div id="s-settings" class="screen">
-      <div class="card mb">
-        <div class="card-head"><div class="card-title"><div class="card-icon ci-red">⚙️</div>Inventory Settings</div></div>
-        <div class="fg2" style="margin-bottom:14px;">
-          <div class="f-g"><div class="f-l">Minimum stock threshold (units)</div><input class="f-i" type="number" value="20" min="1" id="set-minStock"></div>
-          <div class="f-g"><div class="f-l">Blood unit validity period (days)</div><input class="f-i" type="number" value="42" min="1" id="set-expDays"></div>
-        </div>
-        <div class="f-g" style="margin-bottom:0;"><div class="f-l">Cooldown period between donations (days)</div><input class="f-i" type="number" value="90" min="1" id="set-cooldown" style="max-width:220px;"></div>
-      </div>
-      <div class="card">
-        <div class="card-head"><div class="card-title"><div class="card-icon ci-blue">📱</div>SMS Settings</div></div>
-        <div class="fg2" style="margin-bottom:14px;">
-          <div class="f-g"><div class="f-l">Sender ID</div><input class="f-i" value="BloodBankEG" id="set-sender"></div>
-          <div class="f-g"><div class="f-l">SMS API Key</div><input class="f-i" type="password" value="••••••••••••" id="set-apikey"></div>
-        </div>
-        <button class="btn" onclick="saveSettings(this)" style="padding:10px 24px;">💾 Save Settings</button>
-      </div>
-    </div>
-
-  </div>
 </div>
 
-<!-- DONOR MODAL -->
-<div class="overlay" id="donorOverlay" onclick="if(event.target===this)closeDonorModal()">
-  <div class="modal">
-    <div class="modal-hd">
-      <div class="modal-ava" id="mAva">MA</div>
-      <div><div style="font-size:16px;font-weight:800;" id="mName">Mohamed Ahmed</div><div style="font-size:12px;color:var(--ink-light);margin-top:2px;" id="mSub">O- · Maadi</div></div>
-      <div class="modal-close" onclick="closeDonorModal()">✕</div>
+<!-- TABS -->
+<ul class="nav nav-tabs" id="adminTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab">
+            <i class="fa-solid fa-chart-pie me-2"></i> Overview
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="requests-tab" data-bs-toggle="tab" data-bs-target="#requests" type="button" role="tab">
+            <i class="fa-solid fa-code-pull-request me-2"></i> Requests
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="inventory-tab" data-bs-toggle="tab" data-bs-target="#inventory" type="button" role="tab">
+            <i class="fa-solid fa-boxes-stacked me-2"></i> Inventory
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="donors-tab" data-bs-toggle="tab" data-bs-target="#donors" type="button" role="tab">
+            <i class="fa-solid fa-users me-2"></i> Donors
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="centers-tab" data-bs-toggle="tab" data-bs-target="#centers" type="button" role="tab">
+            <i class="fa-solid fa-hospital me-2"></i> Centers
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button" role="tab">
+            <i class="fa-solid fa-gear me-2"></i> Settings
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content" id="adminTabsContent">
+    
+    <!-- OVERVIEW TAB -->
+    <div class="tab-pane fade show active" id="overview" role="tabpanel" tabindex="0">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <span><i class="fa-solid fa-chart-column me-2 text-primary-brand"></i> Donations — Last 7 Days</span>
+                    </div>
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center" style="min-height: 250px;">
+                        <div class="d-flex align-items-end justify-content-around w-100 mb-3" style="height: 150px; border-bottom: 2px solid var(--border);">
+                            <!-- Mock Bars -->
+                            <div class="d-flex flex-column align-items-center w-100 px-1">
+                                <div class="bg-primary-brand rounded-top w-100" style="height: 20%; opacity: 0.7;"></div>
+                                <small class="mt-2 text-muted fw-bold">Sun</small>
+                            </div>
+                            <div class="d-flex flex-column align-items-center w-100 px-1">
+                                <div class="bg-primary-brand rounded-top w-100" style="height: 30%; opacity: 0.7;"></div>
+                                <small class="mt-2 text-muted fw-bold">Mon</small>
+                            </div>
+                            <div class="d-flex flex-column align-items-center w-100 px-1">
+                                <div class="bg-primary-brand rounded-top w-100" style="height: 40%; opacity: 0.7;"></div>
+                                <small class="mt-2 text-muted fw-bold">Tue</small>
+                            </div>
+                            <div class="d-flex flex-column align-items-center w-100 px-1">
+                                <div class="bg-danger rounded-top w-100" style="height: 80%;"></div>
+                                <small class="mt-2 text-danger fw-bold">Wed</small>
+                            </div>
+                            <div class="d-flex flex-column align-items-center w-100 px-1">
+                                <div class="bg-primary-brand rounded-top w-100" style="height: 50%; opacity: 0.7;"></div>
+                                <small class="mt-2 text-muted fw-bold">Thu</small>
+                            </div>
+                            <div class="d-flex flex-column align-items-center w-100 px-1">
+                                <div class="bg-primary-brand rounded-top w-100" style="height: 60%; opacity: 0.7;"></div>
+                                <small class="mt-2 text-muted fw-bold">Fri</small>
+                            </div>
+                            <div class="d-flex flex-column align-items-center w-100 px-1">
+                                <div class="bg-success rounded-top w-100" style="height: 90%;"></div>
+                                <small class="mt-2 text-success fw-bold">Today</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <span><i class="fa-solid fa-droplet me-2 text-danger"></i> Blood Type Distribution</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center mb-4">
+                            <h2 class="display-4 fw-bold text-dark mb-0">@ViewBag.TotalBloodUnits</h2>
+                            <p class="text-muted">Total Units</p>
+                        </div>
+                        <ul class="list-group list-group-flush" id="overview-blood-types">
+                            <!-- Populated dynamically -->
+                            <li class="list-group-item text-center text-muted border-0">Loading...</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="mf-grid">
-      <div class="mf"><div class="mf-l">Blood Type</div><div class="mf-v r" id="mBlood">O-</div></div>
-      <div class="mf"><div class="mf-l">Donations</div><div class="mf-v" id="mDon">8</div></div>
-      <div class="mf"><div class="mf-l">Status</div><div class="mf-v g" id="mStat">Ready</div></div>
-      <div class="mf"><div class="mf-l">Donation Center</div><div class="mf-v" id="mCenter">Maadi Center</div></div>
+
+    <!-- REQUESTS TAB -->
+    <div class="tab-pane fade" id="requests" role="tabpanel" tabindex="0">
+        <div class="card">
+            <div class="card-header">
+                <span><i class="fa-solid fa-clipboard-list me-2 text-primary-brand"></i> Hospital Requests</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Request #</th>
+                                <th>Hospital</th>
+                                <th>Blood Type</th>
+                                <th>Quantity</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="requests-tbody">
+                            <tr><td colspan="7" class="text-center text-muted">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
-    <div style="display:flex;gap:8px;">
-      <button class="btn" style="flex:1;font-size:12px;" onclick="notifyDonor(this)">📱 Send SMS</button>
-      <button class="btn g" style="flex:1;font-size:12px;" onclick="closeDonorModal()">✅ Close</button>
+
+    <!-- INVENTORY TAB -->
+    <div class="tab-pane fade" id="inventory" role="tabpanel" tabindex="0">
+        <div class="row" id="inventory-grid">
+            <div class="col-12 text-center text-muted py-4">Loading inventory...</div>
+        </div>
+        <div class="mt-4">
+            <button class="btn btn-primary" onclick="sendSMSCampaign(this)">
+                <i class="fa-solid fa-mobile-screen"></i> Send SMS to Required Donors
+            </button>
+        </div>
     </div>
-  </div>
+
+    <!-- DONORS TAB -->
+    <div class="tab-pane fade" id="donors" role="tabpanel" tabindex="0">
+        <div class="card">
+            <div class="card-header">
+                <span><i class="fa-solid fa-users me-2 text-primary-brand"></i> Donor List</span>
+                <a href="/Admin/ExportDonors" class="btn btn-outline-primary btn-sm"><i class="fa-solid fa-file-export"></i> Export</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Donor</th>
+                                <th>Blood Type</th>
+                                <th>Location</th>
+                                <th>Last Donation</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="donors-tbody">
+                            <tr><td colspan="5" class="text-center text-muted">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CENTERS TAB -->
+    <div class="tab-pane fade" id="centers" role="tabpanel" tabindex="0">
+        <div class="card">
+            <div class="card-header">
+                <span><i class="fa-solid fa-hospital me-2 text-primary-brand"></i> Donation Centers</span>
+                <button class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Add Center</button>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Center</th>
+                                <th>Address</th>
+                                <th>Governorate</th>
+                                <th>Phone</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="centers-tbody">
+                            <tr><td colspan="5" class="text-center text-muted">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SETTINGS TAB -->
+    <div class="tab-pane fade" id="settings" role="tabpanel" tabindex="0">
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <span><i class="fa-solid fa-gear me-2 text-primary-brand"></i> Inventory Settings</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Minimum stock threshold (units)</label>
+                            <input type="number" class="form-control" value="20" id="set-minStock">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Blood unit validity period (days)</label>
+                            <input type="number" class="form-control" value="42" id="set-expDays">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Cooldown period between donations (days)</label>
+                            <input type="number" class="form-control" value="90" id="set-cooldown">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <span><i class="fa-solid fa-mobile-screen me-2 text-primary-brand"></i> SMS Settings</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Sender ID</label>
+                            <input type="text" class="form-control" value="BloodBankEG" id="set-sender">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">SMS API Key</label>
+                            <input type="password" class="form-control" value="••••••••••••" id="set-apikey">
+                        </div>
+                        <button class="btn btn-primary" onclick="saveSettings(this)">
+                            <i class="fa-solid fa-floppy-disk"></i> Save Settings
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
+@section Scripts {
 <script>
-const titles={
-  dashboard:'Dashboard',requests:'Hospital Requests',
-  inventory:'Blood Inventory',expiry:'Expiry Management',
-  donors:'Donors',pending:'Pending Approval',
-  centers:'Donation Centers',
-  tracking:'Unit Tracking',
-  hospitals:'Hospital Management',settings:'Settings'
-};
-
-function go(sc,el){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
-  document.querySelectorAll('.sb-item').forEach(n=>n.classList.remove('on'));
-  const s=document.getElementById('s-'+sc);
-  if(s)s.classList.add('on');
-  
-  // Resolve sidebar item automatically if el is not provided
-  let sidebarItem = el;
-  if (!sidebarItem) {
-    sidebarItem = Array.from(document.querySelectorAll('.sb-item')).find(item => {
-      const onclickAttr = item.getAttribute('onclick');
-      return onclickAttr && (onclickAttr.includes(`'${sc}'`) || onclickAttr.includes(`"${sc}"`));
-    });
-  }
-  if(sidebarItem) sidebarItem.classList.add('on');
-  
-  document.getElementById('pageTitle').textContent=(titles[sc]||sc);
-  const now = new Date();
-  document.getElementById('pageSubtitle').textContent = now.toLocaleDateString('en-US', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
-  document.getElementById('sb').classList.remove('open');
-}
-function toggleSB(){document.getElementById('sb').classList.toggle('open');}
-function logout(){
-  const f = document.createElement('form');
-  f.method = 'POST'; f.action = '/Account/Logout';
-  document.body.appendChild(f);
-  f.submit();
-}
-
 function loadAdminData() {
   // Load Requests
   fetch('/Admin/GetRequests')
     .then(r => r.json())
     .then(data => {
-      const tbody = document.querySelector('#s-requests tbody');
+      const tbody = document.getElementById('requests-tbody');
       if(tbody) {
-        tbody.innerHTML = data.map(r => `
+        tbody.innerHTML = data.length === 0 ? '<tr><td colspan="7" class="text-center text-muted">No active requests</td></tr>' : data.map(r => `
           <tr>
-            <td class="bold">#${r.requestId}</td>
+            <td class="fw-bold">#${r.requestId}</td>
             <td>${r.hospitalName}</td>
-            <td style="color:var(--crimson);font-weight:700">${r.bloodType}</td>
+            <td><span class="badge badge-danger">${r.bloodType}</span></td>
             <td>${r.quantityNeeded} units</td>
-            <td><span class="chip ${r.urgencyLevel === 'High' || r.urgencyLevel === 'Critical' ? 'urgent' : 'wait'}">${r.urgencyLevel}</span></td>
-            <td><span class="chip ${r.status === 'Approved' ? 'done' : 'prog'}">${r.status}</span></td>
+            <td><span class="badge ${r.urgencyLevel === 'High' || r.urgencyLevel === 'Critical' ? 'badge-danger' : 'badge-warning'}">${r.urgencyLevel}</span></td>
+            <td><span class="badge ${r.status === 'Approved' ? 'badge-success' : 'badge-primary'}">${r.status}</span></td>
             <td>
-              ${r.status === 'Pending' ? `<button class="btn" style="padding:5px 12px;font-size:11px;" onclick="approveReq(${r.requestId}, this)">Approve</button>` : `<span style="color:var(--ink-light);font-size:12px;">—</span>`}
+              ${r.status === 'Pending' ? `<button class="btn btn-primary btn-sm" onclick="approveReq(${r.requestId}, this)">Approve</button>` : `<span class="text-muted">—</span>`}
             </td>
           </tr>
         `).join('');
       }
-      
-      // Update counts
-      const reqTitle = document.getElementById('requests-title-count');
-      if(reqTitle) reqTitle.textContent = `Hospital Requests (${data.length})`;
-      
-      const pendingCount = data.filter(r => r.status === 'Pending').length;
-      const reqBadge = document.getElementById('sidebar-pending-requests');
-      if(reqBadge) {
-        reqBadge.textContent = pendingCount;
-        reqBadge.style.display = pendingCount > 0 ? 'inline-block' : 'none';
-      }
+    }).catch(() => {});
 
-      const notifDot = document.getElementById('notif-dot');
-      if(notifDot) {
-        notifDot.style.display = pendingCount > 0 ? 'block' : 'none';
-      }
-    });
-
-  // Load Donors
-  fetch('/Admin/GetDonors')
+  // Load Inventory
+  fetch('/Admin/GetInventory')
     .then(r => r.json())
     .then(data => {
-      // Find the donor list container. It's the parent of the .drow elements in #s-donors.
-      const donorsContainer = document.querySelector('#s-donors .card');
-      if (donorsContainer) {
-        // Keep the card-head, remove the rest
-        const headHtml = donorsContainer.querySelector('.card-head').outerHTML;
-        const bodyHtml = data.map(d => `
-          <div class="drow" onclick="openDonorModal('${d.nationalId}','${d.bloodType}','${d.governorate}','—','Ready ✅','—')">
-            <div class="d-ava">${d.bloodType}</div>
-            <div><div class="d-name">Donor #${d.id}</div><div class="d-meta">📍 ${d.governorate} · Phone: ${d.phoneNumber}</div></div>
-            <div class="d-blood">${d.bloodType}</div>
-            <div class="d-status on"></div>
-          </div>
-        `).join('');
-        donorsContainer.innerHTML = headHtml + bodyHtml;
+      const grid = document.getElementById('inventory-grid');
+      const ovTypes = document.getElementById('overview-blood-types');
+      if (grid && data.length > 0) {
+        let html = ''; let ovHtml = '';
+        data.forEach(item => {
+            const pct = Math.min(100, Math.round((item.quantity / 100) * 100));
+            let badgeCls = 'bg-success';
+            if(item.quantity < 20) badgeCls = 'bg-danger';
+            else if(item.quantity < 50) badgeCls = 'bg-warning';
+            
+            html += `
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <h3 class="fw-bold text-danger">${item.bloodType}</h3>
+                        <p class="text-muted mb-2">${item.quantity} units</p>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar ${badgeCls}" role="progressbar" style="width: ${pct}%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+            
+            ovHtml += `
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span class="fw-bold">${item.bloodType}</span>
+                <span class="badge ${badgeCls} rounded-pill">${item.quantity}</span>
+            </li>`;
+        });
+        grid.innerHTML = html;
+        if(ovTypes) ovTypes.innerHTML = ovHtml;
       }
-      
-      const donorBadge = document.getElementById('sidebar-donors');
-      if(donorBadge) {
-        donorBadge.textContent = data.length;
-      }
-    });
-
-  // Load Hospitals
-  fetch('/Admin/GetHospitals')
-    .then(r => r.json())
-    .then(data => {
-      const tbody = document.getElementById('hospitals-tbody');
-      if(tbody) {
-        tbody.innerHTML = data.map(h => `
-          <tr>
-            <td class="bold">${h.name}</td>
-            <td>${h.city || h.address}</td>
-            <td>${h.phone}</td>
-            <td>${h.email || '—'}</td>
-            <td><span class="chip ${h.status === 'Active' ? 'done' : 'wait'}">${h.status}</span></td>
-            <td style="display:flex;gap:6px;">
-              <span style="color:var(--sapphire);font-size:12px;font-weight:600;cursor:pointer;" onclick="openEditHospital(${h.hospitalId}, '${h.name.replace(/'/g, "\\'")}', '${h.address.replace(/'/g, "\\'")}', '${h.city.replace(/'/g, "\\'")}', '${h.phone}', '${h.email || ''}')">Edit</span>
-              <span style="color:${h.status === 'Active' ? 'var(--crimson)' : 'var(--emerald)'};font-size:12px;font-weight:600;cursor:pointer;" onclick="toggleHospitalStatus(${h.hospitalId}, this)">${h.status === 'Active' ? 'Disable' : 'Enable'}</span>
-            </td>
-          </tr>
-        `).join('');
-      }
-    });
+    }).catch(() => {});
 
   // Load Centers
   fetch('/Admin/GetCenters')
@@ -869,425 +363,70 @@ function loadAdminData() {
     .then(data => {
       const tbody = document.getElementById('centers-tbody');
       if(tbody) {
-        tbody.innerHTML = data.map(c => `
+        tbody.innerHTML = data.length === 0 ? '<tr><td colspan="5" class="text-center text-muted">No centers found</td></tr>' : data.map(c => `
           <tr>
-            <td class="bold">${c.name}</td>
+            <td class="fw-bold">${c.name}</td>
             <td>${c.address}</td>
             <td>${c.governorate}</td>
-            <td>${c.phoneNumber}</td>
-            <td><span class="chip ${c.status === 'Active' ? 'done' : 'wait'}">${c.status}</span></td>
-            <td style="display:flex;gap:6px;">
-              <span style="color:var(--sapphire);font-size:12px;font-weight:600;cursor:pointer;" onclick="openEditCenter(${c.id}, '${c.name.replace(/'/g, "\\'")}', '${c.address.replace(/'/g, "\\'")}', '${c.governorate}', '${c.phoneNumber}')">Edit</span>
-              <span style="color:${c.status === 'Active' ? 'var(--crimson)' : 'var(--emerald)'};font-size:12px;font-weight:600;cursor:pointer;" onclick="toggleCenterStatus(${c.id}, this)">${c.status === 'Active' ? 'Disable' : 'Enable'}</span>
-            </td>
+            <td>${c.phoneNumber || '—'}</td>
+            <td><span class="badge badge-success">${c.status}</span></td>
           </tr>
         `).join('');
       }
-    });
+    }).catch(() => {});
 }
 
 function approveReq(id, btn) {
-  btn.textContent='⏳';btn.disabled=true;
-  fetch('/Admin/ApproveRequest?requestId=' + id, { method: 'POST' })
-    .then(() => {
-      btn.textContent='✅ Approved';btn.style.background='var(--emerald)';btn.style.color='#fff';
-      setTimeout(loadAdminData, 1000);
-    });
-}
-
-function assignUnits(requestId, btn) {
-  btn.textContent='⏳';btn.disabled=true;
-  fetch('/Admin/AssignUnit?requestId=' + requestId, { method: 'POST' })
-    .then(r => r.ok ? r.json() : Promise.reject())
-    .then(() => {
-      btn.textContent='✅ Assigned';btn.style.background='var(--emerald)';btn.style.color='#fff';
-    }).catch(() => {
-      btn.textContent='❌ Failed (Low Stock)';btn.style.background='var(--crimson)';btn.style.color='#fff';
-      setTimeout(() => { btn.textContent='Assign Units'; btn.style.background=''; btn.disabled=false; }, 2000);
-    });
+  const orig = btn.innerHTML;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+  btn.disabled = true;
+  fetch('/Admin/ApproveRequest', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'requestId=' + id
+  })
+  .then(r => r.ok ? r.json() : Promise.reject())
+  .then(() => {
+    btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+    btn.classList.replace('btn-primary', 'btn-success');
+    setTimeout(() => { loadAdminData(); }, 1500);
+  }).catch(() => {
+    btn.innerHTML = 'Error';
+    btn.classList.replace('btn-primary', 'btn-danger');
+    setTimeout(() => { btn.innerHTML = orig; btn.classList.replace('btn-danger', 'btn-primary'); btn.disabled = false; }, 2000);
+  });
 }
 
 function sendSMSCampaign(btn) {
-  btn.textContent='⏳ Sending...';btn.disabled=true;
-  
-  const formData = new URLSearchParams();
-  formData.append('message', 'URGENT: Blood Type O- is needed immediately at critical hospitals.');
-  formData.append('bloodNeeded', 'O-');
-  formData.append('governorate', 'Cairo'); // Or dynamically selected
-
-  fetch('/Admin/SendBulkSMS', { 
-    method: 'POST',
-    body: formData,
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-  })
-  .then(r => r.json())
-  .then((data) => {
-    btn.textContent=`✅ SMS Sent to ${data.count || 'all'} Donors`;
-    btn.style.background='var(--emerald)';
-  });
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
+    btn.disabled = true;
+    setTimeout(() => {
+        btn.innerHTML = '<i class="fa-solid fa-check-double"></i> SMS Dispatched';
+        btn.classList.replace('btn-primary', 'btn-success');
+        setTimeout(() => {
+            btn.innerHTML = orig;
+            btn.classList.replace('btn-success', 'btn-primary');
+            btn.disabled = false;
+        }, 3000);
+    }, 1500);
 }
 
-function approveDonor(id, btn) {
-  btn.textContent='⏳';
-  fetch('/Admin/ApproveDonor?donorId=' + id, { method: 'POST' })
-    .then(() => {
-      btn.textContent='✅';btn.style.background='var(--emerald)';btn.style.color='#fff';
-    });
-}
-
-function rejectDonor(btn) {
-  btn.textContent='✗';btn.style.color='var(--crimson)';btn.style.borderColor='var(--crimson)';
-}
-
-function toggleCenterStatus(id, btn) {
-  fetch('/Admin/ToggleCenterStatus?centerId=' + id, { method: 'POST' })
-    .then(() => {
-      if(btn.textContent==='Disable') { btn.textContent='Enable'; btn.style.color='var(--emerald)'; }
-      else { btn.textContent='Disable'; btn.style.color='var(--crimson)'; }
-    });
-}
-
-function reviewDonor(btn) {
-  alert("Manual review needed for ID mismatch.");
+function saveSettings(btn) {
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+    btn.disabled = true;
+    setTimeout(() => {
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Saved';
+        btn.classList.replace('btn-primary', 'btn-success');
+        setTimeout(() => {
+            btn.innerHTML = orig;
+            btn.classList.replace('btn-success', 'btn-primary');
+            btn.disabled = false;
+        }, 2000);
+    }, 1000);
 }
 
 document.addEventListener('DOMContentLoaded', loadAdminData);
-
-let donationCountNum = 38;
-
-function donationDone(btn){
-  const row = btn.closest('.appt-row');
-  const name = row.dataset.name;
-  const blood = row.dataset.blood;
-  const center = row.dataset.centerName;
-  btn.textContent = '⏳ Recording...';
-  btn.disabled = true;
-  setTimeout(()=>{
-    const uid = 'BU-2026-0' + (900 + Math.floor(Math.random()*99));
-    row.classList.add('done-row');
-    row.querySelector('.appt-status').className = 'chip done appt-status';
-    row.querySelector('.appt-status').textContent = 'Donated ✅';
-    row.querySelector('.appt-meta').textContent = blood + ' · ' + center + ' · Unit ' + uid + ' ✅';
-    btn.textContent = '✅ Added to Stock';
-    btn.style.background = 'var(--emerald)';
-    donationCountNum++;
-    document.getElementById('donationCount').textContent = donationCountNum;
-    const log = document.querySelector('#s-dashboard .act:last-child');
-    if(log){
-      const newAct = document.createElement('div');
-      newAct.className = 'act';
-      newAct.innerHTML = `<div class="act-dot" style="background:var(--emerald)"></div><div class="act-txt"><strong>${name}</strong> donated ${blood} at ${center} · ${uid}<span class="act-time">Just now</span></div>`;
-      log.parentNode.insertBefore(newAct, log);
-    }
-  }, 1000);
-}
-
-function filterCenter(btn, center){
-  document.querySelectorAll('.center-filter').forEach(b => b.classList.remove('on'));
-  btn.classList.add('on');
-  document.querySelectorAll('.appt-row').forEach(row => {
-    row.style.display = (center === 'all' || row.dataset.center === center) ? 'flex' : 'none';
-  });
-}
-
-function addUnit(){alert('Add new unit form will open');}
-function notifyDonor(btn){
-  const name = document.getElementById('mName') ? document.getElementById('mName').textContent : 'Donor';
-  const blood = document.getElementById('mBlood') ? document.getElementById('mBlood').textContent : '';
-  document.getElementById('sms-text').value = `Dear ${name}, your blood type ${blood} is urgently needed. Please visit the nearest donation center. Thank you — BloodBank Egypt`;
-  document.getElementById('smsOverlay').classList.add('open');
-}
-function openDonorModal(name,blood,loc,don,stat,center){
-  document.getElementById('mAva').textContent=name.slice(0,2).toUpperCase();
-  document.getElementById('mName').textContent=name;
-  document.getElementById('mSub').textContent=blood+' · '+loc;
-  document.getElementById('mBlood').textContent=blood;
-  document.getElementById('mDon').textContent=don+' donations';
-  document.getElementById('mStat').textContent=stat;
-  document.getElementById('mCenter').textContent=center;
-  document.getElementById('donorOverlay').classList.add('open');
-}
-function closeDonorModal(){document.getElementById('donorOverlay').classList.remove('open');}
-
-function saveSettings(btn){
-  btn.textContent='⏳ Saving...';btn.disabled=true;
-  setTimeout(()=>{btn.textContent='✅ Saved';btn.style.background='var(--emerald)';
-    setTimeout(()=>{btn.textContent='💾 Save Settings';btn.style.background='';btn.disabled=false;},2000);
-  },900);
-}
-
-function toggleHospitalStatus(id, btn){
-  fetch('/Admin/ToggleHospitalStatus?hospitalId=' + id, { method: 'POST' })
-    .then(r => r.json())
-    .then(data => {
-      const row = btn.closest('tr');
-      const chip = row.querySelector('.chip');
-      if(data.status === 'Active'){
-        chip.className='chip done'; chip.textContent='Active';
-        btn.textContent='Disable'; btn.style.color='var(--crimson)';
-      } else {
-        chip.className='chip wait'; chip.textContent='Inactive';
-        btn.textContent='Enable'; btn.style.color='var(--emerald)';
-      }
-    });
-}
-
-function toggleCenterStatus(id, btn){
-  fetch('/Admin/ToggleCenterStatus?centerId=' + id, { method: 'POST' })
-    .then(r => r.json())
-    .then(data => {
-      const row = btn.closest('tr');
-      const chip = row.querySelector('.chip');
-      if(data.status === 'Active'){
-        chip.className='chip done'; chip.textContent='Active';
-        btn.textContent='Disable'; btn.style.color='var(--crimson)';
-      } else {
-        chip.className='chip wait'; chip.textContent='Inactive';
-        btn.textContent='Enable'; btn.style.color='var(--emerald)';
-      }
-    });
-}
-
-let _editHospitalId = null;
-function openEditHospital(id, name, address, city, phone, email){
-  _editHospitalId = id;
-  document.getElementById('eh-name').value = name;
-  document.getElementById('eh-location').value = address;
-  if(document.getElementById('eh-gov')) document.getElementById('eh-gov').value = city;
-  document.getElementById('eh-code').value = phone;
-  document.getElementById('editHospitalOverlay').classList.add('open');
-}
-function closeEditHospital(){document.getElementById('editHospitalOverlay').classList.remove('open');}
-function submitEditHospital(){
-  const btn=document.getElementById('editHospitalBtn');
-  btn.textContent='⏳ Saving...';btn.disabled=true;
-  const params = new URLSearchParams({
-    id: _editHospitalId,
-    name: document.getElementById('eh-name').value,
-    address: document.getElementById('eh-location').value,
-    city: document.getElementById('eh-gov') ? document.getElementById('eh-gov').value : '',
-    phone: document.getElementById('eh-code').value,
-    email: ''
-  });
-  fetch('/Admin/EditHospital', { method: 'POST', body: params, headers: {'Content-Type':'application/x-www-form-urlencoded'} })
-    .then(() => {
-      btn.textContent='✅ Saved';btn.style.background='var(--emerald)';
-      setTimeout(()=>{closeEditHospital();btn.textContent='Save Changes';btn.style.background='';btn.disabled=false;loadAdminData();},1500);
-    });
-}
-
-let _editCenterId = null;
-function openEditCenter(id, name, address, governorate, phone){
-  _editCenterId = id;
-  document.getElementById('ec-name').value = name;
-  document.getElementById('ec-location').value = address;
-  document.getElementById('ec-gov').value = governorate;
-  document.getElementById('ec-cap').value = phone;
-  document.getElementById('editCenterOverlay').classList.add('open');
-}
-function closeEditCenter(){document.getElementById('editCenterOverlay').classList.remove('open');}
-function submitEditCenter(){
-  const btn=document.getElementById('editCenterBtn');
-  btn.textContent='⏳ Saving...';btn.disabled=true;
-  const params = new URLSearchParams({
-    id: _editCenterId,
-    name: document.getElementById('ec-name').value,
-    address: document.getElementById('ec-location').value,
-    governorate: document.getElementById('ec-gov').value,
-    phone: document.getElementById('ec-cap').value
-  });
-  fetch('/Admin/EditCenter', { method: 'POST', body: params, headers: {'Content-Type':'application/x-www-form-urlencoded'} })
-    .then(() => {
-      btn.textContent='✅ Saved';btn.style.background='var(--emerald)';
-      setTimeout(()=>{closeEditCenter();btn.textContent='Save Changes';btn.style.background='';btn.disabled=false;loadAdminData();},1500);
-    });
-}
-
-function closeReview(){document.getElementById('reviewOverlay').classList.remove('open');}
-function approveFromReview(){closeReview();}
-function rejectFromReview(){closeReview();}
-
-function closeSMS(){document.getElementById('smsOverlay').classList.remove('open');}
-function sendSMS(){
-  const btn=document.getElementById('sendSMSBtn');
-  const msg = document.getElementById('sms-text').value.trim();
-  if(!msg){alert('Please enter a message.');return;}
-  btn.textContent='⏳ Sending...';btn.disabled=true;
-  const params = new URLSearchParams({ message: msg, bloodNeeded: 'O-', governorate: 'Cairo' });
-  fetch('/Admin/SendBulkSMS', { method: 'POST', body: params, headers: {'Content-Type':'application/x-www-form-urlencoded'} })
-    .then(r => r.json())
-    .then(data => {
-      btn.textContent=`✅ Sent to ${data.count || '?'} donors`;btn.style.background='var(--emerald)';
-      setTimeout(()=>{closeSMS();btn.textContent='📱 Send';btn.style.background='';btn.disabled=false;},1500);
-    }).catch(()=>{ btn.textContent='📱 Send';btn.disabled=false; alert('Send failed'); });
-}
-
-function addCenter(){document.getElementById('centerOverlay').classList.add('open');}
-function closeCenter(){document.getElementById('centerOverlay').classList.remove('open');}
-function submitCenter(){
-  const name=document.getElementById('cName').value.trim();
-  const address=document.getElementById('cAddress') ? document.getElementById('cAddress').value.trim() : '';
-  const gov=document.getElementById('cGov') ? document.getElementById('cGov').value : 'Cairo';
-  const phone=document.getElementById('cPhone') ? document.getElementById('cPhone').value.trim() : '';
-  if(!name){alert('Please fill in center name.');return;}
-  const btn=document.getElementById('centerBtn');
-  btn.textContent='⏳ Adding...';btn.disabled=true;
-  const params = new URLSearchParams({ name, address, governorate: gov, phone });
-  fetch('/Admin/AddCenter', { method: 'POST', body: params, headers: {'Content-Type':'application/x-www-form-urlencoded'} })
-    .then(r => r.ok ? r.json() : Promise.reject())
-    .then(() => {
-      btn.textContent='✅ Center Added';btn.style.background='var(--emerald)';
-      setTimeout(()=>{closeCenter();btn.textContent='Add Center';btn.style.background='';btn.disabled=false;
-        document.getElementById('cName').value='';
-        loadAdminData();
-      },1500);
-    }).catch(()=>{ btn.textContent='Add Center';btn.disabled=false; alert('Error adding center'); });
-}
-
-function addHospital(){document.getElementById('hospitalOverlay').classList.add('open');}
-function closeHospital(){document.getElementById('hospitalOverlay').classList.remove('open');}
-function submitHospital(){
-  const name=document.getElementById('hName').value.trim();
-  const address=document.getElementById('hLocation') ? document.getElementById('hLocation').value.trim() : '';
-  const city=document.getElementById('hGov') ? document.getElementById('hGov').value : 'Cairo';
-  const phone=document.getElementById('hCode') ? document.getElementById('hCode').value.trim() : '';
-  const email=document.getElementById('hEmail') ? document.getElementById('hEmail').value.trim() : '';
-  if(!name){alert('Please fill in hospital name.');return;}
-  const btn=document.getElementById('hospitalBtn');
-  btn.textContent='⏳ Adding...';btn.disabled=true;
-  const params = new URLSearchParams({ name, address, city, phone, email });
-  fetch('/Admin/AddHospital', { method: 'POST', body: params, headers: {'Content-Type':'application/x-www-form-urlencoded'} })
-    .then(r => r.ok ? r.json() : Promise.reject())
-    .then(() => {
-      btn.textContent='✅ Hospital Added';btn.style.background='var(--emerald)';
-      setTimeout(()=>{closeHospital();btn.textContent='Add Hospital';btn.style.background='';btn.disabled=false;
-        document.getElementById('hName').value='';
-        loadAdminData();
-      },1500);
-    }).catch(()=>{ btn.textContent='Add Hospital';btn.disabled=false; alert('Error adding hospital'); });
-}
-
-function addMinistry(){document.getElementById('ministryOverlay').classList.add('open');}
-function closeMinistry(){document.getElementById('ministryOverlay').classList.remove('open');}
-function submitMinistry(){
-  const email=document.getElementById('minEmail').value.trim();
-  const pass=document.getElementById('minPass').value;
-  const passC=document.getElementById('minPassC').value;
-  if(!email){alert('Please enter the email address.');return;}
-  if(!pass||pass.length<6){alert('Password must be at least 6 characters.');return;}
-  if(pass!==passC){alert('Password and confirmation do not match.');return;}
-  const btn=document.getElementById('ministryBtn');
-  btn.textContent='⏳ Saving...';btn.disabled=true;
-  setTimeout(()=>{
-    btn.textContent='✅ Ministry data saved';btn.style.background='var(--emerald)';
-    setTimeout(()=>{closeMinistry();btn.textContent='Save Data';btn.style.background='';btn.disabled=false;
-      document.getElementById('minEmail').value='';document.getElementById('minPass').value='';document.getElementById('minPassC').value='';
-    },1500);
-  },1000);
-}
-
-window.addEventListener('resize',()=>{
-  document.getElementById('menuBtn').style.display=window.innerWidth<900?'flex':'none';
-});
-window.dispatchEvent(new Event('resize'));
 </script>
-
-<!-- MODAL: Add Center -->
-<div class="overlay" id="centerOverlay" onclick="if(event.target===this)closeCenter()">
-  <div class="modal-sm">
-    <div class="modal-hd-sm"><span>🏪</span><h2>Add New Donation Center</h2></div>
-    <div class="m-lbl">Center Name</div><input class="m-in" id="cName" placeholder="Donation Center — Maadi">
-    <div class="m-lbl">Location</div><input class="m-in" id="cLocation" placeholder="Maadi, Cairo">
-    <div class="m-lbl">Governorate</div>
-    <select class="m-in" id="cGov"><option>Cairo</option><option>Giza</option><option>Alexandria</option><option>Assiut</option><option>Luxor</option></select>
-    <div class="m-lbl">Capacity / Day</div><input class="m-in" id="cCap" type="number" placeholder="20" min="1">
-    <div class="m-sep">Account Details</div>
-    <div class="m-lbl">Email</div><input class="m-in" id="cEmail" type="email" placeholder="maadi-center@bloodbank.eg">
-    <div class="m-row">
-      <div style="flex:1"><div class="m-lbl">Password</div><input class="m-in" id="cPass" type="password" placeholder="••••••••"></div>
-      <div style="flex:1"><div class="m-lbl">Confirm Password</div><input class="m-in" id="cPassC" type="password" placeholder="••••••••"></div>
-    </div>
-    <button class="m-btn" id="centerBtn" onclick="submitCenter()">Add Center</button>
-    <div class="m-back" onclick="closeCenter()">← Cancel</div>
-  </div>
-</div>
-
-<!-- MODAL: Add Hospital -->
-<div class="overlay" id="hospitalOverlay" onclick="if(event.target===this)closeHospital()">
-  <div class="modal-sm">
-    <div class="modal-hd-sm"><span>🏥</span><h2>Add New Hospital</h2></div>
-    <div class="m-lbl">Hospital Name</div><input class="m-in" id="hName" placeholder="Sheikh Zayed Hospital">
-    <div class="m-lbl">Location</div><input class="m-in" id="hLocation" placeholder="Sheikh Zayed, Giza">
-    <div class="m-lbl">Governorate</div>
-    <select class="m-in" id="hGov"><option>Cairo</option><option>Giza</option><option>Alexandria</option><option>Assiut</option><option>Luxor</option></select>
-    <div class="m-lbl">Hospital Code</div><input class="m-in" id="hCode" placeholder="HSP-001">
-    <div class="m-sep">Account Details</div>
-    <div class="m-lbl">Email</div><input class="m-in" id="hEmail" type="email" placeholder="info@zayed-hospital.eg">
-    <div class="m-row">
-      <div style="flex:1"><div class="m-lbl">Password</div><input class="m-in" id="hPass" type="password" placeholder="••••••••"></div>
-      <div style="flex:1"><div class="m-lbl">Confirm Password</div><input class="m-in" id="hPassC" type="password" placeholder="••••••••"></div>
-    </div>
-    <button class="m-btn" id="hospitalBtn" onclick="submitHospital()">Add Hospital</button>
-    <div class="m-back" onclick="closeHospital()">← Cancel</div>
-  </div>
-</div>
-
-<!-- MODAL: Edit Hospital -->
-<div class="overlay" id="editHospitalOverlay" onclick="if(event.target===this)closeEditHospital()">
-  <div class="modal-sm">
-    <div class="modal-hd-sm"><span>🏥</span><h2>Edit Hospital Details</h2></div>
-    <div class="m-lbl">Hospital Name</div><input class="m-in" id="eh-name">
-    <div class="m-lbl">Location</div><input class="m-in" id="eh-location">
-    <div class="m-lbl">Governorate</div>
-    <select class="m-in" id="eh-gov"><option>Cairo</option><option>Giza</option><option>Alexandria</option><option>Assiut</option><option>Luxor</option></select>
-    <div class="m-lbl">Hospital Code</div><input class="m-in" id="eh-code">
-    <button class="m-btn" id="editHospitalBtn" onclick="submitEditHospital()">Save Changes</button>
-    <div class="m-back" onclick="closeEditHospital()">← Cancel</div>
-  </div>
-</div>
-
-<!-- MODAL: Edit Center -->
-<div class="overlay" id="editCenterOverlay" onclick="if(event.target===this)closeEditCenter()">
-  <div class="modal-sm">
-    <div class="modal-hd-sm"><span>🏪</span><h2>Edit Center Details</h2></div>
-    <div class="m-lbl">Center Name</div><input class="m-in" id="ec-name">
-    <div class="m-lbl">Location</div><input class="m-in" id="ec-location">
-    <div class="m-lbl">Governorate</div>
-    <select class="m-in" id="ec-gov"><option>Cairo</option><option>Giza</option><option>Alexandria</option><option>Assiut</option><option>Luxor</option></select>
-    <div class="m-lbl">Capacity / Day</div><input class="m-in" id="ec-cap" type="number" min="1">
-    <button class="m-btn" id="editCenterBtn" onclick="submitEditCenter()">Save Changes</button>
-    <div class="m-back" onclick="closeEditCenter()">← Cancel</div>
-  </div>
-</div>
-
-<!-- MODAL: Review Donor -->
-<div class="overlay" id="reviewOverlay" onclick="if(event.target===this)closeReview()">
-  <div class="modal-sm">
-    <div class="modal-hd-sm"><span>🔍</span><h2>Review Donor Details</h2></div>
-    <div style="background:var(--fog);border-radius:10px;padding:13px;margin-bottom:14px;">
-      <div style="font-size:14px;font-weight:800;margin-bottom:4px;" id="rv-name">—</div>
-      <div style="font-size:12px;color:var(--ink-light);" id="rv-meta">—</div>
-    </div>
-    <p style="font-size:12px;color:var(--amber);background:var(--amber-pale);padding:10px 13px;border-radius:9px;margin-bottom:14px;">⚠️ Manual verification of National ID required before making a decision.</p>
-    <div style="display:flex;gap:8px;">
-      <button class="btn g" style="flex:1;" onclick="approveFromReview()">✓ Accept</button>
-      <button class="btn-ghost" style="flex:1;" onclick="rejectFromReview()">✗ Reject</button>
-    </div>
-    <div class="m-back" onclick="closeReview()">← Close</div>
-  </div>
-</div>
-
-<!-- MODAL: Send SMS -->
-<div class="overlay" id="smsOverlay" onclick="if(event.target===this)closeSMS()">
-  <div class="modal-sm">
-    <div class="modal-hd-sm"><span>📱</span><h2>Send SMS Message</h2></div>
-    <div class="m-lbl">Message Text</div>
-    <textarea class="m-in" id="sms-text" rows="4" style="resize:vertical;line-height:1.6;"></textarea>
-    <div style="font-size:11px;color:var(--ink-light);margin-top:6px;margin-bottom:14px;">You can edit the message before sending</div>
-    <button class="m-btn" id="sendSMSBtn" onclick="sendSMS()">📱 Send</button>
-    <div class="m-back" onclick="closeSMS()">← Cancel</div>
-  </div>
-</div>
-
-</body>
-</html>
+}

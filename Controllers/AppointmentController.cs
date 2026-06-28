@@ -55,6 +55,20 @@ namespace BloodBank.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Business Rule: 90-day recovery period check
+                var lastDonation = await _context.Appointments
+                    .Where(a => a.DonorId == appointment.DonorId && a.Status == "Completed")
+                    .OrderByDescending(a => a.AppointmentDate)
+                    .FirstOrDefaultAsync();
+
+                if (lastDonation != null && (DateTime.Now - lastDonation.AppointmentDate).TotalDays < 90)
+                {
+                    ModelState.AddModelError("", "Donor must wait 90 days between donations.");
+                    ViewBag.HospitalId = _context.Hospitals.ToList();
+                    ViewBag.DonorId = _context.Donors.ToList();
+                    return View(appointment);
+                }
+
                 _context.Add(appointment);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

@@ -4,23 +4,24 @@ namespace BloodBank.Models
 {
     public class RegisterViewModel
     {
-        [Required(ErrorMessage = "اسم المستخدم مطلوب")]
-        [StringLength(20, MinimumLength = 3, ErrorMessage = "اسم المستخدم يجب أن يكون بين 3 و 20 حرفاً")]
-        public string Username { get; set; } = string.Empty;
+        [Required] public string FirstName { get; set; } = string.Empty;
+        [Required] public string LastName  { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "البريد الإلكتروني مطلوب")]
-        [EmailAddress(ErrorMessage = "بريد إلكتروني غير صالح")]
+        [Required, EmailAddress]
         public string Email { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "كلمة المرور مطلوبة")]
-        [DataType(DataType.Password)]
-        [StringLength(100, MinimumLength = 6, ErrorMessage = "كلمة المرور يجب أن لا تقل عن 6 أحرف")]
+        [Required, DataType(DataType.Password), MinLength(8)]
         public string Password { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "تأكيد كلمة المرور مطلوب")]
-        [DataType(DataType.Password)]
-        [Compare("Password", ErrorMessage = "كلمة المرور وتأكيد كلمة المرور غير متطابقين.")]
+        [Required, DataType(DataType.Password), Compare("Password")]
         public string ConfirmPassword { get; set; } = string.Empty;
+
+        public string? NationalId  { get; set; }
+        public DateTime DateOfBirth { get; set; } = DateTime.Today.AddYears(-25);
+        public string? Gender      { get; set; }
+        public string? BloodType   { get; set; }
+        public string? PhoneNumber { get; set; }
+        public string? Governorate { get; set; }
     }
 
     public class LoginViewModel

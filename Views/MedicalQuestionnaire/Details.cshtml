@@ -1,114 +1,116 @@
 @model BloodBank.Models.MedicalQuestionnaire
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Questionnaire Details";
+    var isEligible = !Model.HasUncontrolledBloodPressure
+        && !Model.TakesBloodThinners
+        && !Model.HasActiveInfectiousDisease
+        && !Model.HasChronicHeartOrLungCondition
+        && !Model.HadSurgeryOrMajorIllnessLast6Months
+        && !Model.DonatedWholeBloodLast90Days;
 }
 
-<h1>Details</h1>
-
-<div>
-    <h4>MedicalQuestionnaire</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Donor)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Donor.Id)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AgeRange)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AgeRange)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.WeightRange)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.WeightRange)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.HadFullMealInLast4Hours)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.HadFullMealInLast4Hours)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.HasUncontrolledBloodPressure)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.HasUncontrolledBloodPressure)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TakesBloodThinners)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TakesBloodThinners)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.HasActiveInfectiousDisease)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.HasActiveInfectiousDisease)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.HasChronicHeartOrLungCondition)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.HasChronicHeartOrLungCondition)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.HadSurgeryOrMajorIllnessLast6Months)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.HadSurgeryOrMajorIllnessLast6Months)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsPregnantOrRecentlyPregnant)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsPregnantOrRecentlyPregnant)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DonatedWholeBloodLast90Days)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DonatedWholeBloodLast90Days)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DonatedPlateletsLast14Days)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DonatedPlateletsLast14Days)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.HadBloodTransfusionLast12Months)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.HadBloodTransfusionLast12Months)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TraveledToMalariaRiskAreaLast12Months)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TraveledToMalariaRiskAreaLast12Months)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.HadTattooOrPiercingLast6Months)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.HadTattooOrPiercingLast6Months)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.HadCovidOrVaccineLast28Days)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.HadCovidOrVaccineLast28Days)
-        </dd>
-    </dl>
+<div class="page-header mt-4">
+    <div>
+        <h2 class="page-title d-flex align-items-center gap-2">
+            <i class="fa-solid fa-clipboard-list text-primary-brand"></i> Questionnaire Details
+        </h2>
+        <p class="text-muted mb-0">Questionnaire #@Model?.Id</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-outline-primary">
+            <i class="fa-solid fa-pen-to-square me-2"></i>Edit
+        </a>
+        <a asp-action="Index" class="btn btn-outline-primary">
+            <i class="fa-solid fa-arrow-left me-2"></i>Back to List
+        </a>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+
+        <!-- Eligibility Summary -->
+        @if (isEligible)
+        {
+            <div class="alert alert-success d-flex gap-2 mb-4">
+                <i class="fa-solid fa-circle-check fa-lg mt-1"></i>
+                <div><strong>Eligible to Donate</strong> — This donor meets all eligibility requirements.</div>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-danger d-flex gap-2 mb-4">
+                <i class="fa-solid fa-ban fa-lg mt-1"></i>
+                <div><strong>Not Eligible to Donate</strong> — One or more disqualifying conditions were found.</div>
+            </div>
+        }
+
+        <!-- Basic Info Card -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <span><i class="fa-solid fa-user text-primary-brand me-2"></i>Donor Information</span>
+            </div>
+            <div class="card-body">
+                <dl class="row g-0">
+                    <dt class="col-sm-4 text-muted fw-semibold py-2 border-bottom" style="font-size:0.875rem;">Donor ID</dt>
+                    <dd class="col-sm-8 py-2 border-bottom fw-bold">@Html.DisplayFor(m => m.Donor.Id)</dd>
+
+                    <dt class="col-sm-4 text-muted fw-semibold py-2 border-bottom" style="font-size:0.875rem;">Age Range</dt>
+                    <dd class="col-sm-8 py-2 border-bottom">@Html.DisplayFor(m => m.AgeRange)</dd>
+
+                    <dt class="col-sm-4 text-muted fw-semibold py-2" style="font-size:0.875rem;">Weight Range</dt>
+                    <dd class="col-sm-8 py-2">@Html.DisplayFor(m => m.WeightRange)</dd>
+                </dl>
+            </div>
+        </div>
+
+        <!-- Health Questions Card -->
+        <div class="card">
+            <div class="card-header">
+                <span><i class="fa-solid fa-heart-pulse text-primary-brand me-2"></i>Health Screening Answers</span>
+            </div>
+            <div class="card-body">
+                <div class="row g-2">
+                    @{
+                        var checks = new[]
+                        {
+                            new { Label = "Had a full meal in the last 4 hours", Value = Model.HadFullMealInLast4Hours, Disqualifies = false, Icon = "fa-utensils" },
+                            new { Label = "Has uncontrolled blood pressure", Value = Model.HasUncontrolledBloodPressure, Disqualifies = true, Icon = "fa-heart-pulse" },
+                            new { Label = "Takes blood thinners", Value = Model.TakesBloodThinners, Disqualifies = true, Icon = "fa-pills" },
+                            new { Label = "Has an active infectious disease", Value = Model.HasActiveInfectiousDisease, Disqualifies = true, Icon = "fa-virus" },
+                            new { Label = "Has chronic heart or lung condition", Value = Model.HasChronicHeartOrLungCondition, Disqualifies = true, Icon = "fa-lungs" },
+                            new { Label = "Had surgery or major illness last 6 months", Value = Model.HadSurgeryOrMajorIllnessLast6Months, Disqualifies = true, Icon = "fa-scalpel" },
+                            new { Label = "Is pregnant or recently pregnant", Value = Model.IsPregnantOrRecentlyPregnant, Disqualifies = true, Icon = "fa-baby" },
+                            new { Label = "Donated whole blood last 90 days", Value = Model.DonatedWholeBloodLast90Days, Disqualifies = true, Icon = "fa-droplet" },
+                            new { Label = "Donated platelets last 14 days", Value = Model.DonatedPlateletsLast14Days, Disqualifies = true, Icon = "fa-droplet-slash" },
+                            new { Label = "Had a blood transfusion last 12 months", Value = Model.HadBloodTransfusionLast12Months, Disqualifies = true, Icon = "fa-syringe" },
+                            new { Label = "Traveled to malaria risk area last 12 months", Value = Model.TraveledToMalariaRiskAreaLast12Months, Disqualifies = true, Icon = "fa-plane" },
+                            new { Label = "Had a tattoo or piercing last 6 months", Value = Model.HadTattooOrPiercingLast6Months, Disqualifies = true, Icon = "fa-needle" },
+                            new { Label = "Had COVID-19 or vaccine last 28 days", Value = Model.HadCovidOrVaccineLast28Days, Disqualifies = true, Icon = "fa-shield-virus" },
+                        };
+                        foreach (var c in checks)
+                        {
+                            var isBad = c.Disqualifies && c.Value;
+                            var rowStyle = isBad ? "background:var(--color-danger-light);border-color:var(--color-danger);" : "background:var(--color-bg);border:1px solid var(--border);";
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center gap-3 p-3 rounded" style="@rowStyle">
+                                    <i class="fa-solid @c.Icon" style="width:16px;font-size:0.875rem;color:var(--text-muted);"></i>
+                                    <div class="flex-grow-1" style="font-size:0.875rem;">@c.Label</div>
+                                    @if (c.Value)
+                                    {
+                                        <span class="badge @(isBad ? "badge-danger" : "badge-success")"><i class="fa-solid fa-check"></i> Yes</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-info"><i class="fa-solid fa-xmark"></i> No</span>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

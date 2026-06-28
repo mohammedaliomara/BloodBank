@@ -112,7 +112,7 @@ namespace BloodBank.Controllers
             return View();
         }
 
-        // ===================== JSON API: المواعيد =====================
+        // JSON API: المواعيد
         [HttpGet]
         public async Task<IActionResult> GetMyAppointments()
         {
@@ -140,7 +140,7 @@ namespace BloodBank.Controllers
             return Json(appointments);
         }
 
-        // ===================== JSON API: الإشعارات =====================
+        // JSON API: الإشعارات
         [HttpGet]
         public async Task<IActionResult> GetMyNotifications()
         {
@@ -165,9 +165,9 @@ namespace BloodBank.Controllers
             return Json(notifications);
         }
 
-        // ===================== POST: حجز موعد =====================
+        // POST: حجز موعد
         [HttpPost]
-        public async Task<IActionResult> BookAppointment(int hospitalId, DateTime appointmentDate, string appointmentTime, string? notes)
+        public async Task<IActionResult> BookAppointment(int? hospitalId, int? centerId, DateTime appointmentDate, string appointmentTime, string? notes)
         {
             if (!IsDonor()) return Unauthorized();
 
@@ -179,10 +179,21 @@ namespace BloodBank.Controllers
             if (!TimeSpan.TryParse(appointmentTime, out var timeSpan))
                 return BadRequest(new { message = "وقت غير صالح" });
 
+            // إذا تم إرسال centerId بدلاً من hospitalId، نربط الموعد بأول مستشفى متاح
+            int resolvedHospitalId = hospitalId ?? 0;
+            int? resolvedCenterId = centerId;
+
+            if (resolvedHospitalId == 0)
+            {
+                var firstHospital = await _context.Hospitals.Where(h => h.Status == "Active").FirstOrDefaultAsync();
+                resolvedHospitalId = firstHospital?.HospitalId ?? 0;
+            }
+
             _context.Appointments.Add(new Appointment
             {
                 DonorId         = donor.Id,
-                HospitalId      = hospitalId,
+                HospitalId      = resolvedHospitalId,
+                BloodCenterId   = resolvedCenterId,
                 AppointmentDate = appointmentDate,
                 AppointmentTime = timeSpan,
                 Status          = "Pending",
@@ -194,7 +205,32 @@ namespace BloodBank.Controllers
             return Ok(new { message = "تم حجز الموعد بنجاح" });
         }
 
-        // ===================== POST: تعيين الإشعار كمقروء =====================
+        // POST: إلغاء الموعد
+        [HttpPost]
+        public async Task<IActionResult> CancelAppointment(int appointmentId)
+        {
+            if (!IsDonor()) return Unauthorized();
+
+            var accountId = HttpContext.Session.GetInt32("bb_user_id") ?? 0;
+            var donor = await _context.Donors.FirstOrDefaultAsync(d => d.AccountId == accountId);
+            if (donor == null) return NotFound();
+
+            var appointment = await _context.Appointments.FindAsync(appointmentId);
+            if (appointment == null || appointment.DonorId != donor.Id) return NotFound();
+
+            // Allow cancellation only if it's not completed
+            if (appointment.Status == "Completed")
+            {
+                return BadRequest(new { message = "لا يمكن إلغاء موعد تم اكتماله بالفعل." });
+            }
+
+            appointment.Status = "Cancelled";
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "تم إلغاء الموعد بنجاح." });
+        }
+
+        // POST: تعيين الإشعار كمقروء
         [HttpPost]
         public async Task<IActionResult> MarkNotificationRead(int id)
         {
@@ -208,14 +244,14 @@ namespace BloodBank.Controllers
             return Ok();
         }
 
-        // ===================== Logout =====================
+        // Logout
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
             return RedirectToAction("Login", "Account");
         }
 
-        // ===================== CRUD Endpoints =====================
+        // CRUD Endpoints
         public async Task<IActionResult> Index()
         {
             var donors = await _context.Donors.Include(d => d.Account).ToListAsync();

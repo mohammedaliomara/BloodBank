@@ -1,516 +1,468 @@
 @using BloodBank.Models
 @{
-    Layout = null;
+    ViewData["Title"] = "Hospital Portal";
     var hospital = ViewBag.Hospital as Hospital;
     var activeRequestsCount = ViewBag.ActiveRequests ?? 0;
     var totalUnitsCount = ViewBag.TotalUnits ?? 0;
     var inventory = ViewBag.BloodInventory as Dictionary<string, int> ?? new Dictionary<string, int>();
     var recentRequests = ViewBag.RecentRequests as List<Request> ?? new List<Request>();
 }
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BloodBank — بوابة المستشفى</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-:root{
-  --blue:#0047B3;--blue2:#003080;--blue-soft:#E8F0FF;--blue-mid:#B3CFFF;
-  --red:#C8102E;--red-soft:#FFF0F2;--red-mid:#FFD6DA;
-  --ink:#1A1A2E;--ink2:#3D3D5C;--ink3:#7B7B9D;
-  --bg:#F5F6FC;--bg2:#EDEEF5;--white:#fff;
-  --green:#00875A;--green-soft:#E3FCF4;--green-mid:#B3ECDA;
-  --orange:#E07B00;--orange-soft:#FFF4E0;
-  --purple:#6B46C1;--purple-soft:#F3EEFF;
-  --border:#E2E4EF;--shadow:0 2px 12px rgba(26,26,46,0.08);--r:14px;
-}
-*{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans Arabic',sans-serif;min-height:100vh;}
-::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
 
-.topbar{background:var(--white);border-bottom:1.5px solid var(--border);height:60px;display:flex;align-items:center;padding:0 22px;gap:11px;position:sticky;top:0;z-index:50;}
-.tb-mark{width:34px;height:34px;background:var(--blue);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;}
-.tb-name{font-size:14px;font-weight:800;}
-.tb-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;background:var(--blue-soft);color:var(--blue);}
-.tb-spacer{flex:1;}
-.logout-btn{background:none;border:1.5px solid var(--border);border-radius:8px;padding:6px 13px;font-size:12px;font-weight:600;color:var(--ink3);cursor:pointer;font-family:'IBM Plex Sans Arabic',sans-serif;transition:all 0.18s;}
-.logout-btn:hover{border-color:var(--blue);color:var(--blue);}
-
-/* HERO */
-.hero{background:linear-gradient(135deg,#001433,#002B80,#001230);padding:24px 22px;color:#fff;}
-.hero-top{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
-.hero-ico{width:54px;height:54px;background:rgba(255,255,255,0.1);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:22px;border:2px solid rgba(255,255,255,0.12);flex-shrink:0;}
-.hero-name{font-size:18px;font-weight:800;}
-.hero-meta{font-size:12px;opacity:0.5;margin-top:3px;}
-.hero-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(0,135,90,0.3);border:1px solid rgba(0,135,90,0.4);color:#6EF0C0;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;margin-top:7px;}
-.hb-dot{width:6px;height:6px;background:#6EF0C0;border-radius:50%;animation:bl 2s infinite;}
-@@keyframes bl{0%,100%{opacity:1;}50%{opacity:0.3;}}
-.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
-.hs{background:rgba(255,255,255,0.07);border-radius:11px;padding:13px;text-align:center;border:1px solid rgba(255,255,255,0.05);}
-.hs-v{font-size:20px;font-weight:800;}
-.hs-l{font-size:10px;opacity:0.45;margin-top:3px;}
-
-/* PAGE */
-.page{padding:22px;max-width:860px;}
-
-/* TABS */
-.tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:18px;gap:0;overflow-x:auto;}
-.tab{padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2.5px solid transparent;color:var(--ink3);margin-bottom:-2px;transition:all 0.18s;white-space:nowrap;}
-.tab.on{border-bottom-color:var(--blue);color:var(--blue);font-weight:700;}
-.tab:hover:not(.on){color:var(--ink);}
-.tp{display:none;}.tp.on{display:block;}
-
-/* CARDS */
-.card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);padding:20px;box-shadow:var(--shadow);margin-bottom:16px;}
-.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;}
-.ct{font-size:14px;font-weight:700;display:flex;align-items:center;gap:7px;}
-.ci{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;}
-.ci.b{background:var(--blue-soft);}
-.ci.r{background:var(--red-soft);}
-.ci.g{background:var(--green-soft);}
-.ci.o{background:var(--orange-soft);}
-.ci.p{background:var(--purple-soft);}
-.ca{font-size:12px;color:var(--blue);font-weight:600;cursor:pointer;padding:5px 11px;border-radius:7px;border:1.5px solid var(--blue-mid);transition:all 0.18s;}
-.ca:hover{background:var(--blue-soft);}
-
-/* STATS */
-.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:16px;}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:16px;}
-.sbox{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);padding:17px;position:relative;overflow:hidden;}
-.sl{font-size:11px;color:var(--ink3);margin-bottom:8px;}
-.sn{font-size:25px;font-weight:800;letter-spacing:-1px;}
-.st{font-size:11px;margin-top:5px;}.st.up{color:var(--green);}.st.dn{color:var(--red);}
-.sbar{position:absolute;bottom:0;right:0;left:0;height:3px;}
-.sbar.b{background:linear-gradient(to left,var(--blue),transparent);}
-.sbar.g{background:linear-gradient(to left,var(--green),transparent);}
-.sbar.r{background:linear-gradient(to left,var(--red),transparent);}
-.sbar.o{background:linear-gradient(to left,var(--orange),transparent);}
-
-/* CHIP */
-.chip{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;}
-.chip.done{background:var(--green-soft);color:var(--green);}
-.chip.wait{background:var(--orange-soft);color:var(--orange);}
-.chip.urgent{background:var(--red-soft);color:var(--red);}
-.chip.prog{background:var(--blue-soft);color:var(--blue);}
-
-/* BTN */
-.btn{background:var(--blue);color:#fff;border:none;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'IBM Plex Sans Arabic',sans-serif;transition:all 0.2s;}
-.btn:hover{background:var(--blue2);transform:translateY(-1px);}
-.btn:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
-.btn.r{background:var(--red);}.btn.r:hover{background:#A00D24;}
-.btn-ghost{background:none;border:1.5px solid var(--border);color:var(--ink2);padding:9px 18px;border-radius:10px;font-size:13px;cursor:pointer;font-family:'IBM Plex Sans Arabic',sans-serif;transition:all 0.18s;}
-.btn-ghost:hover{border-color:var(--blue);color:var(--blue);}
-
-/* TABLE */
-.tbl{width:100%;border-collapse:collapse;}
-.tbl th{font-size:11px;font-weight:700;color:var(--ink3);text-align:right;padding:8px 12px;border-bottom:2px solid var(--border);background:var(--bg);}
-.tbl td{font-size:12px;padding:10px 12px;border-bottom:1px solid var(--border);color:var(--ink2);vertical-align:middle;}
-.tbl tr:hover td{background:var(--bg);}
-.tbl td.bold{font-weight:700;color:var(--ink);}
-
-/* FORM */
-.fg2{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
-.fg2 .full{grid-column:1/-1;}
-.f-g{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
-.f-l{font-size:12px;font-weight:600;color:var(--ink2);}
-.f-i{background:var(--bg);border:1.5px solid var(--border);border-radius:9px;padding:10px 13px;font-size:13px;color:var(--ink);font-family:'IBM Plex Sans Arabic',sans-serif;outline:none;transition:border-color 0.18s;width:100%;}
-.f-i:focus{border-color:var(--blue);background:var(--white);}
-.f-s{background:var(--bg);border:1.5px solid var(--border);border-radius:9px;padding:10px 13px;font-size:13px;color:var(--ink);font-family:'IBM Plex Sans Arabic',sans-serif;outline:none;width:100%;cursor:pointer;}
-
-/* BLOOD SELECT */
-.bg{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin-top:5px;}
-.bb{padding:9px 4px;border-radius:8px;border:1.5px solid var(--border);background:var(--bg);text-align:center;font-size:12px;font-weight:700;cursor:pointer;color:var(--ink3);transition:all 0.18s;font-family:'IBM Plex Sans Arabic',sans-serif;}
-.bb:hover{border-color:var(--blue);color:var(--blue);}
-.bb.sel{background:var(--blue);border-color:var(--blue);color:#fff;}
-
-/* PRIORITY */
-.pg{display:flex;gap:8px;margin-top:5px;}
-.pb{flex:1;padding:10px 8px;border-radius:9px;border:1.5px solid var(--border);background:var(--bg);text-align:center;font-size:12px;font-weight:600;cursor:pointer;color:var(--ink3);transition:all 0.18s;font-family:'IBM Plex Sans Arabic',sans-serif;}
-.pb.sn{background:var(--green-soft);border-color:var(--green);color:var(--green);}
-.pb.su{background:var(--orange-soft);border-color:var(--orange);color:var(--orange);}
-.pb.sc{background:var(--red-soft);border-color:var(--red);color:var(--red);}
-
-/* AI BOX */
-.ai-box{display:flex;gap:10px;background:linear-gradient(135deg,var(--purple-soft),#EEF2FF);border:1px solid #D4C5FF;border-radius:12px;padding:13px 15px;margin-bottom:16px;}
-.ai-ico{font-size:16px;flex-shrink:0;margin-top:1px;}
-.ai-lbl{font-size:9px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;}
-.ai-txt{font-size:12px;color:var(--ink2);line-height:1.6;}
-
-/* INVENTORY GRID */
-.inv-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
-.inv-cell{background:var(--white);border:1.5px solid var(--border);border-radius:11px;padding:13px;text-align:center;}
-.inv-cell.low{background:var(--red-soft);border-color:var(--red-mid);}
-.inv-type{font-size:16px;font-weight:800;}
-.inv-units{font-size:11px;color:var(--ink3);margin:3px 0;}
-.inv-bar{height:4px;background:var(--bg2);border-radius:2px;overflow:hidden;margin-top:7px;}
-.inv-fill{height:100%;border-radius:2px;}
-.inv-fill.hi{background:var(--green);}
-.inv-fill.mid{background:var(--orange);}
-.inv-fill.lo{background:var(--red);}
-
-/* TRACKING */
-.track-steps{display:flex;flex-direction:column;}
-.ts{display:flex;gap:13px;padding:11px 0;position:relative;}
-.ts:not(:last-child)::after{content:'';position:absolute;right:17px;top:36px;bottom:0;width:2px;background:var(--border);}
-.ts-dot{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;z-index:1;}
-.ts-dot.done{background:var(--green-soft);border:2px solid var(--green);}
-.ts-dot.active{background:var(--blue-soft);border:2px solid var(--blue);animation:bl 2s infinite;}
-.ts-dot.wait{background:var(--bg2);border:2px solid var(--border);}
-.ts-info{flex:1;padding-top:5px;}
-.ts-title{font-size:13px;font-weight:700;}
-.ts-sub{font-size:11px;color:var(--ink3);margin-top:2px;}
-.ts-time{font-size:10px;color:var(--ink3);margin-top:3px;}
-
-@@media(max-width:768px){
-  .hero-stats{grid-template-columns:1fr 1fr;}
-  .g4{grid-template-columns:1fr 1fr;}
-  .fg2{grid-template-columns:1fr;}
-  .bg{grid-template-columns:repeat(4,1fr);}
-  .inv-grid{grid-template-columns:repeat(4,1fr);}
-  .page{padding:14px;}
-}
-</style>
-</head>
-<body>
-
-<div class="topbar">
-  <div class="tb-mark">🏥</div>
-  <div class="tb-name">بوابة المستشفى</div>
-  <span class="tb-badge">مستشفى</span>
-  <div class="tb-spacer"></div>
-  <button class="logout-btn" onclick="logout()">خروج ↩</button>
-</div>
-
-<div class="hero">
-  <div class="hero-top">
-    <div class="hero-ico">🏥</div>
+<div class="page-header mt-4">
     <div>
-      <div class="hero-name">@(hospital?.Name ?? "بوابة المستشفى")</div>
-      <div class="hero-meta">@(hospital?.Address ?? "العنوان") · هاتف: @(hospital?.Phone ?? "") · @(hospital?.Email ?? "")</div>
-      <div class="hero-badge"><div class="hb-dot"></div>متصل بالنظام</div>
-    </div>
-  </div>
-  <div class="hero-stats">
-    <div class="hs"><div class="hs-v">@activeRequestsCount</div><div class="hs-l">طلبات نشطة</div></div>
-    <div class="hs"><div class="hs-v">@totalUnitsCount</div><div class="hs-l">وحدات بالمخزون</div></div>
-    <div class="hs"><div class="hs-v">100%</div><div class="hs-l">نسبة الإتمام</div></div>
-    <div class="hs"><div class="hs-v">30 دق</div><div class="hs-l">متوسط التوصيل</div></div>
-  </div>
-</div>
-
-<div class="page">
-  <div class="tabs">
-    <div class="tab on" onclick="switchTab('new',this)">📋 طلب جديد</div>
-    <div class="tab" onclick="switchTab('track',this)">📍 تتبع الطلبات</div>
-    <div class="tab" onclick="switchTab('inv',this)">🏦 مخزوننا</div>
-    <div class="tab" onclick="switchTab('stats',this)">📊 إحصائيات</div>
-  </div>
-
-  <!-- TAB: NEW REQUEST -->
-  <div id="tp-new" class="tp on">
-    <div class="ai-box">
-      <div class="ai-ico">🤖</div>
-      <div><div class="ai-lbl">AI — تحليل المخزون الوطني</div>
-      <div class="ai-txt">بناءً على الطلب المتوقع، AI وجد <strong>22 وحدة O-</strong> في مركز المعادي (1.2 كم) — متوقع وصولها خلال <strong>38 دقيقة</strong> من الموافقة. يوجد أيضاً <strong>15 متبرع O- جاهز</strong> كاحتياطي.</div></div>
-    </div>
-
-    <div class="card">
-      <div class="ch"><div class="ct"><div class="ci b">📋</div>تفاصيل طلب الدم</div></div>
-      <div class="fg2">
-        <div class="f-g">
-          <div class="f-l">اسم المريض</div>
-          <input class="f-i" id="patName" placeholder="أحمد محمد السيد">
-        </div>
-        <div class="f-g">
-          <div class="f-l">رقم ملف المريض</div>
-          <input class="f-i" id="patId" placeholder="P-2024-XXXX">
-        </div>
-        <div class="f-g">
-          <div class="f-l">القسم / الطابق</div>
-          <input class="f-i" id="dept" placeholder="جراحة القلب — الطابق 3">
-        </div>
-        <div class="f-g">
-          <div class="f-l">الطبيب المسؤول</div>
-          <input class="f-i" id="doctor" placeholder="د. محمود رياض">
-        </div>
-        <div class="f-g">
-          <div class="f-l">الكمية (وحدات)</div>
-          <input class="f-i" id="qty" type="number" placeholder="3" min="1" max="20">
-        </div>
-        <div class="f-g">
-          <div class="f-l">موعد الحاجة</div>
-          <input class="f-i" id="needed" type="datetime-local">
-        </div>
-        <div class="f-g full">
-          <div class="f-l">ملاحظات طبية</div>
-          <input class="f-i" id="notes" placeholder="جراحة قلب مفتوح — حالة طارئة">
-        </div>
-      </div>
-
-      <div class="f-g">
-        <div class="f-l">فصيلة الدم المطلوبة</div>
-        <div class="bg">
-          <div class="bb sel" onclick="selB(this)">A+</div>
-          <div class="bb" onclick="selB(this)">A-</div>
-          <div class="bb" onclick="selB(this)">B+</div>
-          <div class="bb" onclick="selB(this)">B-</div>
-          <div class="bb" onclick="selB(this)">O+</div>
-          <div class="bb" onclick="selB(this)">O-</div>
-          <div class="bb" onclick="selB(this)">AB+</div>
-          <div class="bb" onclick="selB(this)">AB-</div>
-        </div>
-      </div>
-
-      <div class="f-g" style="margin-top:4px;">
-        <div class="f-l">الأولوية</div>
-        <div class="pg">
-          <div class="pb sn" onclick="selP(this,'n')">🟢 عادي</div>
-          <div class="pb" onclick="selP(this,'u')">🟡 عاجل</div>
-          <div class="pb" onclick="selP(this,'c')">🔴 حرج / طوارئ</div>
-        </div>
-      </div>
-
-      <div style="display:flex;gap:11px;margin-top:14px;">
-        <button class="btn" id="submitBtn" onclick="submitReq()" style="flex:2;">📤 تقديم الطلب</button>
-        <button class="btn-ghost" style="flex:1;" onclick="clearForm()">مسح</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- TAB: TRACK -->
-  <div id="tp-track" class="tp">
-    <div class="card">
-      <div class="ch"><div class="ct"><div class="ci b">📍</div>الطلبات النشطة (@activeRequestsCount)</div></div>
-      <table class="tbl">
-        <thead>
-          <tr><th>رقم الطلب</th><th>الفصيلة</th><th>الكمية</th><th>الأولوية</th><th>الحالة</th><th>تتبع</th></tr>
-        </thead>
-        <tbody>
-          @if (recentRequests != null && recentRequests.Any())
-          {
-            foreach (var r in recentRequests)
+        <h2 class="page-title d-flex align-items-center gap-2">
+            <i class="fa-solid fa-hospital text-primary-brand"></i>
+            @(hospital?.Name ?? "Hospital Portal")
+        </h2>
+        <p class="text-muted mb-0 mt-1">
+            <i class="fa-solid fa-location-dot me-1"></i>@(hospital?.Address ?? "—")
+            @if (!string.IsNullOrEmpty(hospital?.Phone))
             {
-              <tr>
-                <td class="bold">#@r.RequestId</td>
-                <td><strong style="color:var(--red)">@r.BloodType</strong></td>
-                <td>@r.QuantityNeeded وحدات</td>
-                <td><span class="chip @(r.UrgencyLevel == "Critical" || r.UrgencyLevel == "Urgent" ? "urgent" : "wait")">@r.UrgencyLevel</span></td>
-                <td><span class="chip @(r.Status == "Approved" || r.Status == "Completed" ? "done" : "prog")">@r.Status</span></td>
-                <td><span style="color:var(--blue);cursor:pointer;font-weight:600;font-size:12px;" onclick="showTrack()">تفاصيل ←</span></td>
-              </tr>
+                <span class="ms-3"><i class="fa-solid fa-phone me-1"></i>@hospital.Phone</span>
             }
-          }
-          else
-          {
-            <tr><td colspan="6" style="text-align:center;color:var(--ink3);">لا يوجد طلبات حالية</td></tr>
-          }
-        </tbody>
-      </table>
+        </p>
     </div>
-
-    <!-- tracking detail -->
-    <div class="card" id="trackDetail" style="display:none;">
-      <div class="ch"><div class="ct"><div class="ci b">🔍</div>تتبع الطلب #2401 — O- (3 وحدات)</div></div>
-      <div class="ai-box"><div class="ai-ico">🤖</div><div><div class="ai-lbl">تحديث AI المباشر</div><div class="ai-txt">الوحدة BU-2024-00814 في الطريق من مركز المعادي — ETA: 12 دقيقة. رقم السيارة: BB-47. درجة حرارة التخزين: 4°C ✅</div></div></div>
-      <div class="track-steps">
-        <div class="ts"><div class="ts-dot done">✅</div><div class="ts-info"><div class="ts-title">تم استلام الطلب</div><div class="ts-sub">النظام بدأ البحث فوراً في المخزون</div><div class="ts-time">8 مارس، 10:14 ص</div></div></div>
-        <div class="ts"><div class="ts-dot done">✅</div><div class="ts-info"><div class="ts-title">موافقة المدير</div><div class="ts-sub">تم تخصيص وحدة BU-2024-00814 (O- · 28 يوم متبقي)</div><div class="ts-time">8 مارس، 10:18 ص</div></div></div>
-        <div class="ts"><div class="ts-dot active">🚚</div><div class="ts-info"><div class="ts-title">في الطريق</div><div class="ts-sub">سيارة BB-47 · 4°C · ETA: 12 دقيقة</div><div class="ts-time">الآن</div></div></div>
-        <div class="ts"><div class="ts-dot wait">🏥</div><div class="ts-info"><div class="ts-title">الاستلام</div><div class="ts-sub">انتظار الوصول</div><div class="ts-time">—</div></div></div>
-        <div class="ts"><div class="ts-dot wait">💉</div><div class="ts-info"><div class="ts-title">نقل الدم للمريض</div><div class="ts-sub">انتظار</div><div class="ts-time">—</div></div></div>
-      </div>
+    <div class="d-flex align-items-center gap-2">
+        <span class="badge badge-success d-flex align-items-center gap-1">
+            <span style="width:7px;height:7px;background:var(--color-success);border-radius:50%;animation:pulse 2s infinite;display:inline-block;"></span>
+            Connected
+        </span>
     </div>
-  </div>
-
-  <!-- TAB: INVENTORY -->
-  <div id="tp-inv" class="tp">
-    <div class="ai-box"><div class="ai-ico">🤖</div><div><div class="ai-lbl">AI — تحليل مخزونكم</div><div class="ai-txt">تحذير: المجموعات المنخفضة باللون الأحمر تحتاج لتعبئة فورية. تم تحسين المخزون بالكامل بناءً على الاستخدام.</div></div></div>
-    <div class="inv-grid">
-      @{
-        var bloodTypes = new[] { "A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-" };
-        foreach (var bt in bloodTypes)
-        {
-          var qty = inventory.ContainsKey(bt) ? inventory[bt] : 0;
-          var percent = Math.Min(100, (qty * 100) / 100); // assume 100 is target capacity
-          var statusClass = qty < 10 ? "low" : "";
-          var barClass = qty < 10 ? "lo" : (qty < 30 ? "mid" : "hi");
-          var warningText = qty < 10 ? (qty < 5 ? "🚨" : "⚠️") : "";
-          
-          <div class="inv-cell @statusClass">
-            <div class="inv-type">@bt</div>
-            <div class="inv-units">@qty وحدة @warningText</div>
-            <div class="inv-bar">
-              <div class="inv-fill @barClass" style="width:@(percent)%"></div>
-            </div>
-          </div>
-        }
-      }
-    </div>
-    <button class="btn" onclick="requestRefill(this)">📦 طلب تعبئة للمخزون المنخفض</button>
-  </div>
-
-  <!-- TAB: STATS -->
-  <div id="tp-stats" class="tp">
-    <div class="g4">
-      <div class="sbox"><div class="sl">طلبات هذا الشهر</div><div class="sn" id="stat-total">...</div><div class="st up">شهر حالي</div><div class="sbar b"></div></div>
-      <div class="sbox"><div class="sl">تم إتمامها</div><div class="sn" id="stat-completed">...</div><div class="st up" id="stat-rate"></div><div class="sbar g"></div></div>
-      <div class="sbox"><div class="sl">وحدات مستهلكة</div><div class="sn" id="stat-units">...</div><div class="sbar b"></div></div>
-      <div class="sbox"><div class="sl">نسبة الإتمام</div><div class="sn" id="stat-pct">...</div><div class="sbar g"></div></div>
-    </div>
-    <div class="card">
-      <div class="ch"><div class="ct"><div class="ci b">📊</div>الطلبات حسب الفصيلة</div></div>
-      <table class="tbl">
-        <thead><tr><th>فصيلة الدم</th><th>الطلبات</th><th>مكتمل</th><th>نسبة النجاح</th></tr></thead>
-        <tbody id="stats-blood-tbody">
-          <tr><td colspan="4" style="text-align:center;color:var(--ink3);">...جاري تحميل البيانات</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
 </div>
+
+<!-- Stats Row -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon stat-bg-primary"><i class="fa-solid fa-file-medical"></i></div>
+            <div class="stat-info">
+                <div class="stat-label">Active Requests</div>
+                <div class="stat-value">@activeRequestsCount</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon stat-bg-success"><i class="fa-solid fa-droplet"></i></div>
+            <div class="stat-info">
+                <div class="stat-label">Units in Stock</div>
+                <div class="stat-value">@totalUnitsCount</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon stat-bg-info"><i class="fa-solid fa-circle-check"></i></div>
+            <div class="stat-info">
+                <div class="stat-label">Completion Rate</div>
+                <div class="stat-value" id="stat-pct">—</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon stat-bg-warning"><i class="fa-solid fa-clock"></i></div>
+            <div class="stat-info">
+                <div class="stat-label">Avg. Delivery</div>
+                <div class="stat-value">30 min</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabs -->
+<ul class="nav nav-tabs" id="hospitalTabs">
+    <li class="nav-item">
+        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-new">
+            <i class="fa-solid fa-plus me-1"></i> New Request
+        </button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-track">
+            <i class="fa-solid fa-location-dot me-1"></i> Track Requests
+        </button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-inv">
+            <i class="fa-solid fa-warehouse me-1"></i> Our Inventory
+        </button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-stats">
+            <i class="fa-solid fa-chart-bar me-1"></i> Statistics
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <!-- NEW REQUEST -->
+    <div class="tab-pane fade show active" id="tab-new">
+        <div class="alert alert-success d-flex align-items-start gap-2 mb-3">
+            <i class="fa-solid fa-robot mt-1"></i>
+            <div>
+                <strong style="font-size:0.75rem;text-transform:uppercase;letter-spacing:.05em;">AI — National Inventory Analysis</strong><br>
+                <small>Based on expected demand, AI found <strong>22 O- units</strong> at the nearest center (1.2 km) — estimated arrival within <strong>38 minutes</strong> of approval.</small>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span><i class="fa-solid fa-file-waveform text-primary-brand me-2"></i>Blood Request Details</span>
+            </div>
+            <div class="card-body">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Patient Name</label>
+                        <input class="form-control" id="patName" placeholder="Ahmed Mohamed">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Patient File No.</label>
+                        <input class="form-control" id="patId" placeholder="P-2024-XXXX">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Department / Floor</label>
+                        <input class="form-control" id="dept" placeholder="Cardiology — Floor 3">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Responsible Doctor</label>
+                        <input class="form-control" id="doctor" placeholder="Dr. Mahmoud Riad">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Quantity (units)</label>
+                        <input class="form-control" id="qty" type="number" placeholder="3" min="1" max="20">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Required By</label>
+                        <input class="form-control" id="needed" type="datetime-local">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Medical Notes</label>
+                        <input class="form-control" id="notes" placeholder="Open-heart surgery — urgent case">
+                    </div>
+                </div>
+
+                <!-- Blood Type Selector -->
+                <div class="mb-3">
+                    <label class="form-label">Required Blood Type</label>
+                    <div class="d-flex flex-wrap gap-2 mt-1" id="bloodTypeGrid">
+                        @foreach (var bt in new[]{"A+","A-","B+","B-","O+","O-","AB+","AB-"})
+                        {
+                            <button type="button" class="btn-blood-type @(bt == "A+" ? "selected" : "")" onclick="selB(this)">@bt</button>
+                        }
+                    </div>
+                </div>
+
+                <!-- Priority Selector -->
+                <div class="mb-4">
+                    <label class="form-label">Priority</label>
+                    <div class="d-flex gap-2 mt-1" id="priorityGrid">
+                        <button type="button" class="btn-priority selected priority-normal" onclick="selP(this,'n')">
+                            <i class="fa-solid fa-circle-check me-1"></i>Normal
+                        </button>
+                        <button type="button" class="btn-priority priority-urgent" onclick="selP(this,'u')">
+                            <i class="fa-solid fa-triangle-exclamation me-1"></i>Urgent
+                        </button>
+                        <button type="button" class="btn-priority priority-critical" onclick="selP(this,'c')">
+                            <i class="fa-solid fa-heart-pulse me-1"></i>Critical / Emergency
+                        </button>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button class="btn btn-primary flex-grow-1" id="submitBtn" onclick="submitReq()">
+                        <i class="fa-solid fa-paper-plane me-2"></i>Submit Request
+                    </button>
+                    <button class="btn btn-outline-primary" onclick="clearForm()">
+                        <i class="fa-solid fa-xmark me-1"></i>Clear
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TRACK REQUESTS -->
+    <div class="tab-pane fade" id="tab-track">
+        <div class="card">
+            <div class="card-header">
+                <span><i class="fa-solid fa-location-dot text-primary-brand me-2"></i>Active Requests (@activeRequestsCount)</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th>Request #</th>
+                                <th>Blood Type</th>
+                                <th>Quantity</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th>Track</th>
+                            </tr>
+                        </thead>
+                        <tbody id="requestsTableBody">
+                            @if (recentRequests != null && recentRequests.Any())
+                            {
+                                foreach (var r in recentRequests)
+                                {
+                                    var urgClass = (r.UrgencyLevel == "Critical" || r.UrgencyLevel == "Urgent") ? "badge-danger" : "badge-warning";
+                                    var stClass = (r.Status == "Approved" || r.Status == "Completed") ? "badge-success" : "badge-info";
+                                    <tr>
+                                        <td><strong>#@r.RequestId</strong></td>
+                                        <td><span class="badge badge-danger">@r.BloodType</span></td>
+                                        <td>@r.QuantityNeeded units</td>
+                                        <td><span class="badge @urgClass">@r.UrgencyLevel</span></td>
+                                        <td><span class="badge @stClass">@r.Status</span></td>
+                                        <td><button class="btn btn-outline-primary btn-sm" onclick="showTrack()"><i class="fa-solid fa-eye me-1"></i>Details</button></td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr><td colspan="6" class="text-center text-muted py-4">No active requests</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="trackDetail" style="display:none;">
+            <div class="card-header">
+                <span><i class="fa-solid fa-route text-primary-brand me-2"></i>Tracking Request #2401 — O- (3 units)</span>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-success mb-4">
+                    <i class="fa-solid fa-robot"></i>
+                    <div><strong>Live AI Update:</strong> Unit BU-2024-00814 en route from nearest center — ETA: 12 min. Vehicle: BB-47. Storage temp: 4°C ✅</div>
+                </div>
+                <div class="track-timeline">
+                    <div class="track-step done"><div class="track-dot"><i class="fa-solid fa-check"></i></div><div class="track-info"><div class="track-title">Request Received</div><div class="track-sub">System began searching inventory immediately</div><div class="track-time">Mar 8, 10:14 AM</div></div></div>
+                    <div class="track-step done"><div class="track-dot"><i class="fa-solid fa-check"></i></div><div class="track-info"><div class="track-title">Admin Approved</div><div class="track-sub">Unit BU-2024-00814 allocated (O- · 28 days remaining)</div><div class="track-time">Mar 8, 10:18 AM</div></div></div>
+                    <div class="track-step active"><div class="track-dot"><i class="fa-solid fa-truck"></i></div><div class="track-info"><div class="track-title">In Transit</div><div class="track-sub">Vehicle BB-47 · 4°C · ETA: 12 min</div><div class="track-time">Now</div></div></div>
+                    <div class="track-step pending"><div class="track-dot"><i class="fa-solid fa-hospital"></i></div><div class="track-info"><div class="track-title">Delivery</div><div class="track-sub">Awaiting arrival</div><div class="track-time">—</div></div></div>
+                    <div class="track-step pending"><div class="track-dot"><i class="fa-solid fa-syringe"></i></div><div class="track-info"><div class="track-title">Transfusion</div><div class="track-sub">Pending</div><div class="track-time">—</div></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- INVENTORY -->
+    <div class="tab-pane fade" id="tab-inv">
+        <div class="alert alert-warning mb-3">
+            <i class="fa-solid fa-robot"></i>
+            <div><strong>AI — Inventory Analysis:</strong> Groups highlighted in red require immediate replenishment.</div>
+        </div>
+        <div class="row g-3 mb-3">
+            @{
+                var bloodTypes = new[] { "A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-" };
+                foreach (var bt in bloodTypes)
+                {
+                    var qty = inventory.ContainsKey(bt) ? inventory[bt] : 0;
+                    var percent = Math.Min(100, (qty * 100) / 100);
+                    var isLow = qty < 10;
+                    var barColor = qty < 10 ? "var(--color-danger)" : (qty < 30 ? "var(--color-warning)" : "var(--color-success)");
+                    var cardBorder = isLow ? "border-color: var(--color-danger); background: var(--color-danger-light);" : "";
+
+                    <div class="col-6 col-md-3">
+                        <div class="card mb-0 text-center p-3" style="@cardBorder">
+                            <div style="font-size:1.4rem;font-weight:800;font-family:'Sora',sans-serif;">@bt</div>
+                            <div class="text-muted" style="font-size:0.8rem;">@qty units @(qty < 5 ? "🚨" : qty < 10 ? "⚠️" : "")</div>
+                            <div style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:8px;">
+                                <div style="height:100%;width:@(percent)%;background:@barColor;border-radius:2px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+        <button class="btn btn-primary" onclick="requestRefill(this)">
+            <i class="fa-solid fa-boxes-stacking me-2"></i>Request Refill for Low Stock
+        </button>
+    </div>
+
+    <!-- STATISTICS -->
+    <div class="tab-pane fade" id="tab-stats">
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="stat-card"><div class="stat-icon stat-bg-info"><i class="fa-solid fa-calendar"></i></div><div class="stat-info"><div class="stat-label">Requests This Month</div><div class="stat-value" id="stat-total">—</div></div></div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card"><div class="stat-icon stat-bg-success"><i class="fa-solid fa-circle-check"></i></div><div class="stat-info"><div class="stat-label">Completed</div><div class="stat-value" id="stat-completed">—</div></div></div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card"><div class="stat-icon stat-bg-primary"><i class="fa-solid fa-droplet"></i></div><div class="stat-info"><div class="stat-label">Units Used</div><div class="stat-value" id="stat-units">—</div></div></div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card"><div class="stat-icon stat-bg-warning"><i class="fa-solid fa-percent"></i></div><div class="stat-info"><div class="stat-label">Success Rate</div><div class="stat-value" id="stat-rate">—</div></div></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span><i class="fa-solid fa-chart-bar text-primary-brand me-2"></i>Requests by Blood Type</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <thead><tr><th>Blood Type</th><th>Requests</th><th>Completed</th><th>Success Rate</th></tr></thead>
+                        <tbody id="stats-blood-tbody">
+                            <tr><td colspan="4" class="text-center text-muted py-4"><i class="fa-solid fa-spinner fa-spin me-2"></i>Loading data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.btn-blood-type {
+    padding: 8px 14px; border-radius: var(--radius-sm); border: 1.5px solid var(--border);
+    background: var(--color-bg); font-weight: 700; cursor: pointer; font-family: 'Sora', sans-serif;
+    color: var(--text-secondary); transition: all var(--transition); min-width: 52px;
+}
+.btn-blood-type:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.btn-blood-type.selected { background: var(--color-primary); border-color: var(--color-primary); color: white; }
+.btn-priority {
+    flex: 1; padding: 10px 12px; border-radius: var(--radius-sm); border: 1.5px solid var(--border);
+    background: var(--color-bg); font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif;
+    color: var(--text-secondary); transition: all var(--transition); font-size: 0.875rem;
+}
+.btn-priority.selected.priority-normal { background: var(--color-success-light); border-color: var(--color-success); color: var(--color-success); }
+.btn-priority.selected.priority-urgent { background: var(--color-warning-light); border-color: var(--color-warning); color: #b45309; }
+.btn-priority.selected.priority-critical { background: var(--color-danger-light); border-color: var(--color-danger); color: var(--color-danger); }
+/* Track Timeline */
+.track-timeline { display: flex; flex-direction: column; gap: 0; }
+.track-step { display: flex; gap: 16px; padding: 12px 0; position: relative; }
+.track-step:not(:last-child)::after { content: ''; position: absolute; left: 16px; top: 44px; bottom: 0; width: 2px; background: var(--border); }
+.track-dot { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; z-index: 1; }
+.track-step.done .track-dot { background: var(--color-success-light); border: 2px solid var(--color-success); color: var(--color-success); }
+.track-step.active .track-dot { background: var(--color-info-light); border: 2px solid var(--color-info); color: var(--color-info); animation: pulse 2s infinite; }
+.track-step.pending .track-dot { background: var(--color-bg); border: 2px solid var(--border); color: var(--text-muted); }
+.track-info { padding-top: 4px; }
+.track-title { font-weight: 700; font-size: 0.9rem; }
+.track-sub { font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px; }
+.track-time { font-size: 0.75rem; color: var(--text-muted); margin-top: 3px; }
+@@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+</style>
 
 <script>
-function switchTab(t,el){
-  document.querySelectorAll('.tp').forEach(p=>p.classList.remove('on'));
-  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
-  document.getElementById('tp-'+t).classList.add('on');
-  el.classList.add('on');
+function selB(el) {
+    document.querySelectorAll('.btn-blood-type').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
 }
-function selB(el){document.querySelectorAll('.bb').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');}
-function selP(el,t){
-  document.querySelectorAll('.pb').forEach(b=>{b.classList.remove('sn','su','sc');});
-  el.classList.add(t==='n'?'sn':t==='u'?'su':'sc');
+function selP(el, t) {
+    document.querySelectorAll('.btn-priority').forEach(b => { b.classList.remove('selected'); });
+    el.classList.add('selected');
 }
-function clearForm(){
-  ['patName','patId','dept','doctor','qty','needed','notes'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+function clearForm() {
+    ['patName','patId','dept','doctor','qty','needed','notes'].forEach(id => { const e = document.getElementById(id); if(e) e.value = ''; });
 }
-function submitReq(){
-  const btn=document.getElementById('submitBtn');
-  
-  const bEl = document.querySelector('.bb.sel');
-  const bloodType = bEl ? bEl.textContent.trim() : 'A+';
-  const qty = document.getElementById('qty').value || 1;
-  const pEl = document.querySelector('.pb.sn, .pb.su, .pb.sc');
-  let urgency = 'Normal';
-  if(pEl) {
-    if(pEl.classList.contains('su')) urgency = 'Urgent';
-    else if(pEl.classList.contains('sc')) urgency = 'Critical';
-  }
-  const notes = document.getElementById('notes').value || '';
-  const needed = document.getElementById('needed').value || new Date().toISOString();
+function submitReq() {
+    const btn = document.getElementById('submitBtn');
+    const bEl = document.querySelector('.btn-blood-type.selected');
+    const bloodType = bEl ? bEl.textContent.trim() : 'A+';
+    const qty = document.getElementById('qty').value || 1;
+    const pEl = document.querySelector('.btn-priority.selected');
+    let urgency = 'Normal';
+    if (pEl) {
+        if (pEl.classList.contains('priority-urgent')) urgency = 'Urgent';
+        else if (pEl.classList.contains('priority-critical')) urgency = 'Critical';
+    }
+    const notes = document.getElementById('notes').value || '';
+    const needed = document.getElementById('needed').value || new Date().toISOString();
 
-  btn.textContent='⏳ جاري الإرسال...';btn.disabled=true;
-  
-  const formData = new URLSearchParams();
-  formData.append('bloodType', bloodType);
-  formData.append('quantity', qty);
-  formData.append('urgencyLevel', urgency);
-  formData.append('notes', notes);
-  formData.append('neededAt', needed);
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Sending...';
+    btn.disabled = true;
 
-  fetch('/Hospital/SubmitRequest', {
-    method: 'POST',
-    body: formData,
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-  })
-  .then(r => r.ok ? r.json() : Promise.reject())
-  .then(() => {
-    btn.textContent='✅ تم! AI يبحث في المخزون...';btn.style.background='var(--green)';
-    setTimeout(()=>{
-      btn.textContent='📤 تقديم الطلب';btn.style.background='';btn.disabled=false;
-      clearForm();
-      loadHospitalData();
-    },3000);
-  }).catch(() => {
-    btn.textContent='❌ خطأ في الإرسال';btn.style.background='var(--red)';
-    setTimeout(()=>{btn.textContent='📤 تقديم الطلب';btn.style.background='';btn.disabled=false;},3000);
-  });
+    const formData = new URLSearchParams();
+    formData.append('bloodType', bloodType);
+    formData.append('quantity', qty);
+    formData.append('urgencyLevel', urgency);
+    formData.append('notes', notes);
+    formData.append('neededAt', needed);
+
+    fetch('/Hospital/SubmitRequest', {
+        method: 'POST', body: formData,
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    })
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(() => {
+        btn.innerHTML = '<i class="fa-solid fa-check me-2"></i>Submitted! AI is searching inventory...';
+        btn.style.background = 'var(--color-success)';
+        setTimeout(() => {
+            btn.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i>Submit Request';
+            btn.style.background = ''; btn.disabled = false;
+            clearForm(); loadHospitalData();
+        }, 3000);
+    }).catch(() => {
+        btn.innerHTML = '<i class="fa-solid fa-xmark me-2"></i>Submission Error';
+        btn.style.background = 'var(--color-danger)';
+        setTimeout(() => { btn.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i>Submit Request'; btn.style.background = ''; btn.disabled = false; }, 3000);
+    });
 }
-
 function loadHospitalData() {
-  // Load requests into track tab
-  fetch('/Hospital/GetMyRequests')
-    .then(r => r.json())
-    .then(data => {
-      const tbody = document.querySelector('#tp-track tbody');
-      if(tbody) {
-        tbody.innerHTML = data.length === 0
-          ? '<tr><td colspan="6" style="text-align:center;color:var(--ink3);">لا يوجد طلبات حالية</td></tr>'
-          : data.map(r => `
-          <tr>
-            <td class="bold">#${r.requestId}</td>
-            <td><strong style="color:var(--red)">${r.bloodType}</strong></td>
-            <td>${r.quantityNeeded} وحدات</td>
-            <td><span class="chip ${r.urgencyLevel === 'High' || r.urgencyLevel === 'Critical' ? 'urgent' : 'wait'}">${r.urgencyLevel}</span></td>
-            <td><span class="chip ${r.status === 'Approved' ? 'done' : 'prog'}">${r.status}</span></td>
-            <td><span style="color:var(--blue);cursor:pointer;font-weight:600;font-size:12px;" onclick="showTrack()">تفاصيل ←</span></td>
-          </tr>
-        `).join('');
-
-        // Build blood-type stats from same data
-        const grouped = {};
-        data.forEach(r => {
-          if (!grouped[r.bloodType]) grouped[r.bloodType] = { total: 0, done: 0 };
-          grouped[r.bloodType].total++;
-          if (r.status === 'Approved' || r.status === 'Completed') grouped[r.bloodType].done++;
-        });
-        const statsTbody = document.getElementById('stats-blood-tbody');
-        if (statsTbody) {
-          const keys = Object.keys(grouped);
-          statsTbody.innerHTML = keys.length === 0
-            ? '<tr><td colspan="4" style="text-align:center;color:var(--ink3);">لا توجد بيانات</td></tr>'
-            : keys.map(bt => {
-                const g = grouped[bt];
-                const pct = g.total > 0 ? Math.round(g.done / g.total * 100) : 100;
-                const cls = pct >= 90 ? 'done' : pct >= 70 ? 'wait' : 'urgent';
-                return `<tr>
-                  <td style="color:var(--red);font-weight:700">${bt}</td>
-                  <td>${g.total}</td>
-                  <td>${g.done}</td>
-                  <td><span class="chip ${cls}">${pct}%</span></td>
-                </tr>`;
-              }).join('');
+    fetch('/Hospital/GetMyRequests').then(r => r.json()).then(data => {
+        const tbody = document.getElementById('requestsTableBody');
+        if (tbody) {
+            tbody.innerHTML = data.length === 0
+                ? '<tr><td colspan="6" class="text-center text-muted py-4">No active requests</td></tr>'
+                : data.map(r => {
+                    const urg = (r.urgencyLevel === 'High' || r.urgencyLevel === 'Critical') ? 'badge-danger' : 'badge-warning';
+                    const st = (r.status === 'Approved' || r.status === 'Completed') ? 'badge-success' : 'badge-info';
+                    return `<tr>
+                        <td><strong>#${r.requestId}</strong></td>
+                        <td><span class="badge badge-danger">${r.bloodType}</span></td>
+                        <td>${r.quantityNeeded} units</td>
+                        <td><span class="badge ${urg}">${r.urgencyLevel}</span></td>
+                        <td><span class="badge ${st}">${r.status}</span></td>
+                        <td><button class="btn btn-outline-primary btn-sm" onclick="showTrack()"><i class="fa-solid fa-eye me-1"></i>Details</button></td>
+                    </tr>`;
+                }).join('');
+            // Blood type stats
+            const grouped = {};
+            data.forEach(r => {
+                if (!grouped[r.bloodType]) grouped[r.bloodType] = { total: 0, done: 0 };
+                grouped[r.bloodType].total++;
+                if (r.status === 'Approved' || r.status === 'Completed') grouped[r.bloodType].done++;
+            });
+            const statsTbody = document.getElementById('stats-blood-tbody');
+            if (statsTbody) {
+                const keys = Object.keys(grouped);
+                statsTbody.innerHTML = keys.length === 0
+                    ? '<tr><td colspan="4" class="text-center text-muted py-4">No data</td></tr>'
+                    : keys.map(bt => {
+                        const g = grouped[bt];
+                        const pct = g.total > 0 ? Math.round(g.done / g.total * 100) : 100;
+                        const cls = pct >= 90 ? 'badge-success' : pct >= 70 ? 'badge-warning' : 'badge-danger';
+                        return `<tr><td><span class="badge badge-danger">${bt}</span></td><td>${g.total}</td><td>${g.done}</td><td><span class="badge ${cls}">${pct}%</span></td></tr>`;
+                    }).join('');
+            }
         }
-      }
-    })
-    .catch(() => {});
-
-  // Load real stats into stats tab
-  fetch('/Hospital/GetStats')
-    .then(r => r.json())
-    .then(d => {
-      const rate = d.completionRate ?? 100;
-      const el = id => document.getElementById(id);
-      if(el('stat-total'))     el('stat-total').textContent     = d.totalThisMonth ?? 0;
-      if(el('stat-completed')) el('stat-completed').textContent = d.completedThisMonth ?? 0;
-      if(el('stat-units'))     el('stat-units').textContent     = d.totalUnitsUsed ?? 0;
-      if(el('stat-pct'))       el('stat-pct').textContent       = rate + '%';
-      if(el('stat-rate'))      el('stat-rate').textContent      = '↑ ' + rate + '%';
-    })
-    .catch(() => {});
+    }).catch(() => {});
+    fetch('/Hospital/GetStats').then(r => r.json()).then(d => {
+        const rate = d.completionRate ?? 100;
+        const el = id => document.getElementById(id);
+        if(el('stat-total'))     el('stat-total').textContent     = d.totalThisMonth ?? 0;
+        if(el('stat-completed')) el('stat-completed').textContent = d.completedThisMonth ?? 0;
+        if(el('stat-units'))     el('stat-units').textContent     = d.totalUnitsUsed ?? 0;
+        if(el('stat-pct'))       el('stat-pct').textContent       = rate + '%';
+        if(el('stat-rate'))      el('stat-rate').textContent      = rate + '%';
+    }).catch(() => {});
 }
-
-function showTrack(){
-  const d=document.getElementById('trackDetail');
-  d.style.display=d.style.display==='none'?'block':'none';
-  if(d.style.display==='block')d.scrollIntoView({behavior:'smooth'});
+function showTrack() {
+    const d = document.getElementById('trackDetail');
+    d.style.display = d.style.display === 'none' ? 'block' : 'none';
+    if (d.style.display === 'block') d.scrollIntoView({ behavior: 'smooth' });
 }
-function requestRefill(btn){
-  btn.textContent='⏳ جاري الإرسال...';btn.disabled=true;
-  setTimeout(()=>{
-    btn.textContent='✅ تم — سيصل خلال 24 ساعة';btn.style.background='var(--green)';
-    setTimeout(()=>{btn.textContent='📦 طلب تعبئة للمخزون المنخفض';btn.style.background='';btn.disabled=false;},3000);
-  },1000);
+function requestRefill(btn) {
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Sending...';
+    btn.disabled = true;
+    setTimeout(() => {
+        btn.innerHTML = '<i class="fa-solid fa-check me-2"></i>Done — Expected within 24 hours';
+        btn.style.background = 'var(--color-success)';
+        setTimeout(() => { btn.innerHTML = '<i class="fa-solid fa-boxes-stacking me-2"></i>Request Refill for Low Stock'; btn.style.background = ''; btn.disabled = false; }, 3000);
+    }, 1000);
 }
-function logout(){
-  const f = document.createElement('form');
-  f.method = 'POST'; f.action = '/Account/Logout';
-  document.body.appendChild(f);
-  f.submit();
-}
-
 document.addEventListener('DOMContentLoaded', loadHospitalData);
 </script>
-</body>
-</html>

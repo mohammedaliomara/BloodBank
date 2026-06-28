@@ -1,125 +1,107 @@
 @model IEnumerable<BloodBank.Models.MedicalQuestionnaire>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Medical Questionnaires";
 }
 
-<h1>Index</h1>
+<div class="page-header mt-4">
+    <div>
+        <h2 class="page-title d-flex align-items-center gap-2">
+            <i class="fa-solid fa-clipboard-list text-primary-brand"></i> Medical Questionnaires
+        </h2>
+        <p class="text-muted mb-0">Donor eligibility screening records</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="fa-solid fa-plus me-2"></i>New Questionnaire
+    </a>
+</div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Donor)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AgeRange)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.WeightRange)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.HadFullMealInLast4Hours)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.HasUncontrolledBloodPressure)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TakesBloodThinners)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.HasActiveInfectiousDisease)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.HasChronicHeartOrLungCondition)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.HadSurgeryOrMajorIllnessLast6Months)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsPregnantOrRecentlyPregnant)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DonatedWholeBloodLast90Days)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DonatedPlateletsLast14Days)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.HadBloodTransfusionLast12Months)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TraveledToMalariaRiskAreaLast12Months)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.HadTattooOrPiercingLast6Months)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.HadCovidOrVaccineLast28Days)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Donor.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AgeRange)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.WeightRange)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.HadFullMealInLast4Hours)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.HasUncontrolledBloodPressure)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TakesBloodThinners)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.HasActiveInfectiousDisease)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.HasChronicHeartOrLungCondition)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.HadSurgeryOrMajorIllnessLast6Months)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsPregnantOrRecentlyPregnant)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DonatedWholeBloodLast90Days)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DonatedPlateletsLast14Days)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.HadBloodTransfusionLast12Months)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TraveledToMalariaRiskAreaLast12Months)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.HadTattooOrPiercingLast6Months)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.HadCovidOrVaccineLast28Days)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th>Donor</th>
+                        <th>Age Range</th>
+                        <th>Weight Range</th>
+                        <th>Full Meal</th>
+                        <th>Blood Pressure</th>
+                        <th>Chronic Condition</th>
+                        <th>Surgery (6mo)</th>
+                        <th>Eligible</th>
+                        <th style="text-align:right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="9" class="text-center text-muted py-5">
+                                <i class="fa-solid fa-clipboard-question fa-2x mb-2 d-block"></i>
+                                No questionnaires found
+                            </td>
+                        </tr>
+                    }
+                    @foreach (var item in Model)
+                    {
+                        var isEligible = !item.HasUncontrolledBloodPressure
+                            && !item.TakesBloodThinners
+                            && !item.HasActiveInfectiousDisease
+                            && !item.HasChronicHeartOrLungCondition
+                            && !item.HadSurgeryOrMajorIllnessLast6Months
+                            && !item.DonatedWholeBloodLast90Days;
+                        <tr>
+                            <td><strong>@Html.DisplayFor(m => item.Donor.Id)</strong></td>
+                            <td>@Html.DisplayFor(m => item.AgeRange)</td>
+                            <td>@Html.DisplayFor(m => item.WeightRange)</td>
+                            <td>
+                                @if (item.HadFullMealInLast4Hours)
+                                { <span class="badge badge-success"><i class="fa-solid fa-check"></i></span> }
+                                else
+                                { <span class="badge badge-danger"><i class="fa-solid fa-xmark"></i></span> }
+                            </td>
+                            <td>
+                                @if (item.HasUncontrolledBloodPressure)
+                                { <span class="badge badge-danger">High</span> }
+                                else
+                                { <span class="badge badge-success">Normal</span> }
+                            </td>
+                            <td>
+                                @if (item.HasChronicHeartOrLungCondition)
+                                { <span class="badge badge-danger">Yes</span> }
+                                else
+                                { <span class="badge badge-success">No</span> }
+                            </td>
+                            <td>
+                                @if (item.HadSurgeryOrMajorIllnessLast6Months)
+                                { <span class="badge badge-warning">Yes</span> }
+                                else
+                                { <span class="badge badge-success">No</span> }
+                            </td>
+                            <td>
+                                @if (isEligible)
+                                { <span class="badge badge-success"><i class="fa-solid fa-circle-check me-1"></i>Eligible</span> }
+                                else
+                                { <span class="badge badge-danger"><i class="fa-solid fa-ban me-1"></i>Not Eligible</span> }
+                            </td>
+                            <td style="text-align:right;">
+                                <div class="d-flex gap-1 justify-content-end">
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-primary btn-sm">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </a>
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-primary btn-sm">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

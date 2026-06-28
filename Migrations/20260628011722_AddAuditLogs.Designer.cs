@@ -4,6 +4,7 @@ using BloodBank.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BloodBank.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260628011722_AddAuditLogs")]
+    partial class AddAuditLogs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,9 +32,6 @@ namespace BloodBank.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
-
-                    b.Property<int?>("BloodCenterId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -55,8 +55,6 @@ namespace BloodBank.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("BloodCenterId");
-
                     b.ToTable("Accounts");
                 });
 
@@ -73,9 +71,6 @@ namespace BloodBank.Migrations
 
                     b.Property<TimeSpan>("AppointmentTime")
                         .HasColumnType("time");
-
-                    b.Property<int?>("BloodCenterId")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -96,10 +91,6 @@ namespace BloodBank.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("AppointmentId");
-
-                    b.HasIndex("BloodCenterId");
-
-                    b.HasIndex("DonorId");
 
                     b.HasIndex("HospitalId");
 
@@ -278,9 +269,6 @@ namespace BloodBank.Migrations
                     b.Property<DateTime>("DateOfBirth")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("FullAddress")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Gender")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -296,19 +284,6 @@ namespace BloodBank.Migrations
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("RegistrationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("RejectionReason")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<double?>("Weight")
-                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
@@ -590,38 +565,13 @@ namespace BloodBank.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("BloodBank.Models.Account", b =>
-                {
-                    b.HasOne("BloodBank.Models.BloodCenter", "BloodCenter")
-                        .WithMany()
-                        .HasForeignKey("BloodCenterId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("BloodCenter");
-                });
-
             modelBuilder.Entity("BloodBank.Models.Appointment", b =>
                 {
-                    b.HasOne("BloodBank.Models.BloodCenter", "BloodCenter")
-                        .WithMany()
-                        .HasForeignKey("BloodCenterId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("BloodBank.Models.Donor", "Donor")
-                        .WithMany()
-                        .HasForeignKey("DonorId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("BloodBank.Models.Hospital", "Hospital")
                         .WithMany("Appointments")
                         .HasForeignKey("HospitalId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("BloodCenter");
-
-                    b.Navigation("Donor");
 
                     b.Navigation("Hospital");
                 });

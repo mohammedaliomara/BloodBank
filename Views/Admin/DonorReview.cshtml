@@ -1,0 +1,153 @@
+@model BloodBank.Models.Donor
+@{
+    ViewData["Title"] = "Donor Review";
+    Layout = "_Layout";
+    var q = ViewBag.Questionnaire as BloodBank.Models.MedicalQuestionnaire;
+    var age = DateTime.Today.Year - Model.DateOfBirth.Year;
+    var isPending = Model.Status == "Pending";
+}
+
+<div class="container mt-4">
+    <div class="mb-3">
+        <a href="/Admin/DonorRequests" class="text-decoration-none text-muted"><i class="fa-solid fa-arrow-left"></i> Back to Requests</a>
+    </div>
+
+    <div class="row">
+        <!-- DONOR INFO -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0 fw-bold"><i class="fa-solid fa-user text-primary-brand me-2"></i> Donor Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <div class="bg-primary-light text-primary-brand rounded-circle d-inline-flex justify-content-center align-items-center mb-2" style="width: 80px; height: 80px; font-size: 30px;">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <h4 class="fw-bold">@(Model.Account?.FirstName) @(Model.Account?.LastName)</h4>
+                        <span class="badge badge-danger fs-5">@Model.BloodType</span>
+                    </div>
+
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">Age</span> <strong>@age years</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">Gender</span> <strong>@Model.Gender</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">Weight</span> <strong>@(Model.Weight?.ToString() ?? "Not provided") kg</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">National ID</span> <strong>@Model.NationalId</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">Phone</span> <strong>@Model.PhoneNumber</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">Governorate</span> <strong>@Model.Governorate</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">Address</span> <strong>@(Model.FullAddress ?? "—")</strong>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- QUESTIONNAIRE & DECISION -->
+        <div class="col-md-8 mb-4">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0 fw-bold"><i class="fa-solid fa-notes-medical text-primary-brand me-2"></i> Medical Questionnaire</h5>
+                </div>
+                <div class="card-body">
+                    @if (q == null)
+                    {
+                        <div class="alert alert-warning"><i class="fa-solid fa-triangle-exclamation"></i> No medical questionnaire submitted.</div>
+                    }
+                    else
+                    {
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">@RenderAnswer(q.HadFullMealInLast4Hours, "Had full meal in last 4 hrs")</li>
+                                    <li class="mb-2">@RenderAnswer(q.HasUncontrolledBloodPressure, "Uncontrolled Blood Pressure")</li>
+                                    <li class="mb-2">@RenderAnswer(q.TakesBloodThinners, "Takes blood thinners")</li>
+                                    <li class="mb-2">@RenderAnswer(q.HasActiveInfectiousDisease, "Active infectious disease")</li>
+                                    <li class="mb-2">@RenderAnswer(q.HasChronicHeartOrLungCondition, "Chronic heart/lung condition")</li>
+                                    <li class="mb-2">@RenderAnswer(q.HadSurgeryOrMajorIllnessLast6Months, "Surgery/Major illness (6 mos)")</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">@RenderAnswer(q.IsPregnantOrRecentlyPregnant, "Pregnant / Recently pregnant")</li>
+                                    <li class="mb-2">@RenderAnswer(q.DonatedWholeBloodLast90Days, "Donated whole blood (90 days)")</li>
+                                    <li class="mb-2">@RenderAnswer(q.DonatedPlateletsLast14Days, "Donated platelets (14 days)")</li>
+                                    <li class="mb-2">@RenderAnswer(q.HadBloodTransfusionLast12Months, "Blood transfusion (12 mos)")</li>
+                                    <li class="mb-2">@RenderAnswer(q.TraveledToMalariaRiskAreaLast12Months, "Malaria risk area (12 mos)")</li>
+                                    <li class="mb-2">@RenderAnswer(q.HadTattooOrPiercingLast6Months, "Tattoo / Piercing (6 mos)")</li>
+                                    <li class="mb-2">@RenderAnswer(q.HadCovidOrVaccineLast28Days, "COVID / Vaccine (28 days)")</li>
+                                </ul>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- DECISION BOX -->
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    @if (isPending)
+                    {
+                        <h5 class="fw-bold mb-3">Make a Decision</h5>
+                        <div class="d-flex gap-3">
+                            <form asp-action="ApproveDonor" asp-controller="Admin" method="post" style="flex:1;">
+                                <input type="hidden" name="id" value="@Model.Id" />
+                                <button type="submit" class="btn btn-success w-100 fw-bold py-2 fs-5" onclick="return confirm('Approve this donor?');">
+                                    <i class="fa-solid fa-check-circle"></i> APPROVE
+                                </button>
+                            </form>
+                            
+                            <button type="button" class="btn btn-danger w-100 fw-bold py-2 fs-5" style="flex:1;" onclick="document.getElementById('rejectFormContainer').style.display = 'block'; this.style.display='none';">
+                                <i class="fa-solid fa-xmark-circle"></i> REJECT
+                            </button>
+                        </div>
+
+                        <!-- Reject Form (Hidden by default) -->
+                        <div id="rejectFormContainer" style="display:none;" class="mt-4 p-4 border border-danger rounded bg-light">
+                            <form asp-action="RejectDonor" asp-controller="Admin" method="post" id="rejectForm">
+                                <input type="hidden" name="id" value="@Model.Id" />
+                                <h6 class="text-danger fw-bold"><i class="fa-solid fa-triangle-exclamation"></i> Reason for Rejection</h6>
+                                <p class="text-muted small">Please provide a clear reason. This is required.</p>
+                                <textarea name="reason" class="form-control mb-3" rows="3" required placeholder="e.g. Medically ineligible due to recent surgery..."></textarea>
+                                <div class="d-flex justify-content-end gap-2">
+                                    <button type="button" class="btn btn-outline-secondary" onclick="window.location.reload();">Cancel</button>
+                                    <button type="submit" class="btn btn-danger fw-bold">Confirm Rejection</button>
+                                </div>
+                            </form>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert @(Model.Status == "Accepted" ? "alert-success" : "alert-danger") mb-0">
+                            <h5 class="mb-1 fw-bold"><i class="fa-solid @(Model.Status == "Accepted" ? "fa-check" : "fa-xmark")"></i> Status: @Model.Status</h5>
+                            @if (Model.Status == "Rejected")
+                            {
+                                <strong>Reason:</strong> <span>@Model.RejectionReason</span>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    public Microsoft.AspNetCore.Html.IHtmlContent RenderAnswer(bool yes, string label)
+    {
+        if (yes) return Html.Raw($"<span class='badge bg-danger' style='width:40px;'>YES</span> {label}");
+        return Html.Raw($"<span class='badge bg-success' style='width:40px;'>NO</span> <span class='text-muted'>{label}</span>");
+    }
+}

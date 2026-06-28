@@ -58,7 +58,29 @@ namespace BloodBank.Controllers
             return View();
         }
 
-        // ===================== Donors (JSON API للـ Dashboard) =====================
+        // ===================== Cleanup Endpoint =====================
+        [HttpGet]
+        public async Task<IActionResult> WipeMockData()
+        {
+            if (!IsAdmin()) return Unauthorized();
+
+            _context.Requests.RemoveRange(await _context.Requests.ToListAsync());
+            _context.BloodUnits.RemoveRange(await _context.BloodUnits.ToListAsync());
+            _context.Appointments.RemoveRange(await _context.Appointments.ToListAsync());
+            _context.SMSNotifications.RemoveRange(await _context.SMSNotifications.ToListAsync());
+            
+            // Delete donors that were mock (we could optionally leave real ones, but this wipes all donors)
+            var donors = await _context.Donors.ToListAsync();
+            foreach(var d in donors) {
+               var hasApp = _context.Appointments.Any(a => a.DonorId == d.Id);
+            }
+            // _context.Donors.RemoveRange(donors); // Let's just remove the transactions (requests, units, etc)
+
+            await _context.SaveChangesAsync();
+            return Content("All requests, blood units, appointments, and SMS notifications have been wiped successfully.");
+        }
+
+        // Donors (JSON API للـ Dashboard)
         [HttpGet]
         public async Task<IActionResult> GetDonors(string? bloodType, string? status)
         {
@@ -103,7 +125,7 @@ namespace BloodBank.Controllers
             return File(System.Text.Encoding.UTF8.GetBytes(builder.ToString()), "text/csv", "Donors.csv");
         }
 
-        // ===================== Requests =====================
+        // Requests
         [HttpGet]
         public async Task<IActionResult> GetRequests(string? status)
         {
@@ -157,7 +179,7 @@ namespace BloodBank.Controllers
             return Ok();
         }
 
-        // ===================== Blood Inventory =====================
+        // Blood Inventory
         [HttpGet]
         public async Task<IActionResult> GetInventory()
         {
@@ -181,7 +203,52 @@ namespace BloodBank.Controllers
             return Json(grouped);
         }
 
-        // ===================== Hospitals =====================
+        // Traceability
+        [HttpGet]
+        public async Task<IActionResult> GetUnitTrace(int bloodUnitId)
+        {
+            if (!IsAdmin()) return Unauthorized();
+
+            var unit = await _context.BloodUnits
+                .Include(b => b.Hospital)
+                .FirstOrDefaultAsync(b => b.BloodUnitId == bloodUnitId);
+
+            if (unit == null) return NotFound();
+
+            // Build trace timeline
+            var trace = new List<object>
+            {
+                new { Event = "Donation Collected", Date = unit.CollectionDate, Details = $"Type: {unit.BloodType}, Quantity: {unit.Quantity}" }
+            };
+
+            if (unit.Status == "Dispatched" || unit.Status == "Assigned")
+            {
+                trace.Add(new { Event = "Dispatched to Hospital", Date = unit.CreatedAt, Details = $"Hospital: {unit.Hospital?.Name}" });
+            }
+            
+            if (unit.Status == "Available" && unit.HospitalId != null)
+            {
+                // If it's available and has a hospital ID, it was received by the hospital
+                trace.Add(new { Event = "Dispatched to Hospital", Date = unit.CreatedAt, Details = $"Hospital: {unit.Hospital?.Name}" });
+                trace.Add(new { Event = "Received by Hospital", Date = unit.CreatedAt, Details = "Confirmed in hospital inventory" });
+            }
+
+            if (unit.Status == "Consumed")
+            {
+                trace.Add(new { Event = "Dispatched to Hospital", Date = unit.CreatedAt, Details = $"Hospital: {unit.Hospital?.Name}" });
+                trace.Add(new { Event = "Received by Hospital", Date = unit.CreatedAt, Details = "Confirmed in hospital inventory" });
+                trace.Add(new { Event = "Consumed", Date = DateTime.UtcNow, Details = "Unit used by hospital" });
+            }
+
+            if (unit.Status == "Expired")
+            {
+                trace.Add(new { Event = "Expired", Date = unit.ExpiryDate, Details = "Unit reached 42-day expiry limit" });
+            }
+
+            return Json(new { UnitId = unit.BloodUnitId, CurrentStatus = unit.Status, Timeline = trace });
+        }
+
+        // Hospitals
         [HttpGet]
         public async Task<IActionResult> GetHospitals()
         {
@@ -201,7 +268,7 @@ namespace BloodBank.Controllers
             return Json(hospitals);
         }
 
-        // ===================== Email Notifications (MailKit) =====================
+        // Email Notifications (MailKit)
         [HttpPost]
         public async Task<IActionResult> SendSMS(int donorId, string message, string bloodNeeded)
         {
@@ -333,7 +400,7 @@ namespace BloodBank.Controllers
 </html>";
         }
 
-        // ===================== Admin Features =====================
+        // Admin Features
         [HttpPost]
         public async Task<IActionResult> AssignUnit(int requestId)
         {
@@ -353,11 +420,11 @@ namespace BloodBank.Controllers
 
             foreach (var unit in unitsToAssign)
             {
-                unit.Status = "Assigned";
+                unit.Status = "Dispatched"; // Requires Hospital confirmation before becoming Available
                 unit.HospitalId = request.HospitalId;
             }
 
-            request.Status = "Assigned";
+            request.Status = "Dispatched";
             await _context.SaveChangesAsync();
             return Ok();
         }
@@ -464,19 +531,89 @@ namespace BloodBank.Controllers
             return Ok(new { status = center.Status });
         }
 
-        [HttpPost]
-        public async Task<IActionResult> ApproveDonor(int donorId)
+        // ===================== DONOR REGISTRATION APPROVAL =====================
+        
+        [HttpGet]
+        public async Task<IActionResult> DonorRequests()
         {
-            if (!IsAdmin()) return Unauthorized();
-            var donor = await _context.Donors.FindAsync(donorId);
-            if (donor == null) return NotFound();
-            
-            // Assume we change a status. Donors don't have a status field in the original model, 
-            // but we can simulate it if needed, or link their account.
-            return Ok();
+            if (!IsAdmin()) return RedirectToAction("Login", "Account");
+
+            var pendingDonors = await _context.Donors
+                .Include(d => d.Account)
+                .Where(d => d.Status == "Pending")
+                .OrderBy(d => d.RegistrationDate)
+                .ToListAsync();
+
+            var reviewedDonors = await _context.Donors
+                .Include(d => d.Account)
+                .Where(d => d.Status == "Accepted" || d.Status == "Rejected")
+                .OrderByDescending(d => d.RegistrationDate) // Assuming latest reviewed first
+                .Take(50)
+                .ToListAsync();
+
+            ViewBag.PendingCount = pendingDonors.Count;
+            ViewBag.ReviewedDonors = reviewedDonors;
+
+            return View(pendingDonors);
         }
 
-        // ===================== Logout =====================
+        [HttpGet]
+        public async Task<IActionResult> DonorReview(int id)
+        {
+            if (!IsAdmin()) return RedirectToAction("Login", "Account");
+
+            var donor = await _context.Donors
+                .Include(d => d.Account)
+                .FirstOrDefaultAsync(d => d.Id == id);
+
+            if (donor == null) return NotFound();
+
+            var questionnaire = await _context.MedicalQuestionnaires
+                .FirstOrDefaultAsync(q => q.DonorId == id);
+
+            ViewBag.Questionnaire = questionnaire;
+
+            return View(donor);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ApproveDonor(int id)
+        {
+            if (!IsAdmin()) return Unauthorized();
+            var donor = await _context.Donors.FindAsync(id);
+            if (donor == null || donor.Status != "Pending") return NotFound();
+            
+            donor.Status = "Accepted";
+            await _context.SaveChangesAsync();
+            
+            // Optional: Send notification
+            // ...
+            
+            return RedirectToAction(nameof(DonorRequests));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RejectDonor(int id, string reason)
+        {
+            if (!IsAdmin()) return Unauthorized();
+            if (string.IsNullOrWhiteSpace(reason)) return BadRequest("Reason is required");
+
+            var donor = await _context.Donors.FindAsync(id);
+            if (donor == null || donor.Status != "Pending") return NotFound();
+            
+            donor.Status = "Rejected";
+            donor.RejectionReason = reason;
+            await _context.SaveChangesAsync();
+
+            // Optional: Send notification
+            // ...
+
+            return RedirectToAction(nameof(DonorRequests));
+        }
+
+        // Logout
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();

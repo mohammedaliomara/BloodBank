@@ -362,32 +362,35 @@
     <h2 class="form-title">Create Account</h2>
     <p class="form-sub">Join BloodLink — fill in your details below</p>
 
-    <div class="section-label">Personal Information</div>
-    <div class="field-row">
-      <div class="field"><label>First Name</label><input type="text" placeholder="Ahmed"></div>
-      <div class="field"><label>Last Name</label><input type="text" placeholder="Sami"></div>
-    </div>
-    <div class="field"><label>National ID</label><input type="text" placeholder="29XXXXXXXXXXX" maxlength="14"></div>
-    <div class="field-row">
-      <div class="field"><label>Date of Birth</label><input type="date"></div>
-      <div class="field"><label>Gender</label><select><option value="">Select</option><option>Male</option><option>Female</option></select></div>
-    </div>
+    <form method="post" asp-action="Register" asp-controller="Account" id="registerForm">
+      @Html.AntiForgeryToken()
 
-    <div class="section-label">Medical Information</div>
-    <div class="field-row">
-      <div class="field"><label>Blood Type</label><select><option value="">Select</option><option>A+</option><option>A−</option><option>B+</option><option>B−</option><option>AB+</option><option>AB−</option><option>O+</option><option>O−</option></select></div>
-      <div class="field"><label>Role</label><select><option value="">Select</option><option>Donor</option><option>Doctor</option><option>Nurse</option><option>Center Staff</option><option>Admin</option></select></div>
-    </div>
+      <div class="section-label">Personal Information</div>
+      <div class="field-row">
+        <div class="field"><label>First Name</label><input type="text" name="FirstName" placeholder="Ahmed" required></div>
+        <div class="field"><label>Last Name</label><input type="text" name="LastName" placeholder="Sami" required></div>
+      </div>
+      <div class="field"><label>National ID</label><input type="text" name="NationalId" placeholder="29XXXXXXXXXXX" maxlength="14"></div>
+      <div class="field-row">
+        <div class="field"><label>Date of Birth</label><input type="date" name="DateOfBirth" required></div>
+        <div class="field"><label>Gender</label><select name="Gender"><option value="">Select</option><option>Male</option><option>Female</option></select></div>
+      </div>
 
-    <div class="section-label">Contact & Access</div>
-    <div class="field"><label>Email Address</label><input type="email" placeholder="user@bloodlink.org"></div>
-    <div class="field"><label>Phone Number</label><input type="tel" placeholder="+20 1XX XXX XXXX"></div>
-    <div class="field"><label>Governorate</label><select><option value="">Select governorate</option><option>Cairo</option><option>Giza</option><option>Alexandria</option><option>Gharbia</option><option>Dakahlia</option><option>Sharqia</option><option>Qalyubia</option><option>Beheira</option><option>Monufia</option><option>Other</option></select></div>
-    <div class="field"><label>Password</label><div class="pw-wrap"><input id="rpw" type="password" placeholder="Min 8 characters"><button class="eye-btn" onclick="toggleRpw()">👁</button></div></div>
-    <div class="field"><label>Confirm Password</label><input type="password" placeholder="Re-enter password"></div>
+      <div class="section-label">Medical Information</div>
+      <div class="field-row">
+        <div class="field"><label>Blood Type</label><select name="BloodType"><option value="">Select</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></div>
+      </div>
 
-    <button class="btn-primary" style="margin-top:10px" onclick="goTo('success')">Create Account &nbsp;→</button>
-    <div class="link-row" style="margin-top:12px">Already have an account? <a onclick="goTo('login')">Sign in</a></div>
+      <div class="section-label">Contact &amp; Access</div>
+      <div class="field"><label>Email Address</label><input type="email" name="Email" placeholder="user@bloodlink.org" required></div>
+      <div class="field"><label>Phone Number</label><input type="tel" name="PhoneNumber" placeholder="+20 1XX XXX XXXX"></div>
+      <div class="field"><label>Governorate</label><select name="Governorate"><option value="">Select governorate</option><option>Cairo</option><option>Giza</option><option>Alexandria</option><option>Gharbia</option><option>Dakahlia</option><option>Sharqia</option><option>Qalyubia</option><option>Beheira</option><option>Menufia</option><option>Other</option></select></div>
+      <div class="field"><label>Password</label><div class="pw-wrap"><input id="rpw" type="password" name="Password" placeholder="Min 8 characters" required minlength="8"><button type="button" class="eye-btn" onclick="toggleRpw()">👁</button></div></div>
+      <div class="field"><label>Confirm Password</label><input type="password" name="ConfirmPassword" placeholder="Re-enter password" required></div>
+
+      <button type="submit" class="btn-primary" style="margin-top:10px">Create Account &nbsp;→</button>
+      <div class="link-row" style="margin-top:12px">Already have an account? <a onclick="goTo('login')">Sign in</a></div>
+    </form>
   </div>
 
   <!-- SUCCESS -->

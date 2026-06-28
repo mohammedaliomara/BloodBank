@@ -1,0 +1,124 @@
+@model IEnumerable<BloodBank.Models.Appointment>
+
+@{
+    ViewData["Title"] = "Center Portal";
+    Layout = "_Layout";
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12 d-flex justify-content-between align-items-center">
+            <div>
+                <h2><i class="fa-solid fa-house-medical text-primary-brand"></i> Donation Center Portal</h2>
+                <p class="text-muted">Welcome, @(ViewBag.Center?.Name ?? "Center Staff"). Manage today's appointments and complete donations.</p>
+            </div>
+            <div class="text-end">
+                <span class="badge bg-primary fs-5"><i class="fa-regular fa-calendar"></i> @DateTime.Today.ToString("dddd, MMM dd, yyyy")</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card text-center text-white" style="background:var(--primary-color);">
+                <div class="card-body">
+                    <h5>Completed Today</h5>
+                    <h2 class="display-4 fw-bold">@ViewBag.CompletedToday</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card text-center bg-light border">
+                <div class="card-body">
+                    <h5>Remaining Appointments</h5>
+                    <h2 class="display-4 fw-bold text-dark">@ViewBag.RemainingToday</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white border-bottom">
+            <h5 class="mb-0"><i class="fa-regular fa-calendar-check text-primary-brand me-2"></i> Today's Pending Appointments</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Time</th>
+                            <th>Donor Name</th>
+                            <th>Blood Type</th>
+                            <th>Hospital/Center</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.Any())
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-muted">No appointments found for today.</td>
+                            </tr>
+                        }
+                        @foreach (var item in Model)
+                        {
+                            var isCompleted = item.Status == "Completed";
+                            <tr class="@(isCompleted ? "text-muted bg-light" : "")">
+                                <td><strong class="@(isCompleted ? "text-decoration-line-through" : "")">@item.AppointmentTime.ToString(@"hh\:mm")</strong></td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="bg-secondary text-white rounded-circle d-flex justify-content-center align-items-center" style="width:30px;height:30px;">
+                                            <i class="fa-solid fa-user"></i>
+                                        </div>
+                                        <span>@(item.Donor?.Account?.FirstName ?? "Unknown") @(item.Donor?.Account?.LastName ?? "")</span>
+                                    </div>
+                                </td>
+                                <td><span class="badge badge-danger">@(item.Donor?.BloodType ?? "—")</span></td>
+                                <td>@(item.Hospital?.Name ?? "General Center")</td>
+                                <td>
+                                    @if (isCompleted)
+                                    {
+                                        <span class="badge bg-success"><i class="fa-solid fa-check"></i> Completed</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark"><i class="fa-solid fa-clock"></i> @item.Status</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!isCompleted)
+                                    {
+                                        <button class="btn btn-sm btn-success btn-complete-donation" data-id="@item.AppointmentId">
+                                            <i class="fa-solid fa-check-double"></i> Complete Donation
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-success small fw-bold"><i class="fa-solid fa-droplet"></i> Unit Generated</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).on('click', '.btn-complete-donation', function () {
+            const id = $(this).data('id');
+            if (confirm("Are you sure you want to mark this donation as complete? This will auto-generate a blood unit with a 42-day expiry.")) {
+                $.post('/DonationCenter/CompleteDonation', { appointmentId: id }, function (res) {
+                    alert(res.message);
+                    location.reload();
+                }).fail(function () {
+                    alert("An error occurred while completing the donation.");
+                });
+            }
+        });
+    </script>
+}

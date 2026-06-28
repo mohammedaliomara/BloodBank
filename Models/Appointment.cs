@@ -14,6 +14,8 @@ namespace BloodBank.Models
         [Required]
         public int HospitalId { get; set; }
 
+        public int? BloodCenterId { get; set; }
+
         [Required]
         public DateTime AppointmentDate { get; set; }
 
@@ -22,7 +24,7 @@ namespace BloodBank.Models
 
         [Required]
         [StringLength(50)]
-        public string Status { get; set; } = "Pending"; 
+        public string Status { get; set; } = "Pending";
         // Pending / Confirmed / Cancelled / Completed
 
         [StringLength(500)]
@@ -31,6 +33,8 @@ namespace BloodBank.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         // Navigation Properties
-        public Hospital? Hospital { get; set; }
+        public Hospital?    Hospital    { get; set; }
+        public Donor?       Donor       { get; set; }
+        public BloodCenter? BloodCenter { get; set; }
     }
 }
